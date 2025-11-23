@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE VALU: Find Your True Value</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pure-white': '#ffffff',
+                        'soft-gray': '#f8f9fa',
+                        'text-dark': '#1a1a1a',
+                        'soft-gold': '#d4af37',
+                        'modern-blue': '#0056b3',
+                        'accent-blue': '#e7f1ff',
+                    },
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- html2canvas & jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #ffffff;
+            color: #1a1a1a;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f8f9fa;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 4px;
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Hexagon Shape */
+        .hexagon {
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+
+        /* Input Styles */
+        .valu-input {
+            background: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .valu-input:focus {
+            background: #ffffff;
+            border-color: #d4af37;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        /* Gold Particle Canvas */
+        #gold-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-soft-gold selection:text-white">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 px-6 py-4 glass transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="text-2xl font-serif font-bold tracking-tighter text-text-dark cursor-pointer"
+                onclick="switchView('landing')">
+                THE VALU
+            </div>
+            <div class="flex items-center gap-8">
+                <div class="hidden md:flex gap-6 text-sm font-medium text-gray-600">
+                    <button onclick="scrollToSection('about')"
+                        class="hover:text-soft-gold transition-colors">Philosophy</button>
+                    <button onclick="scrollToSection('program')"
+                        class="hover:text-soft-gold transition-colors">Program</button>
+                </div>
+                <button onclick="switchView('workbook')"
+                    class="px-6 py-2 bg-text-dark text-white rounded-full text-sm font-bold hover:bg-soft-gold transition-colors duration-300 shadow-lg flex items-center gap-2">
+                    <i class="fa-solid fa-pen-nib"></i>
+                    <span>Workbook</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN VIEW: LANDING PAGE -->
+    <div id="view-landing" class="transition-opacity duration-500">
+
+        <!-- Hero Section -->
+        <section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+            <!-- Background Image -->
+            <div class="absolute inset-0 z-0">
+                <img src="./assets/hero_bg.png" alt="Background" class="w-full h-full object-cover opacity-80">
+                <div class="absolute inset-0 bg-gradient-to-b from-white/0 via-white/20 to-white"></div>
+            </div>
+            <!-- Gold Particles Canvas -->
+            <canvas id="gold-particles"></canvas>
+
+            <div class="relative z-10 max-w-5xl mx-auto px-6 text-center space-y-8">
+                <div
+                    class="inline-block px-4 py-1 rounded-full border border-soft-gold/50 bg-white/50 backdrop-blur-sm text-soft-gold text-sm font-bold tracking-widest uppercase mb-4 opacity-0 reveal-hero">
+                    육각형 인재
+                </div>
+
+                <h1
+                    class="text-5xl md:text-7xl lg:text-8xl font-serif font-bold leading-tight text-text-dark opacity-0 reveal-hero">
+                    <span class="block">Discover Your</span>
+                    <span class="block text-transparent bg-clip-text bg-gradient-to-r from-soft-gold to-yellow-600">True
+                        Value</span>
+                </h1>
+
+                <p
+                    class="text-gray-600 text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed opacity-0 reveal-hero">
+                    AI 시대, 대체 불가능한 나만의 가치를 발견하세요.<br>
+                    당신의 경험은 원석입니다. 우리는 그것을 빛나는 육각형 인재로 다듬습니다.
+                </p>
+
+                <div class="pt-8 opacity-0 reveal-hero flex flex-col md:flex-row gap-4 justify-center">
+                    <button onclick="switchView('workbook')"
+                        class="px-8 py-4 bg-text-dark text-white rounded-full font-bold text-lg hover:bg-soft-gold transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
+                        가치 발견 시작하기
+                    </button>
+                    <button onclick="scrollToSection('about')"
+                        class="px-8 py-4 bg-white border border-gray-200 text-text-dark rounded-full font-bold text-lg hover:border-soft-gold hover:text-soft-gold transition-all duration-300">
+                        더 알아보기
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Philosophy Section -->
+        <section id="about" class="py-32 px-6 bg-white relative">
+            <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+                <div class="relative reveal-scroll order-2 md:order-1">
+                    <div
+                        class="absolute inset-0 bg-soft-gold/10 rounded-full blur-3xl transform -translate-x-10 translate-y-10">
+                    </div>
+                    <img src="./assets/philosophy.png" alt="Polishing Gem"
+                        class="relative rounded-2xl shadow-2xl w-full object-cover h-[600px]">
+                    <div
+                        class="absolute -bottom-10 -right-10 bg-white p-8 rounded-xl shadow-xl max-w-xs hidden md:block">
+                        <p class="font-serif italic text-xl text-gray-800">"Polishing your story into a prism."</p>
+                        <p class="text-sm text-gray-500 mt-2">- THE VALU Director</p>
+                    </div>
+                </div>
+
+                <div class="space-y-10 reveal-scroll order-1 md:order-2">
+                    <div>
+                        <span class="text-soft-gold font-bold tracking-widest uppercase text-sm">Our Philosophy</span>
+                        <h2 class="text-4xl md:text-5xl font-serif font-bold mt-4 mb-6 leading-tight">
+                            왜 '나'여야 하는가?<br>
+                            그 답을 찾아가는 여정
+                        </h2>
+                        <div class="w-20 h-1 bg-soft-gold"></div>
+                    </div>
+
+                    <div class="space-y-6 text-gray-600 text-lg leading-relaxed">
+                        <p>
+                            모두가 AI를 배우는 시대입니다. 하지만 기술이 평준화될수록,
+                            결국 차이를 만드는 것은 <strong class="text-text-dark">‘고유한 서사’</strong>입니다.
+                        </p>
+                        <p>
+                            THE VALU는 단순한 코칭이 아닙니다. 당신의 지난 시간 속에 묻혀있던
+                            경험의 조각들을 모아, 가장 단단하고 빛나는
+                            <strong class="text-text-dark">육각형(Hexagon)</strong>의 형태로 완성해나가는 과정입니다.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-8">
+                        <div>
+                            <div
+                                class="w-12 h-12 bg-accent-blue rounded-full flex items-center justify-center mb-4 text-modern-blue">
+                                <i class="fa-solid fa-magnifying-glass text-xl"></i>
+                            </div>
+                            <h4 class="font-bold text-lg mb-2">Discovery</h4>
+                            <p class="text-sm text-gray-500">내면의 잠재력과<br>숨겨진 가치 발견</p>
+                        </div>
+                        <div>
+                            <div
+                                class="w-12 h-12 bg-yellow-50 rounded-full flex items-center justify-center mb-4 text-soft-gold">
+                                <i class="fa-regular fa-gem text-xl"></i>
+                            </div>
+                            <h4 class="font-bold text-lg mb-2">Polishing</h4>
+                            <p class="text-sm text-gray-500">고유한 강점을<br>시각화하고 증명</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Program Preview / CTA -->
+        <section id="program" class="py-32 px-6 bg-soft-gray relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
+                <div class="absolute top-10 left-10 w-96 h-96 bg-modern-blue rounded-full blur-3xl"></div>
+                <div class="absolute bottom-10 right-10 w-96 h-96 bg-soft-gold rounded-full blur-3xl"></div>
+            </div>
+
+            <div class="max-w-4xl mx-auto text-center relative z-10">
+                <h2 class="text-4xl md:text-5xl font-serif font-bold mb-8 reveal-scroll">Ready to Find Your Value?</h2>
+                <p class="text-gray-600 text-lg mb-12 reveal-scroll">
+                    지금 바로 워크북을 통해 나만의 가치를 발견해보세요.<br>
+                    작성된 내용은 리포트 형태로 소장할 수 있습니다.
+                </p>
+
+                <div class="reveal-scroll">
+                    <button onclick="switchView('workbook')"
+                        class="group relative inline-flex items-center justify-center px-10 py-5 bg-white text-text-dark font-bold text-xl rounded-full overflow-hidden shadow-xl transition-all hover:scale-105">
+                        <span
+                            class="absolute w-0 h-0 transition-all duration-500 ease-out bg-soft-gold rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                        <span class="relative flex items-center gap-3">
+                            워크북 시작하기 <i class="fa-solid fa-arrow-right"></i>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-white py-12 border-t border-gray-100">
+            <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="text-xl font-serif font-bold text-text-dark">THE VALU</div>
+                <p class="text-gray-400 text-sm">© 2024 THE VALU. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="text-gray-400 hover:text-text-dark transition-colors"><i
+                            class="fa-brands fa-instagram text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-text-dark transition-colors"><i
+                            class="fa-brands fa-linkedin text-xl"></i></a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- SUB VIEW: WORKBOOK PAGE -->
+    <div id="view-workbook" class="hidden min-h-screen bg-soft-gray pt-24 pb-12 px-6 transition-opacity duration-500">
+        <div class="max-w-6xl mx-auto">
+            <!-- Header -->
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <h2 class="text-3xl font-serif font-bold text-text-dark">Value Workbook</h2>
+                    <p class="text-gray-500 mt-2">나만의 가치를 찾아가는 여정</p>
+                </div>
+                <button onclick="switchView('landing')"
+                    class="text-gray-500 hover:text-text-dark transition-colors text-sm font-bold">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> 홈으로 돌아가기
+                </button>
+            </div>
+
+            <div class="grid lg:grid-cols-12 gap-8">
+                <!-- Left: Stepper & Input Area -->
+                <div class="lg:col-span-5 space-y-6">
+
+                    <!-- Stepper Navigation -->
+                    <div class="flex gap-2 mb-6">
+                        <button onclick="setStep(1)" id="step-btn-1"
+                            class="flex-1 py-2 rounded-lg text-sm font-bold bg-text-dark text-white transition-all">Step
+                            1</button>
+                        <button onclick="setStep(2)" id="step-btn-2"
+                            class="flex-1 py-2 rounded-lg text-sm font-bold bg-white text-gray-400 transition-all">Step
+                            2</button>
+                        <button onclick="setStep(3)" id="step-btn-3"
+                            class="flex-1 py-2 rounded-lg text-sm font-bold bg-white text-gray-400 transition-all">Step
+                            3</button>
+                    </div>
+
+                    <!-- Step 1: Story -->
+                    <div id="step-1"
+                        class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 transition-all duration-300">
+                        <label class="block text-lg font-bold text-text-dark mb-4">
+                            <span class="text-soft-gold mr-2">01.</span> 가장 몰입했던 순간은?
+                        </label>
+                        <p class="text-sm text-gray-500 mb-4">시간 가는 줄 모르고 빠져들었던 경험, 혹은 힘들었지만 끝까지 해냈던 경험을 구체적으로 적어주세요.
+                        </p>
+                        <textarea id="q1-input" class="valu-input w-full h-48 rounded-xl p-4 text-base resize-none"
+                            placeholder="내용을 입력하세요..."></textarea>
+
+                        <div class="mt-6 flex justify-end">
+                            <button onclick="setStep(2)"
+                                class="px-6 py-3 bg-text-dark text-white rounded-xl font-bold hover:bg-soft-gold transition-colors">
+                                다음 <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Keywords -->
+                    <div id="step-2"
+                        class="hidden bg-white p-8 rounded-2xl shadow-sm border border-gray-100 transition-all duration-300">
+                        <label class="block text-lg font-bold text-text-dark mb-4">
+                            <span class="text-soft-gold mr-2">02.</span> 나를 표현하는 키워드
+                        </label>
+                        <p class="text-sm text-gray-500 mb-4">나의 강점이나 정체성을 나타내는 핵심 키워드 3가지를 적어주세요.</p>
+                        <div class="space-y-3">
+                            <input type="text" id="k1-input" class="valu-input w-full rounded-xl h-12 px-4"
+                                placeholder="#키워드1">
+                            <input type="text" id="k2-input" class="valu-input w-full rounded-xl h-12 px-4"
+                                placeholder="#키워드2">
+                            <input type="text" id="k3-input" class="valu-input w-full rounded-xl h-12 px-4"
+                                placeholder="#키워드3">
+                        </div>
+
+                        <div class="mt-6 flex justify-between">
+                            <button onclick="setStep(1)"
+                                class="px-6 py-3 bg-gray-100 text-gray-500 rounded-xl font-bold hover:bg-gray-200 transition-colors">
+                                이전
+                            </button>
+                            <button onclick="setStep(3)"
+                                class="px-6 py-3 bg-text-dark text-white rounded-xl font-bold hover:bg-soft-gold transition-colors">
+                                결과 보기 <i class="fa-solid fa-check ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Action -->
+                    <div id="step-3"
+                        class="hidden bg-white p-8 rounded-2xl shadow-sm border border-gray-100 transition-all duration-300 text-center">
+                        <div
+                            class="w-16 h-16 bg-soft-gold/10 rounded-full flex items-center justify-center mx-auto mb-4 text-soft-gold">
+                            <i class="fa-solid fa-gift text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-text-dark mb-2">가치 발견 완료!</h3>
+                        <p class="text-gray-500 mb-8">
+                            오른쪽 미리보기에서 결과를 확인하고<br>
+                            이미지나 PDF로 저장해보세요.
+                        </p>
+
+                        <button onclick="setStep(2)" class="text-sm text-gray-400 underline hover:text-text-dark">
+                            수정하러 돌아가기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: Preview Area -->
+                <div class="lg:col-span-7 sticky top-24 h-fit">
+                    <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+                        <div class="p-6 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                            <h3 class="font-bold text-gray-700">Preview</h3>
+                            <div class="flex gap-2">
+                                <button onclick="switchTab('card')" id="tab-card"
+                                    class="px-4 py-2 rounded-lg text-sm font-bold bg-text-dark text-white shadow-md transition-all">Card</button>
+                                <button onclick="switchTab('doc')" id="tab-doc"
+                                    class="px-4 py-2 rounded-lg text-sm font-bold bg-white text-gray-500 hover:bg-gray-100 transition-all">Report</button>
+                            </div>
+                        </div>
+
+                        <div class="p-8 bg-gray-100 flex justify-center items-center min-h-[600px]">
+
+                            <!-- Card View -->
+                            <div id="view-card"
+                                class="relative w-[320px] h-[568px] bg-white rounded-2xl overflow-hidden shadow-2xl transform transition-all hover:scale-[1.02]">
+                                <div
+                                    class="absolute inset-0 bg-[url('./assets/hero_bg.png')] bg-cover bg-center opacity-20">
+                                </div>
+                                <div class="relative h-full flex flex-col p-8 text-center bg-white/80 backdrop-blur-sm">
+                                    <div class="mt-8 mb-auto">
+                                        <div
+                                            class="w-20 h-20 mx-auto border-2 border-soft-gold rounded-full p-1 hexagon flex items-center justify-center bg-white shadow-lg">
+                                            <i class="fa-regular fa-gem text-3xl text-soft-gold"></i>
+                                        </div>
+                                        <h3
+                                            class="text-text-dark font-serif font-bold tracking-widest text-sm mt-6 uppercase">
+                                            Hexagonal Talent</h3>
+                                    </div>
+
+                                    <div class="space-y-4 mb-12">
+                                        <div class="bg-white border border-gray-200 p-3 rounded-lg shadow-sm">
+                                            <p id="card-k1" class="text-lg font-bold text-text-dark">#Keyword1</p>
+                                        </div>
+                                        <div class="bg-white border border-gray-200 p-3 rounded-lg shadow-sm">
+                                            <p id="card-k2" class="text-lg font-bold text-text-dark">#Keyword2</p>
+                                        </div>
+                                        <div class="bg-white border border-gray-200 p-3 rounded-lg shadow-sm">
+                                            <p id="card-k3" class="text-lg font-bold text-text-dark">#Keyword3</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-auto pb-8 border-t border-gray-200 pt-4">
+                                        <p class="text-gray-400 text-xs tracking-widest">DISCOVERED BY THE VALU</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Document View -->
+                            <div id="view-doc"
+                                class="hidden relative w-[420px] min-h-[594px] bg-white text-black p-10 shadow-2xl">
+                                <div class="flex justify-between items-start border-b-2 border-text-dark pb-6 mb-8">
+                                    <div>
+                                        <h1 class="text-3xl font-serif font-bold text-text-dark">THE VALU REPORT</h1>
+                                        <p class="text-sm text-gray-500 mt-1">Personal Value Discovery Document</p>
+                                    </div>
+                                    <div
+                                        class="w-12 h-12 bg-soft-gold/10 rounded-full flex items-center justify-center text-soft-gold">
+                                        <i class="fa-solid fa-fingerprint text-xl"></i>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-10">
+                                    <div>
+                                        <h2 class="text-xs font-bold uppercase tracking-widest text-soft-gold mb-3">01.
+                                            The Narrative</h2>
+                                        <div class="bg-gray-50 p-6 rounded-lg border-l-4 border-soft-gold">
+                                            <p id="doc-q1"
+                                                class="text-sm leading-relaxed font-serif whitespace-pre-wrap text-gray-700">
+                                                작성된 내용이 여기에 표시됩니다.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h2 class="text-xs font-bold uppercase tracking-widest text-soft-gold mb-3">02.
+                                            Core Identity</h2>
+                                        <div class="flex flex-wrap gap-2">
+                                            <span id="doc-k1"
+                                                class="px-4 py-2 bg-text-dark text-white text-sm font-bold rounded-full">#KEYWORD1</span>
+                                            <span id="doc-k2"
+                                                class="px-4 py-2 bg-text-dark text-white text-sm font-bold rounded-full">#KEYWORD2</span>
+                                            <span id="doc-k3"
+                                                class="px-4 py-2 bg-text-dark text-white text-sm font-bold rounded-full">#KEYWORD3</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="absolute bottom-10 left-10 right-10 text-center">
+                                    <p class="text-xs text-gray-400 font-serif italic">"Your story is your power."</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6 bg-white border-t border-gray-100 flex justify-end gap-4">
+                            <button onclick="downloadResult()"
+                                class="px-6 py-3 bg-soft-gold text-white font-bold rounded-xl hover:bg-yellow-600 transition-colors shadow-lg flex items-center gap-2">
+                                <i class="fa-solid fa-download"></i>
+                                <span id="download-text">이미지 저장하기</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // View Switching Logic
+        function switchView(viewName) {
+            const landing = document.getElementById('view-landing');
+            const workbook = document.getElementById('view-workbook');
+            const navbar = document.getElementById('navbar');
+
+            if (viewName === 'workbook') {
+                landing.classList.add('hidden');
+                workbook.classList.remove('hidden');
+                window.scrollTo(0, 0);
+            } else {
+                workbook.classList.add('hidden');
+                landing.classList.remove('hidden');
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function scrollToSection(id) {
+            const landing = document.getElementById('view-landing');
+
+            if (landing.classList.contains('hidden')) {
+                switchView('landing');
+                setTimeout(() => {
+                    document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            } else {
+                document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Stepper Logic
+        function setStep(step) {
+            // Hide all steps
+            document.getElementById('step-1').classList.add('hidden');
+            document.getElementById('step-2').classList.add('hidden');
+            document.getElementById('step-3').classList.add('hidden');
+
+            // Reset buttons
+            [1, 2, 3].forEach(i => {
+                const btn = document.getElementById(`step-btn-${i}`);
+                btn.classList.remove('bg-text-dark', 'text-white');
+                btn.classList.add('bg-white', 'text-gray-400');
+            });
+
+            // Show current step
+            document.getElementById(`step-${step}`).classList.remove('hidden');
+
+            // Highlight current button
+            const activeBtn = document.getElementById(`step-btn-${step}`);
+            activeBtn.classList.remove('bg-white', 'text-gray-400');
+            activeBtn.classList.add('bg-text-dark', 'text-white');
+        }
+
+        // Gold Particle Animation
+        const canvas = document.getElementById('gold-particles');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1; // 1-4px
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * -0.5 - 0.1; // Move upwards
+                this.opacity = Math.random() * 0.5 + 0.2;
+                this.color = `rgba(212, 175, 55, ${this.opacity})`; // Soft Gold
+                this.isShootingStar = Math.random() < 0.05; // 5% chance
+            }
+            update() {
+                if (this.isShootingStar) {
+                    this.x += this.speedX * 5;
+                    this.y += this.speedY * 5;
+                    this.opacity -= 0.01;
+                } else {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.opacity < 1) this.opacity += 0.001;
+                }
+
+                // Reset if out of bounds or faded
+                if (this.y < 0 || this.opacity <= 0) {
+                    this.y = canvas.height;
+                    this.x = Math.random() * canvas.width;
+                    this.opacity = Math.random() * 0.5 + 0.2;
+                    this.isShootingStar = Math.random() < 0.01; // Reset chance
+                }
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Glow effect
+                if (this.isShootingStar) {
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = "#d4af37";
+                } else {
+                    ctx.shadowBlur = 0;
+                }
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < 80; i++) {
+                particles.push(new Particle());
+            }
+        }
+        initParticles();
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+
+        // GSAP Animations
+        window.addEventListener('load', () => {
+            // Hero Reveal
+            const reveals = document.querySelectorAll('.reveal-hero');
+            gsap.to(reveals, {
+                y: 0,
+                opacity: 1,
+                duration: 1.2,
+                stagger: 0.2,
+                ease: "power3.out",
+            });
+
+            // Scroll Reveal
+            gsap.utils.toArray('.reveal-scroll').forEach(element => {
+                gsap.fromTo(element,
+                    { y: 50, opacity: 0 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        duration: 1,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: element,
+                            start: "top 85%",
+                            toggleActions: "play none none reverse"
+                        }
+                    }
+                );
+            });
+
+            // Load Data
+            loadData();
+            updatePreview();
+        });
+
+        // LocalStorage & Real-time Update
+        const inputs = ['q1-input', 'k1-input', 'k2-input', 'k3-input'];
+
+        inputs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', (e) => {
+                    localStorage.setItem('valu_' + id, e.target.value);
+                    updatePreview();
+                });
+            }
+        });
+
+        function loadData() {
+            inputs.forEach(id => {
+                const saved = localStorage.getItem('valu_' + id);
+                if (saved) {
+                    document.getElementById(id).value = saved;
+                }
+            });
+        }
+
+        function updatePreview() {
+            const q1 = document.getElementById('q1-input').value || '아직 내용이 입력되지 않았습니다.';
+            const k1 = document.getElementById('k1-input').value || 'Keyword1';
+            const k2 = document.getElementById('k2-input').value || 'Keyword2';
+            const k3 = document.getElementById('k3-input').value || 'Keyword3';
+
+            // Update Card
+            const cardK1 = document.getElementById('card-k1');
+            if (cardK1) cardK1.innerText = k1.startsWith('#') ? k1 : '#' + k1;
+            const cardK2 = document.getElementById('card-k2');
+            if (cardK2) cardK2.innerText = k2.startsWith('#') ? k2 : '#' + k2;
+            const cardK3 = document.getElementById('card-k3');
+            if (cardK3) cardK3.innerText = k3.startsWith('#') ? k3 : '#' + k3;
+
+            // Update Doc
+            const docQ1 = document.getElementById('doc-q1');
+            if (docQ1) docQ1.innerText = q1;
+            const docK1 = document.getElementById('doc-k1');
+            if (docK1) docK1.innerText = k1.startsWith('#') ? k1 : '#' + k1;
+            const docK2 = document.getElementById('doc-k2');
+            if (docK2) docK2.innerText = k2.startsWith('#') ? k2 : '#' + k2;
+            const docK3 = document.getElementById('doc-k3');
+            if (docK3) docK3.innerText = k3.startsWith('#') ? k3 : '#' + k3;
+        }
+
+        // Tab Switching
+        let currentTab = 'card';
+        function switchTab(tab) {
+            currentTab = tab;
+            const btnCard = document.getElementById('tab-card');
+            const btnDoc = document.getElementById('tab-doc');
+            const viewCard = document.getElementById('view-card');
+            const viewDoc = document.getElementById('view-doc');
+            const downloadText = document.getElementById('download-text');
+
+            if (tab === 'card') {
+                btnCard.classList.remove('bg-white', 'text-gray-500');
+                btnCard.classList.add('bg-text-dark', 'text-white', 'shadow-md');
+                btnDoc.classList.remove('bg-text-dark', 'text-white', 'shadow-md');
+                btnDoc.classList.add('bg-white', 'text-gray-500');
+
+                viewCard.classList.remove('hidden');
+                viewDoc.classList.add('hidden');
+                downloadText.innerText = '이미지 저장하기';
+            } else {
+                btnDoc.classList.remove('bg-white', 'text-gray-500');
+                btnDoc.classList.add('bg-text-dark', 'text-white', 'shadow-md');
+                btnCard.classList.remove('bg-text-dark', 'text-white', 'shadow-md');
+                btnCard.classList.add('bg-white', 'text-gray-500');
+
+                viewDoc.classList.remove('hidden');
+                viewCard.classList.add('hidden');
+                downloadText.innerText = 'PDF 저장하기';
+            }
+        }
+
+        // Download
+        async function downloadResult() {
+            const targetId = currentTab === 'card' ? 'view-card' : 'view-doc';
+            const target = document.getElementById(targetId);
+
+            if (!target) return;
+
+            if (currentTab === 'card') {
+                try {
+                    const canvas = await html2canvas(target, {
+                        scale: 2,
+                        backgroundColor: null,
+                        useCORS: true
+                    });
+
+                    const link = document.createElement('a');
+                    link.download = 'VALU_Card.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                } catch (err) {
+                    console.error('Capture failed:', err);
+                    alert('이미지 저장 중 오류가 발생했습니다.');
+                }
+            } else {
+                try {
+                    const canvas = await html2canvas(target, {
+                        scale: 2,
+                        useCORS: true
+                    });
+
+                    const imgData = canvas.toDataURL('image/png');
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+
+                    const imgProps = pdf.getImageProperties(imgData);
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                    pdf.save('VALU_Report.pdf');
+                } catch (err) {
+                    console.error('PDF generation failed:', err);
+                    alert('PDF 저장 중 오류가 발생했습니다.');
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
