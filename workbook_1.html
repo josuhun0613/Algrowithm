@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workbook Session 1 - THE VALU</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'soft-gold': '#d4af37',
+                        'rich-black': '#0a0a0a',
+                        'off-white': '#fcfcfc',
+                    },
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    backgroundImage: {
+                        'diamond-pattern': "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f3f4f6;
+            color: #0a0a0a;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 0;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .print-container {
+                width: 297mm;
+                height: 210mm;
+                padding: 10mm;
+                margin: 0 auto;
+                background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") !important;
+                page-break-after: always;
+                overflow: hidden;
+                border: none;
+                box-shadow: none;
+            }
+
+            textarea,
+            input {
+                border: none !important;
+                border-bottom: 1px solid #ddd !important;
+                resize: none;
+                background: transparent !important;
+            }
+        }
+
+        @media screen {
+            .print-container {
+                width: 297mm;
+                height: 210mm;
+                margin: 2rem auto;
+                background-color: white;
+                background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+                padding: 10mm;
+                position: relative;
+            }
+        }
+
+        ::placeholder {
+            color: #d1d5db;
+            opacity: 0.4;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen font-sans text-rich-black">
+    <nav class="no-print fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-200 px-6 py-3">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="index.html"
+                class="text-lg font-serif font-bold text-rich-black hover:text-soft-gold transition-colors">
+                <i class="fa-solid fa-arrow-left mr-2"></i> THE VALU
+            </a>
+            <div class="flex gap-4">
+                <a href="workbook_1.html"
+                    class="px-4 py-1.5 bg-rich-black text-white rounded-full text-xs font-bold">Session 1</a>
+                <a href="workbook_2.html"
+                    class="px-4 py-1.5 bg-white text-gray-400 hover:text-rich-black rounded-full text-xs font-bold transition-colors">Session
+                    2</a>
+                <a href="workbook_3.html"
+                    class="px-4 py-1.5 bg-white text-gray-400 hover:text-rich-black rounded-full text-xs font-bold transition-colors">Session
+                    3</a>
+            </div>
+            <button onclick="window.print()"
+                class="px-5 py-1.5 bg-soft-gold text-white rounded-full text-xs font-bold hover:bg-yellow-600 transition-colors shadow-lg flex items-center gap-2">
+                <i class="fa-solid fa-print"></i> Print A4
+            </button>
+        </div>
+    </nav>
+    <div class="h-14 no-print"></div>
+    <div class="print-container relative flex flex-col overflow-hidden pb-12">
+        <img src="./assets/rough_gemstone.png" alt=""
+            class="absolute bottom-10 left-10 w-64 opacity-20 pointer-events-none mix-blend-multiply z-0">
+        <img src="./assets/blue_diamond.png" alt=""
+            class="absolute top-20 right-10 w-64 opacity-20 pointer-events-none mix-blend-multiply z-0">
+        <header class="border-b-2 border-rich-black pb-2.5 mb-2.5 flex justify-between items-end relative z-10">
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="bg-rich-black text-white text-[10px] font-bold px-2 py-0.5 rounded">1회차 워크지</span>
+                    <span class="text-soft-gold font-bold tracking-widest text-[10px] uppercase">Personal Career DNA
+                        Discovery</span>
+                </div>
+                <h1 class="text-2xl font-serif font-bold text-rich-black leading-tight">Why me? <span
+                        class="text-lg font-light text-gray-600 ml-2">- 도대체 '나'는 누구인가?</span></h1>
+                <p class="text-xs text-gray-500 mt-1 italic">"AI는 도구일 뿐, 진짜 답은 네 안에 있어. (Find You, Then AI)"</p>
+            </div>
+            <div class="text-right flex flex-col items-end gap-2">
+                <div class="flex gap-4 bg-white/50 p-2 rounded-lg border border-gray-100">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] text-soft-gold font-bold uppercase">Name</span>
+                        <input type="text"
+                            class="bg-transparent border-b border-gray-300 w-20 text-sm font-bold text-center focus:border-soft-gold focus:outline-none"
+                            placeholder="">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] text-soft-gold font-bold uppercase">Partner</span>
+                        <input type="text"
+                            class="bg-transparent border-b border-gray-300 w-20 text-sm font-bold text-center focus:border-soft-gold focus:outline-none"
+                            placeholder="">
+                    </div>
+                </div>
+                <div class="flex flex-col items-end">
+                    <div class="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-1 rounded mb-1">오늘의 미션: "내 안에 숨겨진
+                        보석 같은 키워드 3개를 찾아라!"</div>
+                    <p class="text-[11px] text-gray-500 font-serif italic">"가장 개인적인 것이 가장 창의적인 것이다." - 마틴 스코세이지</p>
+                </div>
+            </div>
+        </header>
+        <div class="flex-1 grid grid-cols-12 gap-4 h-full relative z-10">
+            <div class="col-span-4 flex flex-col h-full border-r border-gray-200 pr-4">
+                <div class="flex items-center gap-2 mb-2.5">
+                    <div
+                        class="w-7 h-7 rounded-full bg-rich-black text-white flex items-center justify-center font-sans font-bold text-sm">
+                        1</div>
+                    <h3 class="text-sm font-bold text-rich-black">나의 '결정적 순간' 꺼내기 (Speaker)</h3>
+                </div>
+                <div class="bg-gray-50 p-2 rounded-lg text-[10px] text-gray-600 mb-3 border border-gray-100">
+                    <strong>Host Guide:</strong> 질문 리스트 중 딱 하나만 골라 파트너에게 3분 동안 자랑하거나 하소연해 주세요!
+                </div>
+                <div class="space-y-2 mb-3">
+                    <label
+                        class="flex items-start gap-2 cursor-pointer group p-1 hover:bg-white rounded transition-colors border border-transparent hover:border-gray-100">
+                        <input type="radio" name="q_select" class="mt-1 accent-soft-gold">
+                        <span class="text-[10px] leading-relaxed text-gray-700 group-hover:text-rich-black"><strong
+                                class="text-soft-gold">[몰입]</strong> 시간 가는 줄 모르고 밤새워서 무언가에 파고들었던 경험이 있나요? (게임, 덕질, 과제
+                            등)</span>
+                    </label>
+                    <label
+                        class="flex items-start gap-2 cursor-pointer group p-1 hover:bg-white rounded transition-colors border border-transparent hover:border-gray-100">
+                        <input type="radio" name="q_select" class="mt-1 accent-soft-gold">
+                        <span class="text-[10px] leading-relaxed text-gray-700 group-hover:text-rich-black"><strong
+                                class="text-soft-gold">[성취]</strong> "이건 진짜 내가 생각해도 잘했다" 싶어서 뿌듯했던 순간은? (사소한 것도
+                            OK)</span>
+                    </label>
+                    <label
+                        class="flex items-start gap-2 cursor-pointer group p-1 hover:bg-white rounded transition-colors border border-transparent hover:border-gray-100">
+                        <input type="radio" name="q_select" class="mt-1 accent-soft-gold">
+                        <span class="text-[10px] leading-relaxed text-gray-700 group-hover:text-rich-black"><strong
+                                class="text-soft-gold">[해결]</strong> 꼬여버린 문제를 기가 막히게 풀었거나, 엉망인 상황을 수습해 본 경험은?</span>
+                    </label>
+                    <label
+                        class="flex items-start gap-2 cursor-pointer group p-1 hover:bg-white rounded transition-colors border border-transparent hover:border-gray-100">
+                        <input type="radio" name="q_select" class="mt-1 accent-soft-gold">
+                        <span class="text-[10px] leading-relaxed text-gray-700 group-hover:text-rich-black"><strong
+                                class="text-soft-gold">[칭찬]</strong> 남들에게 "너 진짜 이런 거 잘한다", "너 덕분에 해결됐다"는 말을 들었을
+                            때?</span>
+                    </label>
+                    <label
+                        class="flex items-start gap-2 cursor-pointer group p-1 hover:bg-white rounded transition-colors border border-transparent hover:border-gray-100">
+                        <input type="radio" name="q_select" class="mt-1 accent-soft-gold">
+                        <span class="text-[10px] leading-relaxed text-gray-700 group-hover:text-rich-black"><strong
+                                class="text-soft-gold">[극복]</strong> 가장 크게 실패하거나 좌절했지만, 다시 일어설 수 있었던 경험은?</span>
+                    </label>
+                </div>
+                <div class="flex-1 flex flex-col">
+                    <p class="text-[10px] font-bold text-rich-black mb-1">파트너가 들려준 이야기 요약 (Listener의 1줄 이해):</p>
+                    <div class="relative flex-1 flex flex-col">
+                        <textarea
+                            class="w-full flex-1 bg-white/50 border-2 border-gray-200 rounded-lg p-2 text-xs resize-none focus:border-soft-gold focus:outline-none"
+                            placeholder="내용을 간단히 메모하세요..."></textarea>
+                        <span
+                            class="absolute bottom-1.5 right-1.5 text-[9px] text-gray-400 font-bold bg-white px-1 rounded border border-gray-100">핵심
+                            맥락 추출 훈련</span>
+                    </div>
+                </div>
+                <div class="pt-3">
+                    <div class="bg-soft-gold/10 border border-soft-gold rounded-xl p-2.5 relative">
+                        <div
+                            class="absolute -top-2.5 left-3 bg-white text-soft-gold text-[10px] font-bold px-2 py-0.5 rounded shadow-sm border border-soft-gold">
+                            파트너의 칭찬 & 확신 부스터</div>
+                        <p class="text-[10px] text-gray-600 mb-2 mt-1">리스너가 스피커에게 가장 와닿았던 긍정적인 칭찬 문장 또는 단어 1개를 적어주세요.
+                        </p>
+                        <input type="text"
+                            class="w-full bg-white border-b border-soft-gold/50 text-center font-bold text-rich-black py-1 focus:outline-none focus:border-soft-gold placeholder-gray-300 text-sm"
+                            placeholder="너는 ~한 사람이야!">
+                    </div>
+                </div>
+            </div>
+            <div class="col-span-8 flex flex-col h-full">
+                <div class="flex-1 grid grid-cols-8 gap-6">
+                    <div class="col-span-5 flex flex-col h-full border-r border-gray-200 pr-6">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div
+                                class="w-8 h-8 rounded-full bg-white border border-rich-black text-rich-black flex items-center justify-center font-sans font-bold text-base">
+                                2</div>
+                            <h3 class="text-sm font-bold text-rich-black">나만의 보석 채굴장 (Listener)</h3>
+                        </div>
+                        <div class="bg-gray-50 p-2.5 rounded-lg text-[10px] text-gray-600 mb-3 border border-gray-100">
+                            <strong>Host Guide:</strong> 파트너의 이야기를 들으면서, 떠오르는 단어/강점을 마구 적어주세요. 당신은 <strong>'칭찬
+                                탐정'</strong>입니다!
+                        </div>
+                        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm mb-3">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-50 border-b border-gray-200">
+                                        <th
+                                            class="p-1.5 text-[10px] font-bold text-gray-500 w-1/2 border-r border-gray-200">
+                                            FACT (상황/행동)</th>
+                                        <th class="p-1.5 text-[10px] font-bold text-gray-500 w-1/2">KEYWORD (발견한 강점)
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <tr class="bg-yellow-50/30">
+                                        <td
+                                            class="p-1.5 text-[10px] text-gray-400 italic border-r border-gray-100 align-top">
+                                            (예시) 동아리 예산이 빵꾸 났는데 엑셀로 정리해서 막았다.</td>
+                                        <td class="p-1.5 text-[10px] text-gray-400 italic align-top">-> 꼼꼼함, 데이터 감각,
+                                            위기관리, 책임감</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-1.5 border-r border-gray-100 align-top h-11">
+                                            <span class="text-[10px] font-bold text-soft-gold block mb-0.5">1.</span>
+                                            <textarea
+                                                class="w-full h-full bg-transparent resize-none text-xs focus:outline-none placeholder-gray-300"
+                                                placeholder="내용 입력..."></textarea>
+                                        </td>
+                                        <td class="p-1.5 align-top h-11">
+                                            <span class="text-[10px] font-bold text-soft-gold block mb-0.5">-></span>
+                                            <textarea
+                                                class="w-full h-full bg-transparent resize-none text-xs focus:outline-none placeholder-gray-300"
+                                                placeholder="강점 키워드..."></textarea>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-1.5 border-r border-gray-100 align-top h-11">
+                                            <span class="text-[10px] font-bold text-soft-gold block mb-0.5">2.</span>
+                                            <textarea
+                                                class="w-full h-full bg-transparent resize-none text-xs focus:outline-none placeholder-gray-300"
+                                                placeholder="내용 입력..."></textarea>
+                                        </td>
+                                        <td class="p-1.5 align-top h-11">
+                                            <span class="text-[10px] font-bold text-soft-gold block mb-0.5">-></span>
+                                            <textarea
+                                                class="w-full h-full bg-transparent resize-none text-xs focus:outline-none placeholder-gray-300"
+                                                placeholder="강점 키워드..."></textarea>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-1.5 border-r border-gray-100 align-top h-11">
+                                            <span class="text-[10px] font-bold text-soft-gold block mb-0.5">3.</span>
+                                            <textarea
+                                                class="w-full h-full bg-transparent resize-none text-xs focus:outline-none placeholder-gray-300"
+                                                placeholder="내용 입력..."></textarea>
+                                        </td>
+                                        <td class="p-1.5 align-top h-11">
+                                            <span class="text-[10px] font-bold text-soft-gold block mb-0.5">-></span>
+                                            <textarea
+                                                class="w-full h-full bg-transparent resize-none text-xs focus:outline-none placeholder-gray-300"
+                                                placeholder="강점 키워드..."></textarea>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="bg-gray-50 rounded-xl border border-gray-200 p-2.5 flex-1 flex flex-col">
+                            <h4 class="text-[10px] font-bold text-rich-black mb-1.5 flex items-center gap-2">
+                                <i class="fa-solid fa-gem text-soft-gold"></i> 채굴된 키워드 TOP 5
+                            </h4>
+                            <div class="grid grid-cols-3 gap-1.5 mt-auto">
+                                <input type="text"
+                                    class="bg-white/50 border border-gray-200 rounded px-2 py-1 text-xs text-center focus:border-soft-gold focus:outline-none placeholder-gray-300"
+                                    placeholder="#1">
+                                <input type="text"
+                                    class="bg-white/50 border border-gray-200 rounded px-2 py-1 text-xs text-center focus:border-soft-gold focus:outline-none placeholder-gray-300"
+                                    placeholder="#2">
+                                <input type="text"
+                                    class="bg-white/50 border border-gray-200 rounded px-2 py-1 text-xs text-center focus:border-soft-gold focus:outline-none placeholder-gray-300"
+                                    placeholder="#3">
+                                <input type="text"
+                                    class="bg-white/50 border border-gray-200 rounded px-2 py-1 text-xs text-center focus:border-soft-gold focus:outline-none placeholder-gray-300"
+                                    placeholder="#4">
+                                <input type="text"
+                                    class="bg-white/50 border border-gray-200 rounded px-2 py-1 text-xs text-center focus:border-soft-gold focus:outline-none placeholder-gray-300"
+                                    placeholder="#5">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-span-3 flex flex-col h-full">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div
+                                class="w-8 h-8 rounded-full bg-soft-gold text-white flex items-center justify-center font-sans font-bold text-base">
+                                3</div>
+                            <h3 class="text-sm font-bold text-rich-black">나의 커리어 DNA 완성 (Polishing)</h3>
+                        </div>
+                        <p class="text-[10px] text-gray-500 mb-2.5">채굴한 키워드 중, 본인이 생각하기에 <strong>'가장 나다운' 것
+                                3가지</strong>만 골라봅시다.</p>
+                        <div class="bg-white p-2.5 rounded-xl border border-gray-200 shadow-sm mb-3">
+                            <h4 class="text-[10px] font-bold text-center text-rich-black mb-2">최종 선정된 나의 TOP 3 키워드</h4>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-soft-gold font-bold text-sm">#</span>
+                                    <input type="text"
+                                        class="flex-1 border-b border-gray-200 text-sm font-bold text-center pb-1 focus:border-soft-gold focus:outline-none placeholder-gray-300"
+                                        placeholder="키워드 1">
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-soft-gold font-bold text-sm">#</span>
+                                    <input type="text"
+                                        class="flex-1 border-b border-gray-200 text-sm font-bold text-center pb-1 focus:border-soft-gold focus:outline-none placeholder-gray-300"
+                                        placeholder="키워드 2">
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-soft-gold font-bold text-sm">#</span>
+                                    <input type="text"
+                                        class="flex-1 border-b border-gray-200 text-sm font-bold text-center pb-1 focus:border-soft-gold focus:outline-none placeholder-gray-300"
+                                        placeholder="키워드 3">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-1 bg-blue-50/30 p-2 rounded-xl border border-blue-100 relative flex flex-col">
+                            <div
+                                class="absolute -top-2 left-3 bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded shadow-sm border border-blue-200">
+                                최종 페르소나 브랜딩</div>
+                            <div class="space-y-2 text-[10px] leading-relaxed text-gray-700 mt-2 flex-1">
+                                <p>나는 <input type="text"
+                                        class="bg-transparent border-b border-blue-200 w-full px-1 text-center font-bold text-blue-800 focus:outline-none placeholder-blue-200"
+                                        placeholder="(STEP 1 경험)"> 을(를) 경험했어.</p>
+                                <p>내 파트너는 이 경험에서 나를 <input type="text"
+                                        class="bg-transparent border-b border-blue-200 w-full px-1 text-center font-bold text-blue-800 focus:outline-none placeholder-blue-200"
+                                        placeholder="(TOP 3 키워드)"> (이)라고 분석했어.</p>
+                                <p class="font-bold text-blue-900 mt-1">이 내용을 바탕으로 자기소개서에 쓸 수 있는 문장으로 다듬어 줘.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <div class="bg-white text-rich-black p-3 rounded-xl shadow-lg border-2 border-soft-gold relative">
+                        <h4 class="text-xs font-bold text-soft-gold mb-1.5 text-center uppercase tracking-wider">AI가 분석한
+                            나의 직업적 페르소나</h4>
+                        <input type="text"
+                            class="w-full bg-gray-50 border-b-2 border-gray-200 rounded-none p-1.5 text-center text-base font-bold text-rich-black placeholder-gray-200 focus:outline-none focus:border-soft-gold"
+                            placeholder="예: 창의적인 전략가 (ENTP)">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="mt-3 pt-2.5 border-t border-gray-200 flex justify-between items-center relative z-10 mb-8">
+            <div class="flex items-center gap-2">
+                <span class="text-[9px] font-bold bg-soft-gold text-white px-1.5 py-0.5 rounded">THE VALU</span>
+                <span class="text-[10px] text-gray-400">Copyright © 2025 THE VALU. All rights reserved.</span>
+            </div>
+        </footer>
+    </div>
+</body>
+
+</html>
