@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - THE VALU</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'champagne-gold': '#D4AF37',
+                        'deep-navy': '#001F3F',
+                        'rich-black': '#0a0a0a',
+                    },
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        }
+
+        .hexagon-pattern {
+            background-image:
+                linear-gradient(30deg, transparent 48%, rgba(212, 175, 55, 0.03) 50%, transparent 52%),
+                linear-gradient(90deg, transparent 48%, rgba(212, 175, 55, 0.03) 50%, transparent 52%),
+                linear-gradient(150deg, transparent 48%, rgba(212, 175, 55, 0.03) 50%, transparent 52%);
+            background-size: 60px 60px;
+        }
+
+        .profile-image {
+            width: 320px;
+            height: 420px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #D4AF37 0%, #001F3F 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .info-card {
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.15);
+        }
+    </style>
+</head>
+
+<body class="font-sans text-rich-black">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html"
+                class="text-2xl font-serif font-bold text-rich-black hover:text-champagne-gold transition-colors">
+                THE VALU
+            </a>
+            <div class="flex gap-8 items-center">
+                <a href="about.html"
+                    class="text-sm font-bold text-champagne-gold border-b-2 border-champagne-gold pb-1">About</a>
+                <a href="#philosophy"
+                    class="text-sm font-medium text-gray-600 hover:text-champagne-gold transition-colors">Philosophy</a>
+                <a href="#program"
+                    class="text-sm font-medium text-gray-600 hover:text-champagne-gold transition-colors">Program</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Landing Hero Section -->
+    <section class="min-h-screen flex items-center justify-center pt-20 hexagon-pattern relative overflow-hidden">
+        <!-- Floating Diamond Elements -->
+        <div class="absolute top-20 left-10 w-32 h-32 border-2 border-champagne-gold/20 rotate-45 floating"
+            style="animation-delay: 0s;"></div>
+        <div class="absolute bottom-20 right-20 w-24 h-24 border-2 border-champagne-gold/30 rotate-45 floating"
+            style="animation-delay: 2s;"></div>
+        <div class="absolute top-1/3 right-10 w-20 h-20 border-2 border-champagne-gold/25 rotate-45 floating"
+            style="animation-delay: 4s;"></div>
+        <div class="absolute bottom-1/3 left-20 w-16 h-16 border-2 border-champagne-gold/20 rotate-45 floating"
+            style="animation-delay: 3s;"></div>
+
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <!-- Tagline with Border -->
+            <div class="inline-block border-2 border-champagne-gold px-6 py-3 rounded-full mb-8">
+                <p class="text-champagne-gold font-bold text-lg tracking-wide">2030 AI로 취업·이직 PROJECT</p>
+            </div>
+
+            <!-- Sparkling Diamond Image - LARGER SIZE -->
+            <div class="flex justify-center mb-6">
+                <img src="assets/sparkling_diamond-removebg-preview.png" alt="Diamond" class="w-24 h-24 floating"
+                    style="filter: drop-shadow(0 8px 20px rgba(212, 175, 55, 0.4));">
+            </div>
+
+            <!-- Main Message -->
+            <h1 class="text-7xl font-serif font-bold leading-tight mb-8">
+                AI 시대,<br />
+                <span class="gradient-text">대체 불가능한</span><br />
+                나만의 가치를 발견하라
+            </h1>
+
+            <p class="text-2xl text-gray-600 leading-relaxed">
+                당신 안에 숨겨진 보석을 찾아내고, 진정한 육각형 인재로 거듭나는 여정
+            </p>
+        </div>
+    </section>
+
+    <!-- Profile Card Section -->
+    <section class="py-32 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-2 gap-16 items-center">
+                <!-- Left: Profile Image -->
+                <div class="relative">
+                    <div class="profile-image flex items-center justify-center text-gray-400 floating">
+                        <div class="text-center">
+                            <svg class="w-32 h-32 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <p class="text-sm">호스트 사진</p>
+                        </div>
+                    </div>
+                    <!-- Background Decoration -->
+                    <div class="absolute -top-10 -right-10 w-96 h-96 bg-champagne-gold/5 rounded-full blur-3xl -z-10">
+                    </div>
+                    <div class="absolute -bottom-10 -left-10 w-80 h-80 bg-deep-navy/5 rounded-full blur-3xl -z-10">
+                    </div>
+                </div>
+
+                <!-- Right: Profile Info -->
+                <div class="space-y-6">
+                    <div>
+                        <span
+                            class="text-xs font-bold tracking-widest text-champagne-gold uppercase border border-champagne-gold px-4 py-2 rounded-full inline-block mb-4">
+                            THE VALU Founder & Host
+                        </span>
+
+                        <p class="text-lg text-gray-600 mb-3">
+                            2030 AI 커리어 브랜딩 소셜링
+                        </p>
+
+                        <h2 class="text-3xl font-serif font-bold mb-6">
+                            조수훈
+                        </h2>
+
+                        <div class="w-20 h-1 bg-champagne-gold mb-8"></div>
+                    </div>
+
+                    <!-- Career Highlights -->
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-award text-champagne-gold mt-1"></i>
+                            <p class="text-gray-700">THE VALU 커리어 브랜딩 협회 대표</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-brain text-champagne-gold mt-1"></i>
+                            <p class="text-gray-700">AI 커리어 브랜딩 전문가</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-users text-champagne-gold mt-1"></i>
+                            <p class="text-gray-700">2030 세대 커리어 멘토링 200+ 세션</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-chalkboard-teacher text-champagne-gold mt-1"></i>
+                            <p class="text-gray-700">개인 브랜딩 워크숍 기획 및 운영</p>
+                        </div>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="grid grid-cols-2 gap-6 pt-6 border-t border-gray-200">
+                        <div>
+                            <p class="text-xs text-gray-500 mb-1">Email</p>
+                            <p class="text-gray-800 font-medium">contact@thevalu.kr</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 mb-1">Instagram</p>
+                            <p class="text-gray-800 font-medium">@the.valu</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Philosophy Section -->
+    <section id="philosophy" class="py-32 bg-gradient-to-br from-gray-50 to-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-20">
+                <span class="text-xs font-bold tracking-widest text-champagne-gold uppercase">Philosophy</span>
+                <h2 class="text-5xl font-serif font-bold mt-4 mb-6">우리가 믿는 것</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    AI는 도구일 뿐, 진짜 답은 당신 안에 있습니다
+                </p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-8">
+                <div class="info-card bg-white border border-gray-200 rounded-2xl p-8 text-center">
+                    <div
+                        class="w-16 h-16 bg-champagne-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-lightbulb text-champagne-gold text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Find You, Then AI</h3>
+                    <p class="text-gray-600 leading-relaxed text-sm">
+                        AI 도구를 활용하기 전에, 먼저 당신 자신을 발견하세요. 진정한 나를 알 때 AI는 더 강력한 무기가 됩니다.
+                    </p>
+                </div>
+
+                <div class="info-card bg-white border border-gray-200 rounded-2xl p-8 text-center">
+                    <div class="w-16 h-16 bg-deep-navy/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-puzzle-piece text-deep-navy text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">가장 개인적인 것이<br />가장 창의적인 것</h3>
+                    <p class="text-gray-600 leading-relaxed text-sm">
+                        당신만의 경험, 당신만의 시선, 당신만의 이야기. 그것이 바로 대체 불가능한 가치입니다.
+                    </p>
+                </div>
+
+                <div class="info-card bg-white border border-gray-200 rounded-2xl p-8 text-center">
+                    <div
+                        class="w-16 h-16 bg-champagne-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-rocket text-champagne-gold text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">육각형 인재로의<br />진화</h3>
+                    <p class="text-gray-600 leading-relaxed text-sm">
+                        한 가지 강점이 아닌, 다면적인 가치를 발견하고 균형 잡힌 성장을 추구합니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Program Section -->
+    <section id="program" class="py-32 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-20">
+                <span class="text-xs font-bold tracking-widest text-champagne-gold uppercase">Program</span>
+                <h2 class="text-5xl font-serif font-bold mt-4 mb-6">3단계 여정</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    체계적인 프로세스로 당신만의 커리어 브랜드를 완성합니다
+                </p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-8">
+                <!-- Session 1 -->
+                <div class="info-card bg-white border border-gray-200 rounded-2xl p-8 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-champagne-gold/5 rounded-full -mr-16 -mt-16"></div>
+                    <div class="relative z-10">
+                        <div class="text-5xl font-serif font-bold text-champagne-gold/30 mb-4">01</div>
+                        <h3 class="text-2xl font-bold mb-4">Why me?</h3>
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            도대체 '나'는 누구인가?
+                        </p>
+                        <p class="text-sm text-gray-500 leading-relaxed">
+                            나만의 결정적 순간을 발굴하고 핵심 키워드를 추출합니다.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Session 2 -->
+                <div class="info-card bg-white border border-gray-200 rounded-2xl p-8 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-deep-navy/5 rounded-full -mr-16 -mt-16"></div>
+                    <div class="relative z-10">
+                        <div class="text-5xl font-serif font-bold text-deep-navy/30 mb-4">02</div>
+                        <h3 class="text-2xl font-bold mb-4">What can I do?</h3>
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            나는 무엇을 할 수 있는가?
+                        </p>
+                        <p class="text-sm text-gray-500 leading-relaxed">
+                            발견한 강점을 실제 역량으로 연결하고 구체화합니다.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Session 3 -->
+                <div class="info-card bg-white border border-gray-200 rounded-2xl p-8 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-champagne-gold/5 rounded-full -mr-16 -mt-16"></div>
+                    <div class="relative z-10">
+                        <div class="text-5xl font-serif font-bold text-champagne-gold/30 mb-4">03</div>
+                        <h3 class="text-2xl font-bold mb-4">How to brand?</h3>
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            어떻게 브랜딩할 것인가?
+                        </p>
+                        <p class="text-sm text-gray-500 leading-relaxed">
+                            나만의 스토리를 완성하고 세상에 선보입니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-rich-black text-white py-12">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-2xl font-serif font-bold mb-2">THE VALU</h3>
+                    <p class="text-gray-400 text-sm">2030 AI Career Branding Socialring</p>
+                </div>
+                <div class="flex gap-6">
+                    <a href="#" class="text-gray-400 hover:text-champagne-gold transition-colors">
+                        <i class="fab fa-instagram text-2xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-champagne-gold transition-colors">
+                        <i class="fab fa-linkedin text-2xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-champagne-gold transition-colors">
+                        <i class="fas fa-envelope text-2xl"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
+                <p>© 2025 THE VALU. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
