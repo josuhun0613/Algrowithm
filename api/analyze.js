@@ -1,4 +1,4 @@
-// Vercel Serverless Function - Gemini API 연동
+// Vercel Serverless Function - Gemini API 연동 (다중 이미지 지원)
 // API 키는 Vercel 환경변수에 저장됨 (GEMINI_API_KEY)
 
 export default async function handler(req, res) {
@@ -16,10 +16,16 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { image } = req.body;
+        // 다중 이미지 지원: images 배열 또는 기존 image 단일 값
+        let images = req.body.images || (req.body.image ? [req.body.image] : []);
 
-        if (!image) {
-            return res.status(400).json({ error: 'Image is required' });
+        if (!images || images.length === 0) {
+            return res.status(400).json({ error: 'At least one image is required' });
+        }
+
+        // 최대 4장 제한
+        if (images.length > 4) {
+            images = images.slice(0, 4);
         }
 
         const API_KEY = process.env.GEMINI_API_KEY;
@@ -28,23 +34,20 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: 'API key not configured' });
         }
 
-        // Base64 이미지에서 헤더 제거
-        const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
+        // 이미지 parts 배열 생성
+        const imageParts = images.map(img => ({
+            inline_data: {
+                mime_type: 'image/jpeg',
+                data: img.replace(/^data:image\/\w+;base64,/, '')
+            }
+        }));
 
-        // Gemini API 호출
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    contents: [
-                        {
-                            parts: [
-                                {
-                                    text: `이 이미지는 "나만의 커리어 브랜딩 워크북 (3회차)"입니다.
+        // 이미지 개수에 따른 프롬프트 텍스트 조정
+        const imageCountText = images.length > 1
+            ? `이 ${images.length}장의 이미지는 "나만의 커리어 브랜딩 워크북 (3회차)"의 앞/뒤면입니다.`
+            : '이 이미지는 "나만의 커리어 브랜딩 워크북 (3회차)"입니다.';
+
+        const promptText = `${imageCountText}
 
 ## 워크지 구조 (손글씨로 작성됨)
 - **표지**: 이름, 전화번호
@@ -117,20 +120,28 @@ export default async function handler(req, res) {
 - 모든 문구는 STEP 1 핵심 가치 키워드의 분위기에 맞는 말투로 통일
 ---
 
-만약 손글씨가 잘 안 보이거나 비어있다면, 그 부분은 [미입력]으로 표시하고 합리적인 기본값으로 대체해주세요.`
-                                },
-                                {
-                                    inline_data: {
-                                        mime_type: 'image/jpeg',
-                                        data: base64Data
-                                    }
-                                }
-                            ]
+만약 손글씨가 잘 안 보이거나 비어있다면, 그 부분은 [미입력]으로 표시하고 합리적인 기본값으로 대체해주세요.`;
+
+        // parts 배열 구성: 텍스트 프롬프트 + 모든 이미지
+        const parts = [{ text: promptText }, ...imageParts];
+
+        // Gemini API 호출
+        const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contents: [
+                        {
+                            parts: parts
                         }
                     ],
                     generationConfig: {
                         temperature: 0.7,
-                        maxOutputTokens: 1500,
+                        maxOutputTokens: 2000,
                     }
                 })
             }
@@ -163,7 +174,8 @@ export default async function handler(req, res) {
             success: true,
             keywords: keywords.slice(0, 7),
             prompt: prompt || generatedText,
-            rawResponse: generatedText
+            rawResponse: generatedText,
+            imageCount: images.length
         });
 
     } catch (error) {
