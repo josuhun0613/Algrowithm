@@ -61,7 +61,7 @@
                 padding: 10mm;
                 margin: 0 auto;
                 background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") !important;
-                page-break-after: always;
+                page-break-after: avoid;
                 overflow: hidden;
                 border: none;
                 box-shadow: none;
@@ -91,7 +91,8 @@
 
         ::placeholder {
             color: #d1d5db;
-            opacity: 0.4;
+            opacity: 0.3;
+            font-size: 10px;
         }
     </style>
 </head>
@@ -208,10 +209,10 @@
                     </label>
                 </div>
                 <div class="flex-1 flex flex-col">
-                    <p class="text-[10px] font-bold text-rich-black mb-1">파트너가 들려준 이야기 요약 (Listener의 1줄 이해):</p>
+                    <p class="text-xs font-bold text-rich-black mb-1">파트너가 들려준 이야기 요약 (Listener의 1줄 이해):</p>
                     <div class="relative flex-1 flex flex-col">
                         <textarea
-                            class="w-full flex-1 bg-white/50 border-2 border-gray-200 rounded-lg p-2 text-xs resize-none focus:border-soft-gold focus:outline-none"
+                            class="w-full flex-1 bg-white/50 border-2 border-gray-200 rounded-lg p-2 text-sm resize-none focus:border-soft-gold focus:outline-none"
                             placeholder="내용을 간단히 메모하세요..."></textarea>
                         <span
                             class="absolute bottom-1.5 right-1.5 text-[9px] text-gray-400 font-bold bg-white px-1 rounded border border-gray-100">핵심
@@ -267,13 +268,13 @@
                                         <td class="p-1.5 border-r border-gray-100 align-top h-11">
                                             <span class="text-[10px] font-bold text-soft-gold block mb-0.5">1.</span>
                                             <textarea
-                                                class="w-full h-full bg-transparent resize-none text-xs focus:outline-none placeholder-gray-300"
+                                                class="w-full h-full bg-transparent resize-none text-sm focus:outline-none placeholder-gray-300"
                                                 placeholder="내용 입력..."></textarea>
                                         </td>
                                         <td class="p-1.5 align-top h-11">
                                             <span class="text-[10px] font-bold text-soft-gold block mb-0.5">-></span>
                                             <textarea
-                                                class="w-full h-full bg-transparent resize-none text-xs focus:outline-none placeholder-gray-300"
+                                                class="w-full h-full bg-transparent resize-none text-sm focus:outline-none placeholder-gray-300"
                                                 placeholder="강점 키워드..."></textarea>
                                         </td>
                                     </tr>
@@ -281,13 +282,13 @@
                                         <td class="p-1.5 border-r border-gray-100 align-top h-11">
                                             <span class="text-[10px] font-bold text-soft-gold block mb-0.5">2.</span>
                                             <textarea
-                                                class="w-full h-full bg-transparent resize-none text-xs focus:outline-none placeholder-gray-300"
+                                                class="w-full h-full bg-transparent resize-none text-sm focus:outline-none placeholder-gray-300"
                                                 placeholder="내용 입력..."></textarea>
                                         </td>
                                         <td class="p-1.5 align-top h-11">
                                             <span class="text-[10px] font-bold text-soft-gold block mb-0.5">-></span>
                                             <textarea
-                                                class="w-full h-full bg-transparent resize-none text-xs focus:outline-none placeholder-gray-300"
+                                                class="w-full h-full bg-transparent resize-none text-sm focus:outline-none placeholder-gray-300"
                                                 placeholder="강점 키워드..."></textarea>
                                         </td>
                                     </tr>
@@ -295,13 +296,13 @@
                                         <td class="p-1.5 border-r border-gray-100 align-top h-11">
                                             <span class="text-[10px] font-bold text-soft-gold block mb-0.5">3.</span>
                                             <textarea
-                                                class="w-full h-full bg-transparent resize-none text-xs focus:outline-none placeholder-gray-300"
+                                                class="w-full h-full bg-transparent resize-none text-sm focus:outline-none placeholder-gray-300"
                                                 placeholder="내용 입력..."></textarea>
                                         </td>
                                         <td class="p-1.5 align-top h-11">
                                             <span class="text-[10px] font-bold text-soft-gold block mb-0.5">-></span>
                                             <textarea
-                                                class="w-full h-full bg-transparent resize-none text-xs focus:outline-none placeholder-gray-300"
+                                                class="w-full h-full bg-transparent resize-none text-sm focus:outline-none placeholder-gray-300"
                                                 placeholder="강점 키워드..."></textarea>
                                         </td>
                                     </tr>
@@ -309,24 +310,24 @@
                             </table>
                         </div>
                         <div class="bg-gray-50 rounded-xl border border-gray-200 p-2.5 flex-1 flex flex-col">
-                            <h4 class="text-[10px] font-bold text-rich-black mb-1.5 flex items-center gap-2">
+                            <h4 class="text-xs font-bold text-rich-black mb-1.5 flex items-center gap-2">
                                 <i class="fa-solid fa-gem text-soft-gold"></i> 채굴된 키워드 TOP 5
                             </h4>
                             <div class="grid grid-cols-3 gap-1.5 mt-auto">
                                 <input type="text"
-                                    class="bg-white/50 border border-gray-200 rounded px-2 py-1 text-xs text-center focus:border-soft-gold focus:outline-none placeholder-gray-300"
+                                    class="bg-white/50 border border-gray-200 rounded px-2 py-1 text-sm text-center focus:border-soft-gold focus:outline-none placeholder-gray-300"
                                     placeholder="#1">
                                 <input type="text"
-                                    class="bg-white/50 border border-gray-200 rounded px-2 py-1 text-xs text-center focus:border-soft-gold focus:outline-none placeholder-gray-300"
+                                    class="bg-white/50 border border-gray-200 rounded px-2 py-1 text-sm text-center focus:border-soft-gold focus:outline-none placeholder-gray-300"
                                     placeholder="#2">
                                 <input type="text"
-                                    class="bg-white/50 border border-gray-200 rounded px-2 py-1 text-xs text-center focus:border-soft-gold focus:outline-none placeholder-gray-300"
+                                    class="bg-white/50 border border-gray-200 rounded px-2 py-1 text-sm text-center focus:border-soft-gold focus:outline-none placeholder-gray-300"
                                     placeholder="#3">
                                 <input type="text"
-                                    class="bg-white/50 border border-gray-200 rounded px-2 py-1 text-xs text-center focus:border-soft-gold focus:outline-none placeholder-gray-300"
+                                    class="bg-white/50 border border-gray-200 rounded px-2 py-1 text-sm text-center focus:border-soft-gold focus:outline-none placeholder-gray-300"
                                     placeholder="#4">
                                 <input type="text"
-                                    class="bg-white/50 border border-gray-200 rounded px-2 py-1 text-xs text-center focus:border-soft-gold focus:outline-none placeholder-gray-300"
+                                    class="bg-white/50 border border-gray-200 rounded px-2 py-1 text-sm text-center focus:border-soft-gold focus:outline-none placeholder-gray-300"
                                     placeholder="#5">
                             </div>
                         </div>
@@ -341,7 +342,7 @@
                         <p class="text-[10px] text-gray-500 mb-2.5">채굴한 키워드 중, 본인이 생각하기에 <strong>'가장 나다운' 것
                                 3가지</strong>만 골라봅시다.</p>
                         <div class="bg-white p-2.5 rounded-xl border border-gray-200 shadow-sm mb-3">
-                            <h4 class="text-[10px] font-bold text-center text-rich-black mb-2">최종 선정된 나의 TOP 3 키워드</h4>
+                            <h4 class="text-xs font-bold text-center text-rich-black mb-2">최종 선정된 나의 TOP 3 키워드</h4>
                             <div class="space-y-2">
                                 <div class="flex items-center gap-2">
                                     <span class="text-soft-gold font-bold text-sm">#</span>

@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Add Prompt Studio with Gemini Vision API\n\n- Add prompt-studio.html: 워크지 사진 → 프롬프트 자동 생성 페이지\n- Add api/analyze.js: Gemini Vision API 연동 서버리스 함수\n- Add vercel.json: Vercel 배포 설정\n- Update workbook_1.html, workbook_2.html: Prompt 탭 추가\n- Update workbook_2.html: 제목 \"How me? - 나를 어떻게 표현할 것인가?\"로 변경\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nrefactor: Rename THE VALU to Algrowithm\n\n- Update site title and branding across all pages\n- Modified files: index.html, about.html, workbook_1.html, \n  workbook_2.html, workbook_3.html, prompt-studio.html, README.md\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git remote:*)",
+      "Bash(git commit:*)",
+      "Bash(npx serve:*)",
+      "Bash(npx vercel dev:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
