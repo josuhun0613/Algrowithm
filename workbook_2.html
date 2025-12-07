@@ -6,6 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Workbook Session 2 - THE VALU</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'soft-gold': '#d4af37',
+                        'rich-black': '#0a0a0a',
+                        'off-white': '#fcfcfc',
+                    },
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    backgroundImage: {
+                        'diamond-pattern': "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
+                    }
+                }
+            }
+        }
+    </script>
     <link rel="stylesheet" as="style" crossorigin
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
@@ -13,19 +33,276 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            font-family: 'Pretendard', sans-serif;
+            background-color: #f3f4f6;
+            color: #0a0a0a;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 0;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .print-container {
+                width: 297mm;
+                height: 210mm;
+                padding: 10mm;
+                margin: 0 auto;
+                background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") !important;
+                page-break-after: always;
+                overflow: hidden;
+                border: none;
+                box-shadow: none;
+            }
+
+            textarea,
+            input {
+                border: none !important;
+                border-bottom: 1px solid #ddd !important;
+                resize: none;
+                background: transparent !important;
+            }
+        }
+
+        @media screen {
+            .print-container {
+                width: 297mm;
+                height: 210mm;
+                margin: 2rem auto;
+                background-color: white;
+                background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+                padding: 10mm;
+                position: relative;
+            }
+        }
+
+        ::placeholder {
+            color: #d1d5db;
+            opacity: 0.4;
         }
     </style>
 </head>
 
-<body class="bg-gray-50 flex items-center justify-center min-h-screen">
-    <div class="text-center">
-        <h1 class="text-4xl font-serif font-bold text-gray-800 mb-4">Workbook Session 2</h1>
-        <p class="text-gray-600 mb-8">Coming Soon...</p>
-        <a href="index.html"
-            class="px-6 py-3 bg-black text-white rounded-full font-bold hover:bg-gray-800 transition-colors">
-            <i class="fa-solid fa-arrow-left mr-2"></i> Back to Home
-        </a>
+<body class="bg-gray-100 min-h-screen font-sans text-rich-black">
+    <nav class="no-print fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-200 px-6 py-3">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="index.html"
+                class="text-lg font-serif font-bold text-rich-black hover:text-soft-gold transition-colors">
+                <i class="fa-solid fa-arrow-left mr-2"></i> THE VALU
+            </a>
+            <div class="flex gap-4">
+                <a href="workbook_1.html"
+                    class="px-4 py-1.5 bg-white text-gray-400 hover:text-rich-black rounded-full text-xs font-bold transition-colors">Session
+                    1</a>
+                <a href="workbook_2.html"
+                    class="px-4 py-1.5 bg-rich-black text-white rounded-full text-xs font-bold">Session 2</a>
+                <a href="workbook_3.html"
+                    class="px-4 py-1.5 bg-white text-gray-400 hover:text-rich-black rounded-full text-xs font-bold transition-colors">Session
+                    3</a>
+                <a href="prompt-studio.html"
+                    class="px-4 py-1.5 bg-soft-gold/10 text-soft-gold hover:bg-soft-gold hover:text-white rounded-full text-xs font-bold transition-colors border border-soft-gold">
+                    <i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Prompt</a>
+            </div>
+            <button onclick="window.print()"
+                class="px-5 py-1.5 bg-soft-gold text-white rounded-full text-xs font-bold hover:bg-yellow-600 transition-colors shadow-lg flex items-center gap-2">
+                <i class="fa-solid fa-print"></i> Print A4
+            </button>
+        </div>
+    </nav>
+    <div class="h-14 no-print"></div>
+    <div class="print-container relative flex flex-col overflow-hidden pb-12">
+        <img src="./assets/rough_gemstone.png" alt=""
+            class="absolute bottom-10 left-10 w-64 opacity-20 pointer-events-none mix-blend-multiply z-0">
+        <img src="./assets/blue_diamond.png" alt=""
+            class="absolute top-20 right-10 w-64 opacity-20 pointer-events-none mix-blend-multiply z-0">
+        <header class="border-b-2 border-rich-black pb-2.5 mb-2.5 flex justify-between items-end relative z-10">
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="bg-rich-black text-white text-[10px] font-bold px-2 py-0.5 rounded">2회차 워크지</span>
+                    <span class="text-soft-gold font-bold tracking-widest text-[10px] uppercase">Personal Career DNA
+                        Discovery</span>
+                </div>
+                <h1 class="text-2xl font-serif font-bold text-rich-black leading-tight">How me? <span
+                        class="text-lg font-light text-gray-600 ml-2">- 나를 어떻게 표현할 것인가?</span></h1>
+                <p class="text-xs text-gray-500 mt-1 italic">"AI는 도구일 뿐, 진짜 답은 네 안에 있어. (Find You, Then AI)"</p>
+            </div>
+            <div class="text-right flex flex-col items-end gap-2">
+                <div class="flex gap-4 bg-white/50 p-2 rounded-lg border border-gray-100">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] text-soft-gold font-bold uppercase">Name</span>
+                        <input type="text"
+                            class="bg-transparent border-b border-gray-300 w-20 text-sm font-bold text-center focus:border-soft-gold focus:outline-none"
+                            placeholder="">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] text-soft-gold font-bold uppercase">Partner</span>
+                        <input type="text"
+                            class="bg-transparent border-b border-gray-300 w-20 text-sm font-bold text-center focus:border-soft-gold focus:outline-none"
+                            placeholder="">
+                    </div>
+                </div>
+                <div class="flex flex-col items-end">
+                    <div class="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-1 rounded mb-1">오늘의 미션: "나만의 캐릭터를
+                        만들어라!"</div>
+                    <p class="text-[11px] text-gray-500 font-serif italic">"가장 개인적인 것이 가장 창의적인 것이다." - 마틴 스코세이지</p>
+                </div>
+            </div>
+        </header>
+        <div class="flex-1 grid grid-cols-12 gap-4 h-full relative z-10">
+            <div class="col-span-4 flex flex-col h-full border-r border-gray-200 pr-4">
+                <div class="flex items-center gap-2 mb-2.5">
+                    <div
+                        class="w-7 h-7 rounded-full bg-rich-black text-white flex items-center justify-center font-sans font-bold text-sm">
+                        1</div>
+                    <h3 class="text-sm font-bold text-rich-black">자기 이해 진단</h3>
+                </div>
+                <div class="bg-gray-50 p-2 rounded-lg text-[10px] text-gray-600 mb-3 border border-gray-100">
+                    <strong>Guide:</strong> 나를 있는 그대로 솔직하게 표현해 보세요. 긍정적이든 부정적이든 모두 괜찮습니다!
+                </div>
+                <div class="flex-1 flex flex-col space-y-3">
+                    <div class="flex-1 flex flex-col">
+                        <p class="text-[10px] font-bold text-rich-black mb-1.5">1) 나를 생각할 때 떠오르는 단어 15개 이상</p>
+                        <div class="relative flex-1 flex flex-col">
+                            <textarea
+                                class="w-full flex-1 bg-white/50 border-2 border-gray-200 rounded-lg p-2 text-xs resize-none focus:border-soft-gold focus:outline-none"
+                                placeholder="예: 겁이 많다, 세심하다, 솔직하다, 보수적이다, 추진력이 있다..."></textarea>
+                            <span
+                                class="absolute bottom-1.5 right-1.5 text-[9px] text-gray-400 font-bold bg-white px-1 rounded border border-gray-100">15개
+                                이상</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col">
+                        <p class="text-[10px] font-bold text-rich-black mb-1.5">2) 위 단어를 2개 이상 이용해서 나를 표현하는 문장 5개</p>
+                        <div class="relative flex-1 flex flex-col">
+                            <textarea
+                                class="w-full flex-1 bg-white/50 border-2 border-gray-200 rounded-lg p-2 text-xs resize-none focus:border-soft-gold focus:outline-none leading-relaxed"
+                                placeholder="예: 나는 성격이 급하지만 추진력이 좋다.&#10;나는 여려서 상처를 잘 받는다.&#10;&#10;(5개 문장 작성)"></textarea>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col">
+                        <p class="text-[10px] font-bold text-rich-black mb-1.5">3) 부정적인 표현을 긍정적인 표현으로 바꿔보기</p>
+                        <div class="relative flex-1 flex flex-col">
+                            <textarea
+                                class="w-full flex-1 bg-white/50 border-2 border-gray-200 rounded-lg p-2 text-xs resize-none focus:border-soft-gold focus:outline-none leading-relaxed"
+                                placeholder="예: 우유부단하다 → 신중하다&#10;성격이 급하다 → 에너지가 많다&#10;&#10;나의 단어 변환:"></textarea>
+                            <span
+                                class="absolute bottom-1.5 right-1.5 text-[9px] text-gray-400 font-bold bg-white px-1 rounded border border-gray-100">리프레이밍</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-span-4 flex flex-col h-full border-r border-gray-200 pr-4">
+                <div class="flex items-center gap-2 mb-2.5">
+                    <div
+                        class="w-8 h-8 rounded-full bg-white border border-rich-black text-rich-black flex items-center justify-center font-sans font-bold text-base">
+                        2</div>
+                    <h3 class="text-sm font-bold text-rich-black">관계 속에서의 나</h3>
+                </div>
+                <div class="bg-gray-50 p-2.5 rounded-lg text-[10px] text-gray-600 mb-3 border border-gray-100">
+                    <strong>Guide:</strong> 다양한 시각에서 나를 바라보면, 더 입체적인 나를 발견할 수 있어요!
+                </div>
+                <div class="flex-1 flex flex-col space-y-3">
+                    <div class="flex-1 flex flex-col">
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <i class="fa-solid fa-heart text-pink-500 text-xs"></i>
+                            <p class="text-[10px] font-bold text-rich-black">1) 가장 가까운 사람들이 보는 나의 모습</p>
+                        </div>
+                        <div class="relative flex-1 flex flex-col">
+                            <textarea
+                                class="w-full flex-1 bg-pink-50/50 border-2 border-pink-100 rounded-lg p-2.5 text-xs resize-none focus:border-pink-300 focus:outline-none leading-relaxed"
+                                placeholder="가족, 친한 친구들은 나를 어떤 사람이라고 할까?&#10;&#10;예: 엄마는 내가 책임감 있고 든든하다고 한다.&#10;친구들은 내가 웃기고 분위기를 잘 띄운다고 한다."></textarea>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col">
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <i class="fa-solid fa-users text-blue-500 text-xs"></i>
+                            <p class="text-[10px] font-bold text-rich-black">2) 일반 타인이 보는 나의 모습</p>
+                        </div>
+                        <div class="relative flex-1 flex flex-col">
+                            <textarea
+                                class="w-full flex-1 bg-blue-50/50 border-2 border-blue-100 rounded-lg p-2.5 text-xs resize-none focus:border-blue-300 focus:outline-none leading-relaxed"
+                                placeholder="처음 만난 사람들, 학교/회사 사람들은 나를 어떻게 볼까?&#10;&#10;예: 첫인상은 조용하고 차가워 보인다고 들었다.&#10;하지만 알고 나면 재밌는 사람이라고 한다."></textarea>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col">
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <i class="fa-solid fa-star text-yellow-500 text-xs"></i>
+                            <p class="text-[10px] font-bold text-rich-black">3) 내가 되고 싶은 모습</p>
+                        </div>
+                        <div class="relative flex-1 flex flex-col">
+                            <textarea
+                                class="w-full flex-1 bg-yellow-50/50 border-2 border-yellow-100 rounded-lg p-2.5 text-xs resize-none focus:border-yellow-300 focus:outline-none leading-relaxed"
+                                placeholder="앞으로 어떤 모습으로 성장하고 싶은가?&#10;&#10;예: 사람들에게 긍정적인 영향을 주는 사람이 되고 싶다.&#10;전문성을 인정받는 사람이 되고 싶다."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-span-4 flex flex-col h-full">
+                <div class="flex items-center gap-2 mb-2.5">
+                    <div
+                        class="w-8 h-8 rounded-full bg-soft-gold text-white flex items-center justify-center font-sans font-bold text-base">
+                        3</div>
+                    <h3 class="text-sm font-bold text-rich-black">나의 색깔 정하기</h3>
+                </div>
+                <div class="bg-gray-50 p-2.5 rounded-lg text-[10px] text-gray-600 mb-3 border border-gray-100">
+                    <strong>Guide:</strong> 나를 한 가지 색으로 표현한다면? 나만의 브랜드를 만들어 보세요!
+                </div>
+                <div class="flex-1 flex flex-col space-y-3">
+                    <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-sm">
+                        <p class="text-[10px] font-bold text-rich-black mb-2">1) 나의 브랜드 컬러를 고른다면?</p>
+                        <div class="flex gap-2 mb-2">
+                            <input type="color" value="#d4af37"
+                                class="w-12 h-12 rounded-lg border-2 border-gray-200 cursor-pointer">
+                            <div class="flex-1">
+                                <input type="text"
+                                    class="w-full bg-gray-50 border border-gray-200 rounded px-2 py-1.5 text-xs focus:border-soft-gold focus:outline-none placeholder-gray-300"
+                                    placeholder="색 이름 (예: 파스텔 민트, 딥 네이비)">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 bg-white p-3 rounded-xl border border-gray-200 shadow-sm flex flex-col">
+                        <p class="text-[10px] font-bold text-rich-black mb-2">2) 그 색을 고른 이유는?</p>
+                        <textarea
+                            class="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-2 text-xs resize-none focus:border-soft-gold focus:outline-none leading-relaxed"
+                            placeholder="이 색이 나를 표현한다고 생각한 이유를 적어보세요.&#10;&#10;예: 파스텔 민트는 부드럽지만 상쾌한 느낌이 있어서, 내가 사람들에게 주고 싶은 느낌과 비슷하다."></textarea>
+                    </div>
+                    <div class="bg-soft-gold/10 border-2 border-soft-gold rounded-xl p-3 relative">
+                        <div
+                            class="absolute -top-2.5 left-3 bg-white text-soft-gold text-[10px] font-bold px-2 py-0.5 rounded shadow-sm border border-soft-gold">
+                            나만의 브랜드 문구</div>
+                        <p class="text-[10px] text-gray-600 mb-2 mt-1">3) 나를 표현하는 한 단어, 한 문장이 있다면?</p>
+                        <input type="text"
+                            class="w-full bg-white border-b-2 border-soft-gold text-center font-bold text-rich-black py-1.5 focus:outline-none placeholder-gray-300 text-sm mb-2"
+                            placeholder="한 단어 (예: 연결자, 창조자, 치유자)">
+                        <textarea
+                            class="w-full bg-white border border-soft-gold/30 rounded-lg p-2 text-xs resize-none focus:border-soft-gold focus:outline-none leading-relaxed h-16"
+                            placeholder="한 문장 (예: 사람과 사람 사이를 이어주는 다리 같은 사람)"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="mt-3 pt-2.5 border-t border-gray-200 flex justify-between items-center relative z-10 mb-8">
+            <div class="flex items-center gap-2">
+                <span class="text-[9px] font-bold bg-soft-gold text-white px-1.5 py-0.5 rounded">THE VALU</span>
+                <span class="text-[10px] text-gray-400">Copyright © 2025 THE VALU. All rights reserved.</span>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] text-gray-500 italic">다음 단계: 이 내용을 바탕으로 나만의 캐릭터를 완성해 봅시다!</p>
+            </div>
+        </footer>
     </div>
 </body>
 

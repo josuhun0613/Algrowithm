@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Studio - THE VALU</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'soft-gold': '#d4af37',
+                        'rich-black': '#0a0a0a',
+                        'off-white': '#fcfcfc',
+                    },
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #f3f4f6;
+            color: #0a0a0a;
+        }
+
+        .upload-zone {
+            border: 2px dashed #d1d5db;
+            transition: all 0.3s ease;
+        }
+
+        .upload-zone:hover,
+        .upload-zone.dragover {
+            border-color: #d4af37;
+            background-color: rgba(212, 175, 55, 0.05);
+        }
+
+        .upload-zone.has-image {
+            border-style: solid;
+            border-color: #d4af37;
+        }
+
+        .prompt-output {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #d4af37;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-200 px-6 py-3">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="index.html"
+                class="text-lg font-serif font-bold text-rich-black hover:text-soft-gold transition-colors">
+                <i class="fa-solid fa-arrow-left mr-2"></i> THE VALU
+            </a>
+            <div class="flex gap-4">
+                <a href="workbook_1.html"
+                    class="px-4 py-1.5 bg-white text-gray-400 hover:text-rich-black rounded-full text-xs font-bold transition-colors border border-gray-200">Session
+                    1</a>
+                <a href="workbook_2.html"
+                    class="px-4 py-1.5 bg-white text-gray-400 hover:text-rich-black rounded-full text-xs font-bold transition-colors border border-gray-200">Session
+                    2</a>
+                <a href="prompt-studio.html"
+                    class="px-4 py-1.5 bg-rich-black text-white rounded-full text-xs font-bold">Prompt Studio</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="h-16"></div>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-6 py-8">
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center gap-2 bg-soft-gold/10 text-soft-gold px-4 py-1.5 rounded-full text-sm font-bold mb-4">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>AI Prompt Generator</span>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-serif font-bold text-rich-black mb-3">
+                워크지를 프롬프트로 변환하기
+            </h1>
+            <p class="text-gray-500 text-sm max-w-xl mx-auto">
+                작성한 워크지 2를 촬영해서 업로드하면, AI 화보 생성을 위한 프롬프트가 자동으로 만들어집니다.
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Left: Upload Section -->
+            <div class="space-y-6">
+                <div class="bg-white rounded-2xl p-6 shadow-sm">
+                    <h2 class="text-lg font-bold text-rich-black mb-4 flex items-center gap-2">
+                        <span class="w-7 h-7 bg-rich-black text-white rounded-full flex items-center justify-center text-sm">1</span>
+                        워크지 사진 업로드
+                    </h2>
+
+                    <!-- Upload Zone -->
+                    <div id="uploadZone" class="upload-zone rounded-xl p-8 text-center cursor-pointer" onclick="document.getElementById('fileInput').click()">
+                        <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
+
+                        <div id="uploadPlaceholder">
+                            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fa-solid fa-cloud-arrow-up text-2xl text-gray-400"></i>
+                            </div>
+                            <p class="text-gray-600 font-medium mb-1">클릭하여 이미지 업로드</p>
+                            <p class="text-gray-400 text-sm">또는 드래그 앤 드롭</p>
+                            <p class="text-gray-300 text-xs mt-3">JPG, PNG 지원 (최대 10MB)</p>
+                        </div>
+
+                        <div id="imagePreview" class="hidden">
+                            <img id="previewImg" src="" alt="Preview" class="max-h-64 mx-auto rounded-lg shadow-md">
+                            <p class="text-soft-gold text-sm mt-3 font-medium">
+                                <i class="fa-solid fa-check-circle mr-1"></i> 이미지가 업로드되었습니다
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Camera Button (Mobile) -->
+                    <button onclick="document.getElementById('cameraInput').click()"
+                        class="w-full mt-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 md:hidden">
+                        <i class="fa-solid fa-camera"></i>
+                        카메라로 촬영하기
+                    </button>
+                    <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="handleFileSelect(event)">
+                </div>
+
+                <!-- Extract Button -->
+                <button id="extractBtn" onclick="extractFromImage()" disabled
+                    class="w-full py-4 bg-rich-black text-white rounded-xl font-bold text-lg transition-all hover:bg-soft-gold disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                    <span id="extractBtnText">프롬프트 생성하기</span>
+                    <div id="extractSpinner" class="loading-spinner hidden"></div>
+                </button>
+
+                <!-- Instructions -->
+                <div class="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                    <h3 class="text-sm font-bold text-blue-800 mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-lightbulb"></i> 촬영 팁
+                    </h3>
+                    <ul class="text-xs text-blue-700 space-y-1">
+                        <li>• 워크지 전체가 잘 보이도록 촬영해 주세요</li>
+                        <li>• 밝은 곳에서 그림자가 지지 않게 찍어주세요</li>
+                        <li>• 글씨가 선명하게 보여야 정확도가 올라갑니다</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right: Output Section -->
+            <div class="space-y-6">
+                <div class="bg-white rounded-2xl p-6 shadow-sm">
+                    <h2 class="text-lg font-bold text-rich-black mb-4 flex items-center gap-2">
+                        <span class="w-7 h-7 bg-soft-gold text-white rounded-full flex items-center justify-center text-sm">2</span>
+                        생성된 프롬프트
+                    </h2>
+
+                    <!-- Extracted Keywords -->
+                    <div id="keywordsSection" class="mb-4 hidden">
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">추출된 키워드</p>
+                        <div id="keywordTags" class="flex flex-wrap gap-2">
+                            <!-- Tags will be inserted here -->
+                        </div>
+                    </div>
+
+                    <!-- Prompt Output -->
+                    <div class="prompt-output rounded-xl p-5 min-h-[200px]">
+                        <div id="promptPlaceholder" class="text-gray-400 text-sm text-center py-16">
+                            <i class="fa-solid fa-wand-magic-sparkles text-3xl mb-3 opacity-30"></i>
+                            <p>워크지를 업로드하면<br>프롬프트가 여기에 생성됩니다</p>
+                        </div>
+                        <div id="promptOutput" class="hidden">
+                            <p class="text-gray-400 text-xs mb-2 uppercase tracking-wider">Gemini Prompt</p>
+                            <p id="promptText" class="text-white text-sm leading-relaxed whitespace-pre-wrap"></p>
+                        </div>
+                    </div>
+
+                    <!-- Copy Button -->
+                    <button id="copyBtn" onclick="copyPrompt()" disabled
+                        class="copy-btn w-full mt-4 py-3 bg-soft-gold text-white rounded-xl font-bold transition-all hover:bg-yellow-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                        <i class="fa-regular fa-copy"></i>
+                        <span id="copyBtnText">프롬프트 복사하기</span>
+                    </button>
+                </div>
+
+                <!-- How to Use -->
+                <div class="bg-gradient-to-br from-soft-gold/10 to-yellow-50 rounded-xl p-5 border border-soft-gold/20">
+                    <h3 class="text-sm font-bold text-rich-black mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-rocket text-soft-gold"></i> 프롬프트 사용법
+                    </h3>
+                    <ol class="text-xs text-gray-600 space-y-2">
+                        <li class="flex gap-2">
+                            <span class="w-5 h-5 bg-soft-gold/20 text-soft-gold rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">1</span>
+                            <span>위에서 생성된 프롬프트를 복사합니다</span>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="w-5 h-5 bg-soft-gold/20 text-soft-gold rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">2</span>
+                            <span><a href="https://gemini.google.com" target="_blank" class="text-soft-gold underline">Google Gemini</a>에 접속합니다</span>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="w-5 h-5 bg-soft-gold/20 text-soft-gold rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">3</span>
+                            <span>복사한 프롬프트를 붙여넣고 이미지를 생성합니다</span>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="w-5 h-5 bg-soft-gold/20 text-soft-gold rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">4</span>
+                            <span>나만의 AI 화보 완성!</span>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-16 py-8 border-t border-gray-200 bg-white">
+        <div class="max-w-6xl mx-auto px-6 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="text-xs font-bold bg-soft-gold text-white px-2 py-0.5 rounded">THE VALU</span>
+                <span class="text-xs text-gray-400">© 2025 THE VALU. All rights reserved.</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let uploadedImage = null;
+
+        // API 엔드포인트 (Vercel 배포 후 자동 설정)
+        const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:3000'  // 로컬 개발용
+            : '';  // 배포 시 같은 도메인 사용
+
+        // Drag and Drop
+        const uploadZone = document.getElementById('uploadZone');
+
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('이미지 파일만 업로드 가능합니다.');
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                alert('파일 크기는 10MB 이하여야 합니다.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadedImage = e.target.result;
+                document.getElementById('uploadPlaceholder').classList.add('hidden');
+                document.getElementById('imagePreview').classList.remove('hidden');
+                document.getElementById('previewImg').src = uploadedImage;
+                document.getElementById('uploadZone').classList.add('has-image');
+                document.getElementById('extractBtn').disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function extractFromImage() {
+            if (!uploadedImage) return;
+
+            // Show loading state
+            const btn = document.getElementById('extractBtn');
+            const btnText = document.getElementById('extractBtnText');
+            const spinner = document.getElementById('extractSpinner');
+
+            btn.disabled = true;
+            btnText.textContent = 'AI가 워크지 분석 중...';
+            spinner.classList.remove('hidden');
+
+            try {
+                // API 호출
+                const response = await fetch(`${API_BASE}/api/analyze`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ image: uploadedImage })
+                });
+
+                if (!response.ok) {
+                    throw new Error('API 요청 실패');
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayResult(data.keywords, data.prompt);
+                } else {
+                    throw new Error(data.error || '분석 실패');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('분석 중 오류가 발생했습니다. 다시 시도해주세요.\n\n' + error.message);
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = '프롬프트 생성하기';
+                spinner.classList.add('hidden');
+            }
+        }
+
+        function displayResult(keywords, prompt) {
+            // Show keywords
+            document.getElementById('keywordsSection').classList.remove('hidden');
+            const keywordTags = document.getElementById('keywordTags');
+            keywordTags.innerHTML = keywords.map(k =>
+                `<span class="px-3 py-1 bg-soft-gold/10 text-soft-gold rounded-full text-xs font-medium">#${k}</span>`
+            ).join('');
+
+            // Show prompt
+            document.getElementById('promptPlaceholder').classList.add('hidden');
+            document.getElementById('promptOutput').classList.remove('hidden');
+            document.getElementById('promptText').textContent = prompt;
+            document.getElementById('copyBtn').disabled = false;
+        }
+
+        function copyPrompt() {
+            const promptText = document.getElementById('promptText').textContent;
+            navigator.clipboard.writeText(promptText).then(() => {
+                const btn = document.getElementById('copyBtn');
+                const btnText = document.getElementById('copyBtnText');
+                btnText.innerHTML = '<i class="fa-solid fa-check mr-1"></i> 복사 완료!';
+                btn.classList.add('bg-green-500');
+                btn.classList.remove('bg-soft-gold');
+
+                setTimeout(() => {
+                    btnText.innerHTML = '<i class="fa-regular fa-copy mr-1"></i> 프롬프트 복사하기';
+                    btn.classList.remove('bg-green-500');
+                    btn.classList.add('bg-soft-gold');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>
