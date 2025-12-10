@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>일정 | Algrowithm</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pure-white': '#ffffff',
+                        'soft-gray': '#f8f9fa',
+                        'text-dark': '#1a1a1a',
+                        'soft-gold': '#d4af37',
+                    },
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #fafafa;
+            color: #1a1a1a;
+        }
+
+        /* Header - Glass effect with strong blur */
+        .header-blur {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        /* Dropdown Menu */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            min-width: 240px;
+            padding: 10px 0;
+            z-index: 100;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 14px 24px;
+            color: #1a1a1a;
+            font-size: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+        }
+
+        /* Calendar Styles - Compact to fit viewport */
+        .calendar-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            padding: 1.25rem;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: bold;
+            color: #d4af37;
+            font-size: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .calendar-day {
+            min-height: 70px;
+            border: 1px solid #f0f0f0;
+            border-radius: 10px;
+            padding: 0.5rem;
+            transition: all 0.3s ease;
+            background: #fcfcfc;
+        }
+
+        .calendar-day:hover {
+            border-color: #d4af37;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.1);
+        }
+
+        .calendar-day.today {
+            background: #fffdf5;
+            border-color: #d4af37;
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.4;
+        }
+
+        .day-number {
+            font-weight: bold;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .calendar-event {
+            background: #1a1a1a;
+            color: white;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-top: 4px;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: all 0.2s ease;
+        }
+
+        .calendar-event:hover {
+            background: #d4af37;
+        }
+
+        .calendar-event.workshop {
+            background: #d4af37;
+        }
+
+        .calendar-event.online {
+            background: #4a90d9;
+        }
+
+        /* Sidebar - Fixed right side, full height */
+        .event-sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 450px;
+            height: 100vh;
+            background: white;
+            border-left: 1px solid #f0f0f0;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .event-sidebar-header {
+            padding: 100px 28px 28px 28px;
+            border-bottom: 1px solid #f0f0f0;
+            background: #fafafa;
+        }
+
+        .event-sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            scrollbar-width: thin;
+            scrollbar-color: #d4af37 #f0f0f0;
+        }
+
+        .event-sidebar-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .event-sidebar-content::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 3px;
+        }
+
+        .event-sidebar-content::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 3px;
+        }
+
+        /* Main content - account for sidebar */
+        .main-content {
+            margin-right: 450px;
+        }
+
+        /* Event List */
+        .event-item {
+            border-left: 4px solid #d4af37;
+            transition: all 0.3s ease;
+        }
+
+        .event-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .event-item.online {
+            border-left-color: #4a90d9;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 1024px) {
+            .event-sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+            .main-content {
+                margin-right: 0;
+            }
+            .event-sidebar-header {
+                padding-top: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Navigation - Same as Landing Page -->
+    <nav class="fixed w-full z-50 header-blur transition-all duration-300" id="navbar">
+        <div class="w-full px-[60px] py-5 flex justify-between items-center">
+            <a href="/" class="flex items-center gap-3">
+                <img src="./assets/logo.svg" alt="Logo" class="w-10 h-10">
+                <span class="text-2xl font-serif font-bold tracking-tight">Algrowithm</span>
+            </a>
+
+            <div class="hidden md:flex items-center gap-12 text-lg font-medium text-gray-700">
+                <a href="about.html" class="hover:text-soft-gold transition-colors">About</a>
+
+                <div class="dropdown">
+                    <button class="hover:text-soft-gold transition-colors flex items-center gap-1">
+                        실습
+                        <i class="fa-solid fa-chevron-down text-[12px] ml-1"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a href="workbook_1.html" class="dropdown-item">
+                            <span class="text-soft-gold font-bold mr-2">01</span> 나는 누구인가
+                        </a>
+                        <a href="workbook_2.html" class="dropdown-item">
+                            <span class="text-soft-gold font-bold mr-2">02</span> 이미지 아이덴티티
+                        </a>
+                        <a href="workbook_3.html" class="dropdown-item">
+                            <span class="text-soft-gold font-bold mr-2">03</span> 커리어 브랜딩
+                        </a>
+                        <div class="border-t border-gray-100 my-2"></div>
+                        <a href="prompt-studio.html" class="dropdown-item">
+                            <i class="fa-solid fa-wand-magic-sparkles text-soft-gold mr-2"></i> 프롬프트 생성기
+                        </a>
+                        <a href="ebook-generator.html" class="dropdown-item">
+                            <i class="fa-solid fa-book text-soft-gold mr-2"></i> E-book 생성기
+                        </a>
+                    </div>
+                </div>
+
+                <a href="schedule.html" class="text-soft-gold transition-colors">일정</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Event Sidebar - Fixed Right -->
+    <aside class="event-sidebar">
+        <div class="event-sidebar-header">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-2xl font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-check text-soft-gold"></i>
+                    다가오는 일정
+                </h3>
+                <button onclick="openAddModal()" class="w-11 h-11 bg-soft-gold text-white rounded-full flex items-center justify-center hover:bg-yellow-600 transition-colors text-lg">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+            <p class="text-base text-gray-500">일정을 클릭하면 상세 정보를 확인할 수 있습니다</p>
+        </div>
+
+        <div class="event-sidebar-content space-y-5" id="eventList">
+            <!-- Event 1 -->
+            <div class="event-item bg-gray-50 rounded-xl p-5">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="bg-soft-gold text-white text-sm font-bold px-3 py-1.5 rounded">12/15</span>
+                    <span class="text-sm text-gray-500">일요일</span>
+                </div>
+                <h4 class="font-bold text-lg mb-1">1회차 워크샵</h4>
+                <p class="text-base text-soft-gold font-medium mb-1">나는 누구인가</p>
+                <p class="text-sm text-gray-500 mb-3">자기 탐색을 통해 숨겨진 가치관과 강점을 발견합니다.</p>
+                <div class="flex items-center gap-4 text-sm">
+                    <span class="text-gray-600">
+                        <i class="fa-solid fa-clock mr-1"></i>14:00-17:00
+                    </span>
+                    <span class="text-soft-gold font-medium">
+                        <i class="fa-solid fa-location-dot mr-1"></i>오프라인
+                    </span>
+                </div>
+            </div>
+
+            <!-- Event 2 -->
+            <div class="event-item online bg-gray-50 rounded-xl p-5">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="bg-blue-500 text-white text-sm font-bold px-3 py-1.5 rounded">12/18</span>
+                    <span class="text-sm text-gray-500">수요일</span>
+                </div>
+                <h4 class="font-bold text-lg mb-1">온라인 Q&A 세션</h4>
+                <p class="text-sm text-gray-500 mb-3">워크북 작성 관련 질의응답 시간입니다.</p>
+                <div class="flex items-center gap-4 text-sm">
+                    <span class="text-gray-600">
+                        <i class="fa-solid fa-clock mr-1"></i>20:00-21:00
+                    </span>
+                    <span class="text-blue-500 font-medium">
+                        <i class="fa-solid fa-video mr-1"></i>온라인
+                    </span>
+                </div>
+            </div>
+
+            <!-- Event 3 -->
+            <div class="event-item bg-gray-50 rounded-xl p-5">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="bg-soft-gold text-white text-sm font-bold px-3 py-1.5 rounded">12/22</span>
+                    <span class="text-sm text-gray-500">일요일</span>
+                </div>
+                <h4 class="font-bold text-lg mb-1">2회차 워크샵</h4>
+                <p class="text-base text-soft-gold font-medium mb-1">이미지 아이덴티티</p>
+                <p class="text-sm text-gray-500 mb-3">나만의 시각적 정체성을 디자인하고 표현합니다.</p>
+                <div class="flex items-center gap-4 text-sm">
+                    <span class="text-gray-600">
+                        <i class="fa-solid fa-clock mr-1"></i>14:00-17:00
+                    </span>
+                    <span class="text-soft-gold font-medium">
+                        <i class="fa-solid fa-location-dot mr-1"></i>오프라인
+                    </span>
+                </div>
+            </div>
+
+            <!-- Event 4 -->
+            <div class="event-item bg-gray-50 rounded-xl p-5">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="bg-soft-gold text-white text-sm font-bold px-3 py-1.5 rounded">12/29</span>
+                    <span class="text-sm text-gray-500">일요일</span>
+                </div>
+                <h4 class="font-bold text-lg mb-1">3회차 워크샵</h4>
+                <p class="text-base text-soft-gold font-medium mb-1">커리어 브랜딩</p>
+                <p class="text-sm text-gray-500 mb-3">발견한 가치를 바탕으로 나만의 브랜드를 완성합니다.</p>
+                <div class="flex items-center gap-4 text-sm">
+                    <span class="text-gray-600">
+                        <i class="fa-solid fa-clock mr-1"></i>14:00-17:00
+                    </span>
+                    <span class="text-soft-gold font-medium">
+                        <i class="fa-solid fa-location-dot mr-1"></i>오프라인
+                    </span>
+                </div>
+            </div>
+
+            <!-- Event 5 -->
+            <div class="event-item bg-gray-50 rounded-xl p-5">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="bg-soft-gold text-white text-sm font-bold px-3 py-1.5 rounded">01/05</span>
+                    <span class="text-sm text-gray-500">일요일</span>
+                </div>
+                <h4 class="font-bold text-lg mb-1">신년 특강</h4>
+                <p class="text-sm text-gray-500 mb-3">새해를 맞이하여 목표 설정 및 실행 계획 수립</p>
+                <div class="flex items-center gap-4 text-sm">
+                    <span class="text-gray-600">
+                        <i class="fa-solid fa-clock mr-1"></i>14:00-16:00
+                    </span>
+                    <span class="text-soft-gold font-medium">
+                        <i class="fa-solid fa-location-dot mr-1"></i>오프라인
+                    </span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Add Event Modal -->
+    <div id="addModal" class="modal-overlay" onclick="closeAddModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold">일정 추가</h3>
+                <button onclick="closeAddModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fa-solid fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <form id="eventForm" onsubmit="addEvent(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">일정 제목</label>
+                        <input type="text" id="eventTitle" required
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none"
+                            placeholder="예: 4회차 워크샵">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">부제목 (선택)</label>
+                        <input type="text" id="eventSubtitle"
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none"
+                            placeholder="예: 커리어 브랜딩 심화">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">날짜</label>
+                            <input type="date" id="eventDate" required
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">유형</label>
+                            <select id="eventType"
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none">
+                                <option value="workshop">워크샵 (오프라인)</option>
+                                <option value="online">온라인 세션</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">시작 시간</label>
+                            <input type="time" id="eventStartTime" required
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">종료 시간</label>
+                            <input type="time" id="eventEndTime" required
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">설명</label>
+                        <textarea id="eventDescription" rows="3"
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none resize-none"
+                            placeholder="일정에 대한 간단한 설명을 입력하세요"></textarea>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                    <button type="button" onclick="closeAddModal()"
+                        class="flex-1 py-3 border border-gray-200 rounded-xl font-medium hover:bg-gray-50 transition-colors">
+                        취소
+                    </button>
+                    <button type="submit"
+                        class="flex-1 py-3 bg-soft-gold text-white rounded-xl font-medium hover:bg-yellow-600 transition-colors">
+                        추가하기
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content pt-20 pb-8 px-8">
+        <!-- Header -->
+        <div class="mb-6">
+            <span class="text-soft-gold font-bold tracking-widest uppercase text-sm">Schedule</span>
+            <h1 class="text-3xl md:text-4xl font-serif font-bold mt-2 mb-2">프로그램 일정</h1>
+            <p class="text-gray-600 text-base">Algrowithm 워크샵 및 온라인 세션 일정을 확인하세요.</p>
+        </div>
+
+        <!-- Calendar Section - Full Width -->
+        <div class="calendar-container">
+            <div class="flex justify-between items-center mb-4">
+                <button onclick="prevMonth()" class="p-3 hover:bg-gray-100 rounded-full transition-colors">
+                    <i class="fa-solid fa-chevron-left text-gray-600 text-lg"></i>
+                </button>
+                <h2 id="calendar-month" class="text-3xl font-serif font-bold text-text-dark">December 2025</h2>
+                <button onclick="nextMonth()" class="p-3 hover:bg-gray-100 rounded-full transition-colors">
+                    <i class="fa-solid fa-chevron-right text-gray-600 text-lg"></i>
+                </button>
+            </div>
+
+            <div class="calendar-grid mb-3">
+                <div class="calendar-day-header">SUN</div>
+                <div class="calendar-day-header">MON</div>
+                <div class="calendar-day-header">TUE</div>
+                <div class="calendar-day-header">WED</div>
+                <div class="calendar-day-header">THU</div>
+                <div class="calendar-day-header">FRI</div>
+                <div class="calendar-day-header">SAT</div>
+            </div>
+
+            <div id="calendar-grid" class="calendar-grid">
+                <!-- Generated by JS -->
+            </div>
+
+            <!-- Legend -->
+            <div class="flex justify-center gap-8 mt-8 pt-6 border-t border-gray-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-4 h-4 rounded bg-soft-gold"></div>
+                    <span class="text-base text-gray-600">워크샵</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-4 h-4 rounded bg-[#4a90d9]"></div>
+                    <span class="text-base text-gray-600">온라인 세션</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-content bg-text-dark py-16 text-white">
+        <div class="px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <img src="./assets/logo.svg" alt="Logo" class="w-8 h-8 invert">
+                    <span class="text-xl font-serif font-bold">Algrowithm</span>
+                </div>
+                <p class="text-gray-500 text-sm">&copy; 2025 Algrowithm. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Calendar data
+        const events = {
+            '2025-12-15': [{ title: '1회차 워크샵', type: 'workshop' }],
+            '2025-12-18': [{ title: 'Q&A 세션', type: 'online' }],
+            '2025-12-22': [{ title: '2회차 워크샵', type: 'workshop' }],
+            '2025-12-29': [{ title: '3회차 워크샵', type: 'workshop' }],
+            '2026-01-05': [{ title: '신년 특강', type: 'workshop' }],
+        };
+
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+
+        const monthNames = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            const monthLabel = document.getElementById('calendar-month');
+
+            monthLabel.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+
+            let html = '';
+
+            // Previous month days
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const day = daysInPrevMonth - i;
+                html += `<div class="calendar-day other-month"><div class="day-number">${day}</div></div>`;
+            }
+
+            // Current month days
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const isToday = today.getDate() === day && today.getMonth() === currentMonth && today.getFullYear() === currentYear;
+                const dayEvents = events[dateStr] || [];
+
+                let eventsHtml = dayEvents.map(e =>
+                    `<div class="calendar-event ${e.type}">${e.title}</div>`
+                ).join('');
+
+                html += `
+                    <div class="calendar-day ${isToday ? 'today' : ''}">
+                        <div class="day-number">${day}</div>
+                        ${eventsHtml}
+                    </div>
+                `;
+            }
+
+            // Next month days
+            const totalCells = firstDay + daysInMonth;
+            const remainingCells = (7 - (totalCells % 7)) % 7;
+            for (let day = 1; day <= remainingCells; day++) {
+                html += `<div class="calendar-day other-month"><div class="day-number">${day}</div></div>`;
+            }
+
+            grid.innerHTML = html;
+        }
+
+        function prevMonth() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        }
+
+        renderCalendar();
+
+        // Modal functions
+        function openAddModal() {
+            document.getElementById('addModal').classList.add('active');
+        }
+
+        function closeAddModal(e) {
+            if (!e || e.target === e.currentTarget) {
+                document.getElementById('addModal').classList.remove('active');
+                document.getElementById('eventForm').reset();
+            }
+        }
+
+        function addEvent(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('eventTitle').value;
+            const subtitle = document.getElementById('eventSubtitle').value;
+            const date = document.getElementById('eventDate').value;
+            const type = document.getElementById('eventType').value;
+            const startTime = document.getElementById('eventStartTime').value;
+            const endTime = document.getElementById('eventEndTime').value;
+            const description = document.getElementById('eventDescription').value;
+
+            // Format date
+            const dateObj = new Date(date);
+            const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+            const dayName = days[dateObj.getDay()];
+            const month = dateObj.getMonth() + 1;
+            const day = dateObj.getDate();
+            const dateDisplay = `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}`;
+
+            // Create event HTML
+            const isOnline = type === 'online';
+            const badgeClass = isOnline ? 'bg-blue-500' : 'bg-soft-gold';
+            const locationIcon = isOnline ? 'fa-video' : 'fa-location-dot';
+            const locationText = isOnline ? '온라인' : '오프라인';
+            const locationColor = isOnline ? 'text-blue-500' : 'text-soft-gold';
+            const itemClass = isOnline ? 'event-item online' : 'event-item';
+
+            const eventHtml = `
+                <div class="${itemClass} bg-gray-50 rounded-xl p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="${badgeClass} text-white text-xs font-bold px-2 py-1 rounded">${dateDisplay}</span>
+                        <span class="text-xs text-gray-500">${dayName}</span>
+                    </div>
+                    <h4 class="font-bold text-base mb-1">${title}</h4>
+                    ${subtitle ? `<p class="text-sm ${locationColor} font-medium mb-1">${subtitle}</p>` : ''}
+                    ${description ? `<p class="text-xs text-gray-500 mb-2">${description}</p>` : ''}
+                    <div class="flex items-center gap-3 text-xs">
+                        <span class="text-gray-600">
+                            <i class="fa-solid fa-clock mr-1"></i>${startTime}-${endTime}
+                        </span>
+                        <span class="${locationColor} font-medium">
+                            <i class="fa-solid ${locationIcon} mr-1"></i>${locationText}
+                        </span>
+                    </div>
+                </div>
+            `;
+
+            // Add to event list
+            document.getElementById('eventList').insertAdjacentHTML('beforeend', eventHtml);
+
+            // Add to calendar
+            const dateStr = date;
+            if (!events[dateStr]) {
+                events[dateStr] = [];
+            }
+            events[dateStr].push({ title: title, type: type });
+            renderCalendar();
+
+            // Close modal
+            closeAddModal();
+
+            // Show success message
+            alert('일정이 추가되었습니다!');
+        }
+    </script>
+</body>
+
+</html>

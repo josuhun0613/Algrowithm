@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algrowithm: Find Your True Value</title>
+    <title>Algrowithm</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -14,11 +14,9 @@
                 extend: {
                     colors: {
                         'pure-white': '#ffffff',
-                        'soft-gray': '#f8f9fa',
+                        'off-white': '#f5f5f5',
                         'text-dark': '#1a1a1a',
                         'soft-gold': '#d4af37',
-                        'modern-blue': '#0056b3',
-                        'accent-blue': '#e7f1ff',
                     },
                     fontFamily: {
                         sans: ['Pretendard', 'sans-serif'],
@@ -29,13 +27,15 @@
         }
     </script>
 
+    <!-- Lenis Smooth Scroll -->
+    <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-
-    <!-- html2canvas & jsPDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -47,464 +47,999 @@
         rel="stylesheet">
 
     <style>
+        html.lenis, html.lenis body {
+            height: auto;
+        }
+
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+
+        .lenis.lenis-smooth iframe {
+            pointer-events: none;
+        }
+
         body {
             font-family: 'Pretendard', sans-serif;
             background-color: #ffffff;
             color: #1a1a1a;
-            overflow-x: hidden;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
+        /* Header - Glass effect with strong blur */
+        .header-blur {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
-        ::-webkit-scrollbar-track {
-            background: #f8f9fa;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #d4af37;
-            border-radius: 4px;
-        }
-
-        /* Glassmorphism */
-        .glass {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        /* Hexagon Shape */
-        .hexagon {
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-        }
-
-        /* Input Styles */
-        .valu-input {
-            background: #f8f9fa;
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
-        }
-
-        .valu-input:focus {
-            background: #ffffff;
-            border-color: #d4af37;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
-        }
-
-        /* Gold Particle Canvas */
-        #gold-particles {
+        /* Dropdown */
+        .dropdown { position: relative; }
+        .dropdown-menu {
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            min-width: 240px;
+            padding: 10px 0;
+            z-index: 100;
+        }
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+        .dropdown-item {
+            display: block;
+            padding: 14px 24px;
+            color: #1a1a1a;
+            font-size: 15px;
+            transition: all 0.2s ease;
+        }
+        .dropdown-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+        }
+
+        /* Hero - Full screen image slider */
+        .hero-swiper {
+            width: 100%;
+            height: 100vh;
+        }
+
+        .hero-swiper .swiper-slide {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-swiper .swiper-slide img {
             width: 100%;
             height: 100%;
-            pointer-events: none;
-            z-index: 1;
+            object-fit: cover;
         }
 
-        /* Calendar Styles */
-        .calendar-container {
+        /* Minimal overlay - just slight darkening at bottom for text */
+        .slide-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%);
+        }
+
+        /* Hero Title - Magazine B style */
+        .hero-title {
+            position: absolute;
+            bottom: 100px;
+            left: 60px;
+            z-index: 10;
+            color: white;
+        }
+
+        /* Swiper pagination - Top position */
+        .hero-swiper .swiper-pagination {
+            top: 120px !important;
+            bottom: auto !important;
+            right: 60px !important;
+            left: auto !important;
+            width: auto !important;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .hero-swiper .swiper-pagination-bullet {
+            width: 10px;
+            height: 10px;
+            background: white;
+            opacity: 0.4;
+            margin: 0 !important;
+        }
+        .hero-swiper .swiper-pagination-bullet-active {
+            opacity: 1;
+        }
+
+        /* Slide Counter */
+        .slide-counter {
+            position: absolute;
+            top: 120px;
+            left: 60px;
+            z-index: 20;
+            color: white;
+        }
+
+        /* Text reveal animation */
+        .reveal-text {
+            opacity: 0;
+            transform: translateY(60px);
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            color: white;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        /* Grid card hover */
+        .grid-card {
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            cursor: pointer;
+        }
+        .grid-card:hover {
+            transform: translateY(-8px);
+        }
+        .grid-card:hover img {
+            transform: scale(1.05);
+        }
+        .grid-card img {
+            transition: transform 0.6s ease;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-content {
             background: white;
             border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            padding: 1.5rem;
-            max-width: 900px;
-            margin: 0 auto;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
         }
-
-        .calendar-header {
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f0f0f0;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 0.5rem;
-        }
-
-        .calendar-day-header {
-            text-align: center;
-            font-weight: bold;
-            color: #d4af37;
-            font-size: 0.8rem;
-            padding-bottom: 0.5rem;
-        }
-
-        .calendar-day {
-            min-height: 80px;
-            border: 1px solid #f0f0f0;
-            border-radius: 12px;
-            padding: 0.25rem;
-            transition: all 0.3s ease;
-            background: #fcfcfc;
-        }
-
-        .calendar-day:hover {
-            border-color: #d4af37;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.1);
-        }
-
-        .calendar-day.today {
-            background: #fffdf5;
-            border-color: #d4af37;
-        }
-
-        .day-number {
-            font-weight: bold;
-            color: #1a1a1a;
-            margin-bottom: 0.25rem;
-            font-size: 0.9rem;
-        }
-
-        .calendar-event {
-            background: #1a1a1a;
-            color: white;
-            font-size: 0.65rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-top: 2px;
+            justify-content: center;
             cursor: pointer;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+        .modal-close:hover {
+            background: #d4af37;
+            color: white;
+        }
+
+        /* Reviews marquee */
+        .reviews-track {
+            display: flex;
+            gap: 24px;
+            animation: scroll-left 30s linear infinite;
+        }
+        .reviews-track:hover {
+            animation-play-state: paused;
+        }
+        @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .review-card {
+            flex-shrink: 0;
+            width: 320px;
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
     </style>
 </head>
 
-<body class="antialiased selection:bg-soft-gold selection:text-white">
+<body class="antialiased">
 
-    <!-- Navigation -->
-    <nav class="fixed w-full z-50 px-6 py-4 glass transition-all duration-300" id="navbar">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="text-2xl font-serif font-bold tracking-tighter text-text-dark cursor-pointer"
-                onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-                Algrowithm
-            </div>
-            <div class="flex items-center gap-8">
-                <div class="hidden md:flex gap-6 text-sm font-medium text-gray-600">
-                    <a href="about.html" class="hover:text-soft-gold transition-colors">About</a>
-                    <button onclick="scrollToSection('about')"
-                        class="hover:text-soft-gold transition-colors">Philosophy</button>
-                    <button onclick="scrollToSection('program')"
-                        class="hover:text-soft-gold transition-colors">Program</button>
+    <!-- Navigation - More transparent -->
+    <nav class="fixed w-full z-50 header-blur transition-all duration-300" id="navbar">
+        <div class="w-full px-[60px] py-5 flex justify-between items-center">
+            <a href="/" class="flex items-center gap-3">
+                <img src="./assets/logo.svg" alt="Logo" class="w-10 h-10">
+                <span class="text-2xl font-serif font-bold tracking-tight">Algrowithm</span>
+            </a>
+
+            <div class="hidden md:flex items-center gap-12 text-lg font-medium text-gray-700">
+                <a href="about.html" class="hover:text-soft-gold transition-colors">About</a>
+
+                <div class="dropdown">
+                    <button class="hover:text-soft-gold transition-colors flex items-center gap-1">
+                        실습
+                        <i class="fa-solid fa-chevron-down text-[12px] ml-1"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a href="workbook_1.html" class="dropdown-item">
+                            <span class="text-soft-gold font-bold mr-2">01</span> 나는 누구인가
+                        </a>
+                        <a href="workbook_2.html" class="dropdown-item">
+                            <span class="text-soft-gold font-bold mr-2">02</span> 이미지 아이덴티티
+                        </a>
+                        <a href="workbook_3.html" class="dropdown-item">
+                            <span class="text-soft-gold font-bold mr-2">03</span> 커리어 브랜딩
+                        </a>
+                        <div class="border-t border-gray-100 my-2"></div>
+                        <a href="prompt-studio.html" class="dropdown-item">
+                            <i class="fa-solid fa-wand-magic-sparkles text-soft-gold mr-2"></i> 프롬프트 생성기
+                        </a>
+                        <a href="ebook-generator.html" class="dropdown-item">
+                            <i class="fa-solid fa-book text-soft-gold mr-2"></i> E-book 생성기
+                        </a>
+                    </div>
                 </div>
-                <a href="workbook_1.html"
-                    class="px-6 py-2 bg-text-dark text-white rounded-full text-sm font-bold hover:bg-soft-gold transition-colors duration-300 shadow-lg flex items-center gap-2">
-                    <i class="fa-solid fa-pen-nib"></i>
-                    <span>Workbook</span>
-                </a>
+
+                <a href="schedule.html" class="hover:text-soft-gold transition-colors">일정</a>
             </div>
         </div>
     </nav>
 
-    <!-- MAIN VIEW: LANDING PAGE -->
-    <div id="view-landing" class="transition-opacity duration-500">
-
-        <!-- Hero Section -->
-        <section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-            <!-- Background Image -->
-            <div class="absolute inset-0 z-0">
-                <img src="./assets/hero_bg.png" alt="Background" class="w-full h-full object-cover opacity-80">
-                <div class="absolute inset-0 bg-gradient-to-b from-white/0 via-white/20 to-white"></div>
-            </div>
-            <!-- Gold Particles Canvas -->
-            <canvas id="gold-particles"></canvas>
-
-            <div class="relative z-10 max-w-5xl mx-auto px-6 text-center space-y-8">
-                <div
-                    class="inline-block px-4 py-1 rounded-full border border-soft-gold/50 bg-white/50 backdrop-blur-sm text-soft-gold text-sm font-bold tracking-widest uppercase mb-4 opacity-0 reveal-hero">
-                    육각형 인재
+    <!-- Hero Section - Full Screen Image Slider -->
+    <section id="hero" class="relative">
+        <div class="swiper hero-swiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <img src="./assets/표지1.jpg" alt="Cover 1">
+                    <div class="slide-overlay"></div>
                 </div>
+                <div class="swiper-slide">
+                    <img src="./assets/표지5.jpg" alt="Cover 2">
+                    <div class="slide-overlay"></div>
+                </div>
+                <div class="swiper-slide">
+                    <img src="./assets/표지3.jpg" alt="Cover 3">
+                    <div class="slide-overlay"></div>
+                </div>
+                <div class="swiper-slide">
+                    <img src="./assets/표지4.jpg" alt="Cover 4">
+                    <div class="slide-overlay"></div>
+                </div>
+                <div class="swiper-slide">
+                    <img src="./assets/표지6.jpg" alt="Cover 5">
+                    <div class="slide-overlay"></div>
+                </div>
+                <div class="swiper-slide">
+                    <img src="./assets/표지_사진_2.jpg" alt="Cover 6">
+                    <div class="slide-overlay"></div>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
 
-                <h1
-                    class="text-5xl md:text-7xl lg:text-8xl font-serif font-bold leading-tight text-text-dark opacity-0 reveal-hero">
-                    <span class="block">Discover Your</span>
-                    <span class="block text-transparent bg-clip-text bg-gradient-to-r from-soft-gold to-yellow-600">True
-                        Value</span>
-                </h1>
+        <!-- Slide Counter -->
+        <div class="slide-counter">
+            <span id="currentSlide" class="text-6xl font-serif font-bold">1</span>
+            <div class="w-12 h-[2px] bg-white/50 my-3"></div>
+            <span id="totalSlides" class="text-2xl font-serif opacity-60">6</span>
+        </div>
 
-                <p
-                    class="text-gray-600 text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed opacity-0 reveal-hero">
-                    AI 시대, 대체 불가능한 나만의 가치를 발견하세요.<br>
-                    당신의 경험은 원석입니다. 우리는 그것을 빛나는 육각형 인재로 다듬습니다.
+        <!-- Hero Title - Magazine Style -->
+        <div class="hero-title">
+            <p class="text-lg font-bold tracking-[0.3em] uppercase mb-6 opacity-80">Growth Algorithm</p>
+            <h1 class="text-7xl md:text-9xl font-serif font-bold leading-none mb-6">
+                Algrowithm
+            </h1>
+            <p class="text-2xl md:text-3xl font-light opacity-90 max-w-xl">
+                내 성장 알고리즘을 만들다
+            </p>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator">
+            <i class="fa-solid fa-chevron-down text-2xl"></i>
+        </div>
+    </section>
+
+    <!-- Section: Program Cards with Popups -->
+    <section class="py-20 px-6 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <!-- Section Header -->
+            <div class="mb-16 reveal-text">
+                <span class="text-soft-gold font-bold tracking-[0.2em] uppercase text-sm">Philosophy</span>
+                <h2 class="text-5xl md:text-6xl font-serif font-bold mt-4 leading-tight">
+                    왜 '나'여야 하는가?
+                </h2>
+                <p class="text-xl text-gray-500 mt-6 max-w-3xl leading-relaxed">
+                    모두가 AI를 배우는 시대입니다. 하지만 기술이 평준화될수록, 결국 차이를 만드는 것은 '고유한 서사'입니다. Algrowithm은 당신만의 이야기를 발견하고 표현하는 여정입니다.
                 </p>
-
-                <div class="pt-8 opacity-0 reveal-hero flex flex-col md:flex-row gap-4 justify-center">
-                    <a href="workbook_1.html"
-                        class="px-8 py-4 bg-text-dark text-white rounded-full font-bold text-lg hover:bg-soft-gold transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
-                        가치 발견 시작하기
-                    </a>
-                    <button onclick="scrollToSection('about')"
-                        class="px-8 py-4 bg-white border border-gray-200 text-text-dark rounded-full font-bold text-lg hover:border-soft-gold hover:text-soft-gold transition-all duration-300">
-                        더 알아보기
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Philosophy Section -->
-        <section id="about" class="py-32 px-6 bg-white relative">
-            <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-                <div class="relative reveal-scroll order-2 md:order-1">
-                    <div
-                        class="absolute inset-0 bg-soft-gold/10 rounded-full blur-3xl transform -translate-x-10 translate-y-10">
-                    </div>
-                    <img src="./assets/philosophy.png" alt="Polishing Gem"
-                        class="relative rounded-2xl shadow-2xl w-full object-cover h-[600px]">
-                    <div
-                        class="absolute -bottom-10 -right-10 bg-white p-8 rounded-xl shadow-xl max-w-xs hidden md:block">
-                        <p class="font-serif italic text-xl text-gray-800">"Polishing your story into a prism."</p>
-                        <p class="text-sm text-gray-500 mt-2">- Algrowithm Director</p>
-                    </div>
-                </div>
-
-                <div class="space-y-10 reveal-scroll order-1 md:order-2">
-                    <div>
-                        <span class="text-soft-gold font-bold tracking-widest uppercase text-sm">Our Philosophy</span>
-                        <h2 class="text-4xl md:text-5xl font-serif font-bold mt-4 mb-6 leading-tight">
-                            왜 '나'여야 하는가?<br>
-                            그 답을 찾아가는 여정
-                        </h2>
-                        <div class="w-20 h-1 bg-soft-gold"></div>
-                    </div>
-
-                    <div class="space-y-6 text-gray-600 text-lg leading-relaxed">
-                        <p>
-                            모두가 AI를 배우는 시대입니다. 하지만 기술이 평준화될수록,
-                            결국 차이를 만드는 것은 <strong class="text-text-dark">‘고유한 서사’</strong>입니다.
-                        </p>
-                        <p>
-                            Algrowithm는 단순한 코칭이 아닙니다. 당신의 지난 시간 속에 묻혀있던
-                            경험의 조각들을 모아, 가장 단단하고 빛나는
-                            <strong class="text-text-dark">육각형(Hexagon)</strong>의 형태로 완성해나가는 과정입니다.
-                        </p>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-8">
-                        <div>
-                            <div
-                                class="w-12 h-12 bg-accent-blue rounded-full flex items-center justify-center mb-4 text-modern-blue">
-                                <i class="fa-solid fa-magnifying-glass text-xl"></i>
-                            </div>
-                            <h4 class="font-bold text-lg mb-2">Discovery</h4>
-                            <p class="text-sm text-gray-500">내면의 잠재력과<br>숨겨진 가치 발견</p>
-                        </div>
-                        <div>
-                            <div
-                                class="w-12 h-12 bg-yellow-50 rounded-full flex items-center justify-center mb-4 text-soft-gold">
-                                <i class="fa-regular fa-gem text-xl"></i>
-                            </div>
-                            <h4 class="font-bold text-lg mb-2">Polishing</h4>
-                            <p class="text-sm text-gray-500">고유한 강점을<br>시각화하고 증명</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Calendar Section -->
-        <section id="calendar-section" class="py-12 px-6 bg-white relative">
-            <div class="max-w-7xl mx-auto">
-                <div class="text-center mb-8 reveal-scroll">
-                    <span class="text-soft-gold font-bold tracking-widest uppercase text-sm">Schedule</span>
-                    <h2 class="text-3xl md:text-4xl font-serif font-bold mt-2">Monthly Events</h2>
-                </div>
-
-                <div class="calendar-container reveal-scroll">
-                    <div class="calendar-header">
-                        <button onclick="prevMonth()" class="text-gray-400 hover:text-text-dark transition-colors">
-                            <i class="fa-solid fa-chevron-left text-xl"></i>
-                        </button>
-                        <h3 id="calendar-month" class="text-2xl font-serif font-bold text-text-dark">November 2025</h3>
-                        <button onclick="nextMonth()" class="text-gray-400 hover:text-text-dark transition-colors">
-                            <i class="fa-solid fa-chevron-right text-xl"></i>
-                        </button>
-                    </div>
-
-                    <div class="grid grid-cols-7 gap-4 mb-4">
-                        <div class="calendar-day-header">SUN</div>
-                        <div class="calendar-day-header">MON</div>
-                        <div class="calendar-day-header">TUE</div>
-                        <div class="calendar-day-header">WED</div>
-                        <div class="calendar-day-header">THU</div>
-                        <div class="calendar-day-header">FRI</div>
-                        <div class="calendar-day-header">SAT</div>
-                    </div>
-
-                    <div id="calendar-grid" class="calendar-grid">
-                        <!-- Generated by JS -->
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Program Preview / CTA -->
-        <section id="program" class="py-32 px-6 bg-soft-gray relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
-                <div class="absolute top-10 left-10 w-96 h-96 bg-modern-blue rounded-full blur-3xl"></div>
-                <div class="absolute bottom-10 right-10 w-96 h-96 bg-soft-gold rounded-full blur-3xl"></div>
             </div>
 
-            <div class="max-w-4xl mx-auto text-center relative z-10">
-                <h2 class="text-4xl md:text-5xl font-serif font-bold mb-8 reveal-scroll">Ready to Find Your Value?</h2>
-                <p class="text-gray-600 text-lg mb-12 reveal-scroll">
-                    지금 바로 워크북을 통해 나만의 가치를 발견해보세요.<br>
-                    작성된 내용은 리포트 형태로 소장할 수 있습니다.
+            <!-- Grid Cards - 3 columns -->
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="grid-card group" onclick="openModal('modal1')">
+                    <div class="aspect-[16/9] overflow-hidden rounded-2xl mb-6">
+                        <img src="./assets/philosophy.png" alt="나는 누구인가" class="w-full h-full object-cover">
+                    </div>
+                    <span class="text-soft-gold font-bold text-lg">01</span>
+                    <h3 class="text-2xl font-bold mt-2 mb-3 group-hover:text-soft-gold transition-colors">나는 누구인가</h3>
+                    <p class="text-gray-500 text-base leading-relaxed">자기 탐색을 통해 숨겨진 강점과 가치관을 발견합니다. 나만의 핵심 가치 키워드를 찾고, 삶의 목적을 정의하는 첫 번째 단계입니다.</p>
+                </div>
+
+                <div class="grid-card group" onclick="openModal('modal2')">
+                    <div class="aspect-[16/9] overflow-hidden rounded-2xl mb-6">
+                        <img src="./assets/표지2.jpg" alt="이미지 아이덴티티" class="w-full h-full object-cover">
+                    </div>
+                    <span class="text-soft-gold font-bold text-lg">02</span>
+                    <h3 class="text-2xl font-bold mt-2 mb-3 group-hover:text-soft-gold transition-colors">이미지 아이덴티티</h3>
+                    <p class="text-gray-500 text-base leading-relaxed">나만의 시각적 정체성을 디자인하고 표현합니다. 컬러, 폰트, 무드보드를 통해 나를 대표하는 비주얼 언어를 만들어갑니다.</p>
+                </div>
+
+                <div class="grid-card group" onclick="openModal('modal3')">
+                    <div class="aspect-[16/9] overflow-hidden rounded-2xl mb-6">
+                        <img src="./assets/표지_사진_1.jpg" alt="커리어 브랜딩" class="w-full h-full object-cover">
+                    </div>
+                    <span class="text-soft-gold font-bold text-lg">03</span>
+                    <h3 class="text-2xl font-bold mt-2 mb-3 group-hover:text-soft-gold transition-colors">커리어 브랜딩</h3>
+                    <p class="text-gray-500 text-base leading-relaxed">발견한 가치를 바탕으로 나만의 브랜드를 완성합니다. 포트폴리오, 자기소개서, 면접 스토리까지 일관된 브랜딩을 구축합니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: AI Tools with Activity Photos Grid -->
+    <section class="py-20 px-6 bg-off-white">
+        <div class="max-w-7xl mx-auto">
+            <!-- Section Header -->
+            <div class="text-center mb-12 reveal-text">
+                <span class="text-soft-gold font-bold tracking-[0.2em] uppercase text-sm">AI Tools</span>
+                <h2 class="text-5xl md:text-6xl font-serif font-bold mt-4 mb-6">AI로 창작하다</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                    워크북에서 발견한 가치를 바탕으로 AI 도구를 활용해 나만의 콘텐츠를 만들어보세요.
                 </p>
+                <p class="text-gray-500 text-lg mt-4">
+                    AI는 도구일 뿐, 진짜 이야기는 당신 안에 있습니다.
+                </p>
+            </div>
 
-                <div class="reveal-scroll">
-                    <a href="workbook_1.html"
-                        class="group relative inline-flex items-center justify-center px-10 py-5 bg-white text-text-dark font-bold text-xl rounded-full overflow-hidden shadow-xl transition-all hover:scale-105">
-                        <span
-                            class="absolute w-0 h-0 transition-all duration-500 ease-out bg-soft-gold rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-                        <span class="relative flex items-center gap-3">
-                            워크북 시작하기 <i class="fa-solid fa-arrow-right"></i>
-                        </span>
-                    </a>
+            <!-- Activity Photos Grid - Masonry Style -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 reveal-text">
+                <!-- Large image -->
+                <div class="col-span-2 row-span-2 overflow-hidden rounded-2xl">
+                    <img src="./assets/표지7.jpg" alt="워크샵 활동 1" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                </div>
+                <!-- Small images -->
+                <div class="overflow-hidden rounded-2xl aspect-square">
+                    <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=400&fit=crop" alt="워크샵 활동 2" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                </div>
+                <div class="overflow-hidden rounded-2xl aspect-square">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=400&fit=crop" alt="워크샵 활동 3" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                </div>
+                <div class="overflow-hidden rounded-2xl aspect-square">
+                    <img src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400&h=400&fit=crop" alt="워크샵 활동 4" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                </div>
+                <div class="overflow-hidden rounded-2xl aspect-square">
+                    <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&h=400&fit=crop" alt="워크샵 활동 5" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                </div>
+                <!-- Bottom row -->
+                <div class="overflow-hidden rounded-2xl aspect-[2/1] col-span-2">
+                    <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&h=400&fit=crop" alt="워크샵 활동 6" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                </div>
+                <div class="overflow-hidden rounded-2xl aspect-[2/1] col-span-2">
+                    <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&h=400&fit=crop" alt="워크샵 활동 7" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Footer -->
-        <footer class="bg-white py-12 border-t border-gray-100">
-            <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-                <div class="text-xl font-serif font-bold text-text-dark">Algrowithm</div>
-                <p class="text-gray-400 text-sm">© 2024 Algrowithm. All rights reserved.</p>
-                <div class="flex gap-4">
-                    <a href="#" class="text-gray-400 hover:text-text-dark transition-colors"><i
-                            class="fa-brands fa-instagram text-xl"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-text-dark transition-colors"><i
-                            class="fa-brands fa-linkedin text-xl"></i></a>
+    <!-- Section: Reviews - Animated Marquee -->
+    <section class="py-20 bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 mb-12">
+            <span class="text-soft-gold font-bold tracking-[0.2em] uppercase text-sm">Reviews</span>
+            <h2 class="text-5xl md:text-6xl font-serif font-bold mt-4">참가자 후기</h2>
+            <p class="text-xl text-gray-500 mt-4">Algrowithm과 함께한 분들의 이야기</p>
+        </div>
+
+        <!-- Reviews Marquee -->
+        <div class="relative">
+            <div class="reviews-track">
+                <!-- Review 1 -->
+                <div class="review-card">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-soft-gold to-yellow-300 flex items-center justify-center text-white font-bold text-xl">김</div>
+                        <div>
+                            <p class="font-bold text-lg">김지현</p>
+                            <p class="text-gray-400 text-sm">마케터 | 3기 수료</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">"막연했던 나의 강점이 구체적인 키워드로 정리되었어요. 면접에서 자신있게 나를 소개할 수 있게 되었습니다."</p>
+                    <div class="flex gap-1 mt-4 text-soft-gold">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+
+                <!-- Review 2 -->
+                <div class="review-card">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-xl">이</div>
+                        <div>
+                            <p class="font-bold text-lg">이준호</p>
+                            <p class="text-gray-400 text-sm">개발자 | 2기 수료</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">"기술만 강조하던 포트폴리오에 '나만의 스토리'를 담을 수 있게 되었어요. 채용담당자들의 반응이 확실히 달라졌습니다."</p>
+                    <div class="flex gap-1 mt-4 text-soft-gold">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+
+                <!-- Review 3 -->
+                <div class="review-card">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold text-xl">박</div>
+                        <div>
+                            <p class="font-bold text-lg">박서연</p>
+                            <p class="text-gray-400 text-sm">디자이너 | 1기 수료</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">"워크북을 통해 나의 디자인 철학을 명확하게 정의할 수 있었어요. 클라이언트에게 왜 이런 디자인인지 설명하기가 훨씬 수월해졌습니다."</p>
+                    <div class="flex gap-1 mt-4 text-soft-gold">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+
+                <!-- Review 4 -->
+                <div class="review-card">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold text-xl">최</div>
+                        <div>
+                            <p class="font-bold text-lg">최민수</p>
+                            <p class="text-gray-400 text-sm">대학생 | 4기 수료</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">"취업 준비하면서 나 자신에 대해 깊이 고민해본 적이 없었는데, 이 프로그램이 정말 많은 도움이 되었어요."</p>
+                    <div class="flex gap-1 mt-4 text-soft-gold">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+
+                <!-- Review 5 -->
+                <div class="review-card">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white font-bold text-xl">정</div>
+                        <div>
+                            <p class="font-bold text-lg">정하은</p>
+                            <p class="text-gray-400 text-sm">기획자 | 3기 수료</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">"이직 준비 중에 참여했는데, 나의 커리어 방향성을 다시 정립할 수 있었어요. 지금은 원하던 회사에서 일하고 있습니다!"</p>
+                    <div class="flex gap-1 mt-4 text-soft-gold">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+
+                <!-- Review 6 -->
+                <div class="review-card">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-xl">윤</div>
+                        <div>
+                            <p class="font-bold text-lg">윤성재</p>
+                            <p class="text-gray-400 text-sm">프리랜서 | 2기 수료</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">"프리랜서로 일하면서 나를 브랜딩하는 게 정말 중요한데, Algrowithm이 그 기초를 탄탄하게 잡아줬어요."</p>
+                    <div class="flex gap-1 mt-4 text-soft-gold">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+
+                <!-- Duplicate for seamless loop -->
+                <div class="review-card">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-soft-gold to-yellow-300 flex items-center justify-center text-white font-bold text-xl">김</div>
+                        <div>
+                            <p class="font-bold text-lg">김지현</p>
+                            <p class="text-gray-400 text-sm">마케터 | 3기 수료</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">"막연했던 나의 강점이 구체적인 키워드로 정리되었어요. 면접에서 자신있게 나를 소개할 수 있게 되었습니다."</p>
+                    <div class="flex gap-1 mt-4 text-soft-gold">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+
+                <div class="review-card">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-xl">이</div>
+                        <div>
+                            <p class="font-bold text-lg">이준호</p>
+                            <p class="text-gray-400 text-sm">개발자 | 2기 수료</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">"기술만 강조하던 포트폴리오에 '나만의 스토리'를 담을 수 있게 되었어요. 채용담당자들의 반응이 확실히 달라졌습니다."</p>
+                    <div class="flex gap-1 mt-4 text-soft-gold">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+
+                <div class="review-card">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold text-xl">박</div>
+                        <div>
+                            <p class="font-bold text-lg">박서연</p>
+                            <p class="text-gray-400 text-sm">디자이너 | 1기 수료</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">"워크북을 통해 나의 디자인 철학을 명확하게 정의할 수 있었어요. 클라이언트에게 왜 이런 디자인인지 설명하기가 훨씬 수월해졌습니다."</p>
+                    <div class="flex gap-1 mt-4 text-soft-gold">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+
+                <div class="review-card">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold text-xl">최</div>
+                        <div>
+                            <p class="font-bold text-lg">최민수</p>
+                            <p class="text-gray-400 text-sm">대학생 | 4기 수료</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">"취업 준비하면서 나 자신에 대해 깊이 고민해본 적이 없었는데, 이 프로그램이 정말 많은 도움이 되었어요."</p>
+                    <div class="flex gap-1 mt-4 text-soft-gold">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+
+                <div class="review-card">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white font-bold text-xl">정</div>
+                        <div>
+                            <p class="font-bold text-lg">정하은</p>
+                            <p class="text-gray-400 text-sm">기획자 | 3기 수료</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">"이직 준비 중에 참여했는데, 나의 커리어 방향성을 다시 정립할 수 있었어요. 지금은 원하던 회사에서 일하고 있습니다!"</p>
+                    <div class="flex gap-1 mt-4 text-soft-gold">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+
+                <div class="review-card">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-xl">윤</div>
+                        <div>
+                            <p class="font-bold text-lg">윤성재</p>
+                            <p class="text-gray-400 text-sm">프리랜서 | 2기 수료</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">"프리랜서로 일하면서 나를 브랜딩하는 게 정말 중요한데, Algrowithm이 그 기초를 탄탄하게 잡아줬어요."</p>
+                    <div class="flex gap-1 mt-4 text-soft-gold">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
                 </div>
             </div>
-        </footer>
+        </div>
+    </section>
+
+    <!-- Section: Motivational Quote -->
+    <section class="py-32 px-6 bg-text-dark text-white relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-5">
+            <div class="absolute top-10 left-10 w-64 h-64 border border-white rotate-45"></div>
+            <div class="absolute bottom-10 right-10 w-48 h-48 border border-white rotate-45"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 border border-white rotate-45"></div>
+        </div>
+
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <div class="mb-8">
+                <i class="fa-solid fa-quote-left text-soft-gold text-5xl opacity-50"></i>
+            </div>
+            <h2 class="text-4xl md:text-6xl font-serif font-bold leading-tight mb-8">
+                가장 개인적인 것이<br>
+                <span class="text-soft-gold">가장 창의적인 것이다.</span>
+            </h2>
+            <p class="text-xl text-gray-400 mb-4">- 마틴 스코세이지</p>
+            <div class="w-24 h-1 bg-soft-gold mx-auto mb-12"></div>
+            <p class="text-xl text-gray-300 leading-relaxed max-w-2xl mx-auto">
+                당신만의 이야기가 세상을 바꿉니다.<br>
+                Algrowithm과 함께 당신의 고유한 가치를 발견하세요.
+            </p>
+            <button onclick="openInquiryModal()" class="inline-block mt-10 px-10 py-4 bg-soft-gold text-text-dark rounded-full font-bold text-lg hover:bg-white transition-colors cursor-pointer">
+                프로그램 참여 문의 <i class="fa-solid fa-paper-plane ml-2"></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- Modals -->
+    <div id="modal1" class="modal-overlay" onclick="closeModal('modal1')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-close" onclick="closeModal('modal1')">
+                <i class="fa-solid fa-times"></i>
+            </div>
+            <div class="aspect-[16/9] overflow-hidden rounded-t-2xl">
+                <img src="./assets/philosophy.png" alt="나는 누구인가" class="w-full h-full object-cover">
+            </div>
+            <div class="p-8">
+                <span class="text-soft-gold font-bold text-lg">01</span>
+                <h3 class="text-3xl font-bold mt-2 mb-4">나는 누구인가</h3>
+                <p class="text-gray-600 text-lg leading-relaxed mb-6">
+                    자기 탐색을 통해 숨겨진 강점과 가치관을 발견합니다. 100개의 가치 키워드 중에서 나에게 와닿는 것들을 선별하고, 최종 3개의 핵심 가치를 도출합니다.
+                </p>
+                <h4 class="font-bold text-lg mb-3">이런 것들을 배웁니다</h4>
+                <ul class="text-gray-500 space-y-2 mb-6">
+                    <li><i class="fa-solid fa-check text-soft-gold mr-2"></i>나의 핵심 가치 키워드 발견</li>
+                    <li><i class="fa-solid fa-check text-soft-gold mr-2"></i>삶의 목적과 비전 정의</li>
+                    <li><i class="fa-solid fa-check text-soft-gold mr-2"></i>롤모델 분석을 통한 자기 이해</li>
+                    <li><i class="fa-solid fa-check text-soft-gold mr-2"></i>강점 기반 자기소개 작성</li>
+                </ul>
+                <a href="workbook_1.html" class="inline-block px-6 py-3 bg-soft-gold text-white rounded-full font-medium hover:bg-yellow-600 transition-colors">
+                    워크북 보기 <i class="fa-solid fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </div>
     </div>
 
-    <!-- Scripts -->
+    <div id="modal2" class="modal-overlay" onclick="closeModal('modal2')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-close" onclick="closeModal('modal2')">
+                <i class="fa-solid fa-times"></i>
+            </div>
+            <div class="aspect-[16/9] overflow-hidden rounded-t-2xl">
+                <img src="./assets/표지2.jpg" alt="이미지 아이덴티티" class="w-full h-full object-cover">
+            </div>
+            <div class="p-8">
+                <span class="text-soft-gold font-bold text-lg">02</span>
+                <h3 class="text-3xl font-bold mt-2 mb-4">이미지 아이덴티티</h3>
+                <p class="text-gray-600 text-lg leading-relaxed mb-6">
+                    나만의 시각적 정체성을 디자인하고 표현합니다. 1회차에서 발견한 가치를 바탕으로 컬러, 무드, 키워드를 선정하여 나만의 비주얼 언어를 만들어갑니다.
+                </p>
+                <h4 class="font-bold text-lg mb-3">이런 것들을 배웁니다</h4>
+                <ul class="text-gray-500 space-y-2 mb-6">
+                    <li><i class="fa-solid fa-check text-soft-gold mr-2"></i>퍼스널 컬러 및 무드 선정</li>
+                    <li><i class="fa-solid fa-check text-soft-gold mr-2"></i>무드보드 제작</li>
+                    <li><i class="fa-solid fa-check text-soft-gold mr-2"></i>비주얼 키워드 도출</li>
+                    <li><i class="fa-solid fa-check text-soft-gold mr-2"></i>AI 이미지 생성 실습</li>
+                </ul>
+                <a href="workbook_2.html" class="inline-block px-6 py-3 bg-soft-gold text-white rounded-full font-medium hover:bg-yellow-600 transition-colors">
+                    워크북 보기 <i class="fa-solid fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal3" class="modal-overlay" onclick="closeModal('modal3')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-close" onclick="closeModal('modal3')">
+                <i class="fa-solid fa-times"></i>
+            </div>
+            <div class="aspect-[16/9] overflow-hidden rounded-t-2xl">
+                <img src="./assets/표지_사진_1.jpg" alt="커리어 브랜딩" class="w-full h-full object-cover">
+            </div>
+            <div class="p-8">
+                <span class="text-soft-gold font-bold text-lg">03</span>
+                <h3 class="text-3xl font-bold mt-2 mb-4">커리어 브랜딩</h3>
+                <p class="text-gray-600 text-lg leading-relaxed mb-6">
+                    발견한 가치를 바탕으로 나만의 브랜드를 완성합니다. 포트폴리오, 자기소개서, 면접 스토리까지 일관된 브랜딩을 구축하여 커리어에 적용합니다.
+                </p>
+                <h4 class="font-bold text-lg mb-3">이런 것들을 배웁니다</h4>
+                <ul class="text-gray-500 space-y-2 mb-6">
+                    <li><i class="fa-solid fa-check text-soft-gold mr-2"></i>퍼스널 브랜드 스토리 구축</li>
+                    <li><i class="fa-solid fa-check text-soft-gold mr-2"></i>포트폴리오 방향성 설정</li>
+                    <li><i class="fa-solid fa-check text-soft-gold mr-2"></i>면접 스토리텔링 기법</li>
+                    <li><i class="fa-solid fa-check text-soft-gold mr-2"></i>AI 기반 콘텐츠 제작</li>
+                </ul>
+                <a href="workbook_3.html" class="inline-block px-6 py-3 bg-soft-gold text-white rounded-full font-medium hover:bg-yellow-600 transition-colors">
+                    워크북 보기 <i class="fa-solid fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inquiry Form Modal -->
+    <div id="inquiryModal" class="modal-overlay" onclick="closeInquiryModal()">
+        <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 500px;">
+            <div class="modal-close" onclick="closeInquiryModal()">
+                <i class="fa-solid fa-times"></i>
+            </div>
+            <div class="p-8">
+                <div class="text-center mb-8">
+                    <span class="text-soft-gold font-bold tracking-[0.2em] uppercase text-sm">Inquiry</span>
+                    <h3 class="text-2xl font-bold mt-2">프로그램 참여 문의</h3>
+                    <p class="text-gray-500 mt-2 text-sm">아래 양식을 작성해주시면 담당자가 연락드리겠습니다.</p>
+                </div>
+
+                <form id="inquiryForm" onsubmit="submitInquiry(event)">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">이름 <span class="text-red-500">*</span></label>
+                            <input type="text" id="inquiryName" required
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none"
+                                placeholder="홍길동">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">연락처 <span class="text-red-500">*</span></label>
+                            <input type="tel" id="inquiryPhone" required
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none"
+                                placeholder="010-1234-5678">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">이메일</label>
+                            <input type="email" id="inquiryEmail"
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none"
+                                placeholder="example@email.com">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">관심 프로그램</label>
+                            <select id="inquiryProgram"
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none">
+                                <option value="">선택해주세요</option>
+                                <option value="전체 프로그램">전체 프로그램 (1~3회차)</option>
+                                <option value="1회차">1회차 - 나는 누구인가</option>
+                                <option value="2회차">2회차 - 이미지 아이덴티티</option>
+                                <option value="3회차">3회차 - 커리어 브랜딩</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">문의 내용</label>
+                            <textarea id="inquiryMessage" rows="3"
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none resize-none"
+                                placeholder="궁금한 점이나 요청사항을 자유롭게 작성해주세요."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 mt-6">
+                        <button type="button" onclick="closeInquiryModal()"
+                            class="flex-1 py-3 border border-gray-200 rounded-xl font-medium hover:bg-gray-50 transition-colors">
+                            취소
+                        </button>
+                        <button type="submit"
+                            class="flex-1 py-3 bg-soft-gold text-white rounded-xl font-medium hover:bg-yellow-600 transition-colors">
+                            문의하기
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-text-dark py-24 text-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-3 gap-16">
+                <div>
+                    <div class="flex items-center gap-4 mb-8">
+                        <img src="./assets/logo.svg" alt="Logo" class="w-12 h-12 invert">
+                        <span class="text-3xl font-serif font-bold">Algrowithm</span>
+                    </div>
+                    <p class="text-gray-400 text-lg leading-relaxed">
+                        내 성장 알고리즘을 만들다.<br>
+                        나만의 아이덴티티를 AI로 표현하고 창작하세요.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold mb-6 text-soft-gold text-lg tracking-wider">실습</h4>
+                    <ul class="space-y-4 text-gray-400 text-lg">
+                        <li><a href="workbook_1.html" class="hover:text-white transition-colors">01 나는 누구인가</a></li>
+                        <li><a href="workbook_2.html" class="hover:text-white transition-colors">02 이미지 아이덴티티</a></li>
+                        <li><a href="workbook_3.html" class="hover:text-white transition-colors">03 커리어 브랜딩</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold mb-6 text-soft-gold text-lg tracking-wider">바로가기</h4>
+                    <ul class="space-y-4 text-gray-400 text-lg">
+                        <li><a href="about.html" class="hover:text-white transition-colors">About</a></li>
+                        <li><a href="schedule.html" class="hover:text-white transition-colors">일정</a></li>
+                        <li><a href="prompt-studio.html" class="hover:text-white transition-colors">프롬프트 생성기</a></li>
+                        <li><a href="ebook-generator.html" class="hover:text-white transition-colors">E-book 생성기</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-20 pt-10 text-center">
+                <p class="text-gray-500 text-base">&copy; 2025 Algrowithm. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
     <script>
-        function scrollToSection(id) {
-            const element = document.getElementById(id);
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth' });
-            }
+        // Initialize Lenis Smooth Scroll
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            orientation: 'vertical',
+            gestureOrientation: 'vertical',
+            smoothWheel: true,
+            wheelMultiplier: 1,
+            touchMultiplier: 2,
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
         }
+        requestAnimationFrame(raf);
 
-        // Gold Particle Animation
-        const canvas = document.getElementById('gold-particles');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
+        // Connect Lenis to GSAP ScrollTrigger
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => {
+            lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 3 + 1; // 1-4px
-                this.speedX = Math.random() * 0.5 - 0.25;
-                this.speedY = Math.random() * -0.5 - 0.1; // Move upwards
-                this.opacity = Math.random() * 0.5 + 0.2;
-                this.color = `rgba(212, 175, 55, ${this.opacity})`; // Soft Gold
-                this.isShootingStar = Math.random() < 0.05; // 5% chance
-            }
-            update() {
-                if (this.isShootingStar) {
-                    this.x += this.speedX * 5;
-                    this.y += this.speedY * 5;
-                    this.opacity -= 0.01;
-                } else {
-                    this.x += this.speedX;
-                    this.y += this.speedY;
-                    if (this.opacity < 1) this.opacity += 0.001;
-                }
-
-                // Reset if out of bounds or faded
-                if (this.y < 0 || this.opacity <= 0) {
-                    this.y = canvas.height;
-                    this.x = Math.random() * canvas.width;
-                    this.opacity = Math.random() * 0.5 + 0.2;
-                    this.isShootingStar = Math.random() < 0.01; // Reset chance
-                }
-            }
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Glow effect
-                if (this.isShootingStar) {
-                    ctx.shadowBlur = 10;
-                    ctx.shadowColor = "#d4af37";
-                } else {
-                    ctx.shadowBlur = 0;
-                }
-            }
-        }
-
-        function initParticles() {
-            particles = [];
-            for (let i = 0; i < 80; i++) {
-                particles.push(new Particle());
-            }
-        }
-        initParticles();
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
-            }
-            requestAnimationFrame(animateParticles);
-        }
-        animateParticles();
-
-
-        // GSAP Animations
-        window.addEventListener('load', () => {
-            // Hero Reveal
-            const reveals = document.querySelectorAll('.reveal-hero');
-            gsap.to(reveals, {
-                y: 0,
-                opacity: 1,
-                duration: 1.2,
-                stagger: 0.2,
-                ease: "power3.out",
-            });
-
-            // Scroll Reveal
-            gsap.utils.toArray('.reveal-scroll').forEach(element => {
-                gsap.fromTo(element,
-                    { y: 50, opacity: 0 },
-                    {
-                        y: 0,
-                        opacity: 1,
-                        duration: 1,
-                        ease: "power3.out",
-                        scrollTrigger: {
-                            trigger: element,
-                            start: "top 85%",
-                            toggleActions: "play none none reverse"
-                        }
+        // Initialize Swiper
+        const heroSwiper = new Swiper('.hero-swiper', {
+            effect: 'fade',
+            fadeEffect: { crossFade: true },
+            speed: 1500,
+            autoplay: {
+                delay: 4000,
+                disableOnInteraction: false,
+            },
+            loop: true,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            on: {
+                slideChange: function () {
+                    const currentSlide = document.getElementById('currentSlide');
+                    if (currentSlide) {
+                        currentSlide.textContent = this.realIndex + 1;
                     }
-                );
+                }
+            }
+        });
+
+        // GSAP ScrollTrigger Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Grid card animations
+        gsap.utils.toArray('.grid-card').forEach((card, i) => {
+            gsap.from(card, {
+                y: 80,
+                opacity: 0,
+                duration: 1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse',
+                }
             });
         });
+
+        // Text reveal animations
+        gsap.utils.toArray('.reveal-text').forEach(text => {
+            gsap.to(text, {
+                y: 0,
+                opacity: 1,
+                duration: 1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: text,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse',
+                }
+            });
+        });
+
+        // Header background change on scroll
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 100) {
+                navbar.style.background = 'rgba(255, 255, 255, 0.7)';
+                navbar.style.boxShadow = '0 1px 0 rgba(0,0,0,0.05)';
+            } else {
+                navbar.style.background = 'rgba(255, 255, 255, 0.15)';
+                navbar.style.boxShadow = 'none';
+            }
+        });
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Inquiry Modal functions
+        function openInquiryModal() {
+            document.getElementById('inquiryModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeInquiryModal() {
+            document.getElementById('inquiryModal').classList.remove('active');
+            document.body.style.overflow = '';
+            document.getElementById('inquiryForm').reset();
+        }
+
+        function submitInquiry(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('inquiryName').value;
+            const phone = document.getElementById('inquiryPhone').value;
+            const email = document.getElementById('inquiryEmail').value;
+            const program = document.getElementById('inquiryProgram').value;
+            const message = document.getElementById('inquiryMessage').value;
+
+            // Here you would typically send this data to a server
+            console.log('문의 접수:', { name, phone, email, program, message });
+
+            // Show success message
+            alert(`${name}님, 문의가 접수되었습니다!\n담당자가 빠른 시일 내에 연락드리겠습니다.`);
+
+            closeInquiryModal();
+        }
     </script>
-    <script src="calendar.js"></script>
 </body>
 
 </html>

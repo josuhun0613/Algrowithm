@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-book 프롬프트 생성기 | Algrowithm</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pure-white': '#ffffff',
+                        'soft-gray': '#f8f9fa',
+                        'text-dark': '#1a1a1a',
+                        'soft-gold': '#d4af37',
+                    },
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #fafafa;
+            color: #1a1a1a;
+        }
+
+        /* Header Glassmorphism */
+        .header-blur {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        /* Dropdown Menu */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            min-width: 220px;
+            padding: 8px 0;
+            z-index: 100;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 12px 20px;
+            color: #1a1a1a;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+        }
+
+        /* Step Progress */
+        .step-item {
+            transition: all 0.3s ease;
+        }
+
+        .step-item.active .step-number {
+            background: #d4af37;
+            color: white;
+        }
+
+        .step-item.completed .step-number {
+            background: #10b981;
+            color: white;
+        }
+
+        .step-item.completed .step-number i {
+            display: block;
+        }
+
+        .step-connector {
+            height: 2px;
+            background: #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .step-connector.active {
+            background: #d4af37;
+        }
+
+        /* Form Styles */
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+            padding-right: 48px;
+        }
+
+        /* Genre Cards */
+        .genre-card {
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .genre-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-2px);
+        }
+
+        .genre-card.selected {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        /* Title Option Cards */
+        .title-option {
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .title-option:hover {
+            border-color: #d4af37;
+        }
+
+        .title-option.selected {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        /* Result Section */
+        .result-container {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .copy-btn {
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #d4af37;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Hide steps */
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 header-blur transition-all duration-300">
+        <div class="w-full px-[60px] py-5 flex justify-between items-center">
+            <a href="/" class="flex items-center gap-3 cursor-pointer">
+                <img src="./assets/logo.svg" alt="Algrowithm Logo" class="w-10 h-10">
+                <span class="text-2xl font-serif font-bold tracking-tight text-text-dark">Algrowithm</span>
+            </a>
+
+            <div class="flex items-center gap-10">
+                <div class="hidden md:flex items-center gap-12 text-lg font-medium text-gray-700">
+                    <a href="about.html" class="hover:text-soft-gold transition-colors">About</a>
+
+                    <div class="dropdown">
+                        <button class="hover:text-soft-gold transition-colors flex items-center gap-1">
+                            실습
+                            <i class="fa-solid fa-chevron-down text-[12px] ml-1"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="workbook_1.html" class="dropdown-item">
+                                <span class="text-soft-gold font-bold mr-2">01</span> 나는 누구인가
+                            </a>
+                            <a href="workbook_2.html" class="dropdown-item">
+                                <span class="text-soft-gold font-bold mr-2">02</span> 이미지 아이덴티티
+                            </a>
+                            <a href="workbook_3.html" class="dropdown-item">
+                                <span class="text-soft-gold font-bold mr-2">03</span> 커리어 브랜딩
+                            </a>
+                            <div class="border-t border-gray-100 my-2"></div>
+                            <a href="prompt-studio.html" class="dropdown-item">
+                                <i class="fa-solid fa-wand-magic-sparkles text-soft-gold mr-2"></i> 프롬프트 생성기
+                            </a>
+                        </div>
+                    </div>
+
+                    <a href="schedule.html" class="hover:text-soft-gold transition-colors">일정</a>
+                </div>
+
+                <a href="workbook_1.html"
+                    class="px-6 py-2.5 bg-text-dark text-white rounded-full text-sm font-bold hover:bg-soft-gold transition-all duration-300 shadow-lg flex items-center gap-2">
+                    <i class="fa-solid fa-pen-nib"></i>
+                    <span>시작하기</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16 px-6">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-12">
+                <span class="text-soft-gold font-bold tracking-widest uppercase text-sm">E-book Generator</span>
+                <h1 class="text-4xl md:text-5xl font-serif font-bold mt-4 mb-4">맞춤형 글쓰기 프롬프트 생성</h1>
+                <p class="text-gray-600 text-lg">AI를 활용해 당신만의 E-book을 작성할 수 있는<br>맞춤형 프롬프트를 생성합니다.</p>
+            </div>
+
+            <!-- Step Progress -->
+            <div class="flex items-center justify-center mb-12">
+                <div class="flex items-center">
+                    <div class="step-item active" data-step="1">
+                        <div class="step-number w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600">
+                            <span>1</span>
+                            <i class="fa-solid fa-check hidden"></i>
+                        </div>
+                        <div class="text-xs mt-2 text-center font-medium">장르 선택</div>
+                    </div>
+                    <div class="step-connector w-16 mx-2"></div>
+                    <div class="step-item" data-step="2">
+                        <div class="step-number w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600">
+                            <span>2</span>
+                            <i class="fa-solid fa-check hidden"></i>
+                        </div>
+                        <div class="text-xs mt-2 text-center font-medium">주제 입력</div>
+                    </div>
+                    <div class="step-connector w-16 mx-2"></div>
+                    <div class="step-item" data-step="3">
+                        <div class="step-number w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600">
+                            <span>3</span>
+                            <i class="fa-solid fa-check hidden"></i>
+                        </div>
+                        <div class="text-xs mt-2 text-center font-medium">세부 설정</div>
+                    </div>
+                    <div class="step-connector w-16 mx-2"></div>
+                    <div class="step-item" data-step="4">
+                        <div class="step-number w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600">
+                            <span>4</span>
+                            <i class="fa-solid fa-check hidden"></i>
+                        </div>
+                        <div class="text-xs mt-2 text-center font-medium">프롬프트 생성</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 1: Genre Selection -->
+            <div class="step-content active" data-step="1">
+                <div class="bg-white rounded-2xl p-8 shadow-sm">
+                    <h2 class="text-2xl font-bold mb-6">어떤 장르의 글을 쓰시겠습니까?</h2>
+
+                    <div class="mb-8">
+                        <h3 class="text-sm font-bold text-soft-gold mb-4 uppercase tracking-wider">문학</h3>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="genre-card" data-genre="수필">
+                                <div class="text-3xl mb-2"><i class="fa-solid fa-feather-pointed text-soft-gold"></i></div>
+                                <div class="font-bold">수필 (에세이)</div>
+                                <div class="text-sm text-gray-500">개인적 경험과 성찰</div>
+                            </div>
+                            <div class="genre-card" data-genre="소설">
+                                <div class="text-3xl mb-2"><i class="fa-solid fa-book-open text-soft-gold"></i></div>
+                                <div class="font-bold">소설</div>
+                                <div class="text-sm text-gray-500">순문학/대중소설</div>
+                            </div>
+                            <div class="genre-card" data-genre="시">
+                                <div class="text-3xl mb-2"><i class="fa-solid fa-pen-fancy text-soft-gold"></i></div>
+                                <div class="font-bold">시</div>
+                                <div class="text-sm text-gray-500">시적 표현과 운율</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <h3 class="text-sm font-bold text-soft-gold mb-4 uppercase tracking-wider">비문학</h3>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="genre-card" data-genre="자기계발서">
+                                <div class="text-3xl mb-2"><i class="fa-solid fa-rocket text-soft-gold"></i></div>
+                                <div class="font-bold">자기계발서</div>
+                                <div class="text-sm text-gray-500">성장과 동기부여</div>
+                            </div>
+                            <div class="genre-card" data-genre="인문학">
+                                <div class="text-3xl mb-2"><i class="fa-solid fa-landmark text-soft-gold"></i></div>
+                                <div class="font-bold">인문학 도서</div>
+                                <div class="text-sm text-gray-500">철학, 역사, 문화</div>
+                            </div>
+                            <div class="genre-card" data-genre="심리학">
+                                <div class="text-3xl mb-2"><i class="fa-solid fa-brain text-soft-gold"></i></div>
+                                <div class="font-bold">심리학 도서</div>
+                                <div class="text-sm text-gray-500">마음과 행동 이해</div>
+                            </div>
+                            <div class="genre-card" data-genre="사회경제">
+                                <div class="text-3xl mb-2"><i class="fa-solid fa-chart-line text-soft-gold"></i></div>
+                                <div class="font-bold">사회/정치/경제</div>
+                                <div class="text-sm text-gray-500">사회 분석과 전망</div>
+                            </div>
+                            <div class="genre-card" data-genre="실용서">
+                                <div class="text-3xl mb-2"><i class="fa-solid fa-tools text-soft-gold"></i></div>
+                                <div class="font-bold">실용서</div>
+                                <div class="text-sm text-gray-500">실용적 가이드</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="nextStep()" id="step1-next" disabled
+                        class="w-full py-4 bg-text-dark text-white rounded-xl font-bold hover:bg-soft-gold transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        다음 단계로 <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Topic Input -->
+            <div class="step-content" data-step="2">
+                <div class="bg-white rounded-2xl p-8 shadow-sm">
+                    <h2 class="text-2xl font-bold mb-2">핵심 주제를 알려주세요</h2>
+                    <p class="text-gray-500 mb-6">선택하신 <span id="selected-genre-display" class="text-soft-gold font-bold"></span> 장르의 핵심 주제는 무엇인가요?</p>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-bold mb-2">핵심 주제 *</label>
+                        <textarea id="topic-input" class="form-input h-32" placeholder="예: 30대 직장인의 번아웃 극복기, 사랑과 상실에 관한 이야기, AI 시대의 자기계발 등"></textarea>
+                        <p class="text-xs text-gray-400 mt-2">구체적으로 작성할수록 더 좋은 프롬프트가 생성됩니다.</p>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <button onclick="prevStep()" class="flex-1 py-4 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-colors">
+                            <i class="fa-solid fa-arrow-left mr-2"></i> 이전
+                        </button>
+                        <button onclick="nextStep()" id="step2-next" disabled
+                            class="flex-1 py-4 bg-text-dark text-white rounded-xl font-bold hover:bg-soft-gold transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            다음 단계로 <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Detailed Settings -->
+            <div class="step-content" data-step="3">
+                <div class="bg-white rounded-2xl p-8 shadow-sm">
+                    <h2 class="text-2xl font-bold mb-6">세부 설정</h2>
+
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-bold mb-2">1. 독자 분석 (타겟 독자층)</label>
+                            <input type="text" id="target-reader" class="form-input" placeholder="예: 20-30대 직장인, 취준생, 육아맘 등">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold mb-2">2. 목표 (독자가 얻길 바라는 것)</label>
+                            <input type="text" id="goal" class="form-input" placeholder="예: 번아웃 극복 방법, 위로와 공감, 실용적 지식 등">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold mb-2">3. 스타일/톤</label>
+                            <select id="style" class="form-input form-select">
+                                <option value="">선택해주세요</option>
+                                <option value="친근하고 편안한">친근하고 편안한</option>
+                                <option value="전문적이고 신뢰감 있는">전문적이고 신뢰감 있는</option>
+                                <option value="유머러스하고 가벼운">유머러스하고 가벼운</option>
+                                <option value="진중하고 깊이 있는">진중하고 깊이 있는</option>
+                                <option value="서정적이고 감성적인">서정적이고 감성적인</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold mb-2">4. 핵심 소재 (반드시 포함할 요소)</label>
+                            <input type="text" id="key-elements" class="form-input" placeholder="예: 개인 경험담, 연구 자료, 인용문 등">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold mb-2">5. 차별점 (독창적 관점)</label>
+                            <input type="text" id="unique-point" class="form-input" placeholder="예: 실제 경험 기반, 한국적 맥락, 새로운 접근법 등">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-bold mb-2">6. 전체 분량 (A5 기준)</label>
+                                <select id="page-count" class="form-input form-select">
+                                    <option value="100-150페이지">100-150페이지 (에세이/시집)</option>
+                                    <option value="150-200페이지" selected>150-200페이지 (일반)</option>
+                                    <option value="200-250페이지">200-250페이지 (전문서)</option>
+                                    <option value="250-300페이지">250-300페이지 (대작)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold mb-2">7. 문단 형식</label>
+                                <select id="paragraph-style" class="form-input form-select">
+                                    <option value="A타입: 전통적 문단">A타입: 전통적 문단</option>
+                                    <option value="B타입: 시적 행갈이">B타입: 시적 행갈이</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 mt-8">
+                        <button onclick="prevStep()" class="flex-1 py-4 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-colors">
+                            <i class="fa-solid fa-arrow-left mr-2"></i> 이전
+                        </button>
+                        <button onclick="generatePrompt()" id="generate-btn"
+                            class="flex-1 py-4 bg-soft-gold text-white rounded-xl font-bold hover:bg-yellow-600 transition-colors flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span id="generate-btn-text">프롬프트 생성하기</span>
+                            <div id="generate-spinner" class="spinner hidden"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Result -->
+            <div class="step-content" data-step="4">
+                <div class="bg-white rounded-2xl p-8 shadow-sm">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold">생성된 프롬프트</h2>
+                        <button onclick="copyPrompt()" id="copy-btn"
+                            class="copy-btn px-6 py-2 bg-soft-gold text-white rounded-lg font-bold hover:bg-yellow-600 transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-copy"></i>
+                            <span>복사하기</span>
+                        </button>
+                    </div>
+
+                    <p class="text-gray-500 mb-4">아래 프롬프트를 복사하여 ChatGPT, Claude, Gemini 등 AI에 붙여넣기 하세요.</p>
+
+                    <div class="result-container">
+                        <pre id="result-prompt" class="text-gray-300 text-sm whitespace-pre-wrap font-mono leading-relaxed max-h-[500px] overflow-y-auto"></pre>
+                    </div>
+
+                    <div class="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                        <h3 class="text-sm font-bold text-blue-800 mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-lightbulb"></i> 사용 방법
+                        </h3>
+                        <ol class="text-sm text-blue-700 space-y-1 list-decimal list-inside">
+                            <li>위 프롬프트를 복사합니다</li>
+                            <li>ChatGPT, Claude, Gemini 등 AI 채팅에 붙여넣습니다</li>
+                            <li>"시작"을 입력하면 AI가 목차와 세계관을 생성합니다</li>
+                            <li>원하는 챕터를 요청하면 본문이 작성됩니다</li>
+                        </ol>
+                    </div>
+
+                    <div class="flex gap-4 mt-8">
+                        <button onclick="resetAll()" class="flex-1 py-4 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-colors">
+                            <i class="fa-solid fa-rotate-left mr-2"></i> 처음부터 다시
+                        </button>
+                        <button onclick="copyPrompt()" class="flex-1 py-4 bg-text-dark text-white rounded-xl font-bold hover:bg-soft-gold transition-colors">
+                            <i class="fa-solid fa-copy mr-2"></i> 프롬프트 복사
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-text-dark py-12 text-white">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-3">
+                <img src="./assets/logo.svg" alt="Logo" class="w-7 h-7 invert">
+                <span class="text-lg font-serif font-bold">Algrowithm</span>
+            </div>
+            <p class="text-gray-500 text-sm">&copy; 2025 Algrowithm. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // State
+        let currentStep = 1;
+        let formData = {
+            genre: '',
+            topic: '',
+            targetReader: '',
+            goal: '',
+            style: '',
+            keyElements: '',
+            uniquePoint: '',
+            pageCount: '150-200페이지',
+            paragraphStyle: 'A타입: 전통적 문단',
+            selectedTitle: ''
+        };
+
+        // Genre selection
+        document.querySelectorAll('.genre-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.genre-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                formData.genre = card.dataset.genre;
+                document.getElementById('step1-next').disabled = false;
+            });
+        });
+
+        // Topic input validation
+        document.getElementById('topic-input').addEventListener('input', (e) => {
+            formData.topic = e.target.value;
+            document.getElementById('step2-next').disabled = e.target.value.trim().length < 5;
+        });
+
+        // Step navigation
+        function updateStepDisplay() {
+            // Update step items
+            document.querySelectorAll('.step-item').forEach((item, index) => {
+                const stepNum = index + 1;
+                item.classList.remove('active', 'completed');
+
+                if (stepNum < currentStep) {
+                    item.classList.add('completed');
+                } else if (stepNum === currentStep) {
+                    item.classList.add('active');
+                }
+            });
+
+            // Update connectors
+            document.querySelectorAll('.step-connector').forEach((connector, index) => {
+                if (index < currentStep - 1) {
+                    connector.classList.add('active');
+                } else {
+                    connector.classList.remove('active');
+                }
+            });
+
+            // Update content visibility
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+                if (parseInt(content.dataset.step) === currentStep) {
+                    content.classList.add('active');
+                }
+            });
+
+            // Update genre display
+            if (currentStep === 2) {
+                document.getElementById('selected-genre-display').textContent = formData.genre;
+            }
+        }
+
+        function nextStep() {
+            if (currentStep < 4) {
+                currentStep++;
+                updateStepDisplay();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepDisplay();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function resetAll() {
+            currentStep = 1;
+            formData = {
+                genre: '',
+                topic: '',
+                targetReader: '',
+                goal: '',
+                style: '',
+                keyElements: '',
+                uniquePoint: '',
+                pageCount: '150-200페이지',
+                paragraphStyle: 'A타입: 전통적 문단',
+                selectedTitle: ''
+            };
+
+            document.querySelectorAll('.genre-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('topic-input').value = '';
+            document.getElementById('target-reader').value = '';
+            document.getElementById('goal').value = '';
+            document.getElementById('style').value = '';
+            document.getElementById('key-elements').value = '';
+            document.getElementById('unique-point').value = '';
+            document.getElementById('step1-next').disabled = true;
+            document.getElementById('step2-next').disabled = true;
+
+            updateStepDisplay();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Generate prompt
+        function generatePrompt() {
+            // Collect all form data
+            formData.targetReader = document.getElementById('target-reader').value || '일반 독자';
+            formData.goal = document.getElementById('goal').value || '유익한 정보와 인사이트';
+            formData.style = document.getElementById('style').value || '친근하고 편안한';
+            formData.keyElements = document.getElementById('key-elements').value || '개인 경험과 사례';
+            formData.uniquePoint = document.getElementById('unique-point').value || '저자만의 독창적 관점';
+            formData.pageCount = document.getElementById('page-count').value;
+            formData.paragraphStyle = document.getElementById('paragraph-style').value;
+
+            // Show loading
+            const btn = document.getElementById('generate-btn');
+            const btnText = document.getElementById('generate-btn-text');
+            const spinner = document.getElementById('generate-spinner');
+
+            btn.disabled = true;
+            btnText.textContent = '생성 중...';
+            spinner.classList.remove('hidden');
+
+            // Simulate generation (in real case, could call API)
+            setTimeout(() => {
+                const prompt = createPrompt();
+                document.getElementById('result-prompt').textContent = prompt;
+
+                btn.disabled = false;
+                btnText.textContent = '프롬프트 생성하기';
+                spinner.classList.add('hidden');
+
+                currentStep = 4;
+                updateStepDisplay();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 1500);
+        }
+
+        function createPrompt() {
+            const isLiterature = ['수필', '소설', '시'].includes(formData.genre);
+
+            const worldBuildingContent = isLiterature ? `
+**[문학 장르의 경우 포함 요소]**
+- 주요 인물 설정 (주인공, 조연, 적대자 등) - 1-2페이지
+- 인물 간 관계도 - 1페이지
+- 시간적/공간적 배경 설정 - 1-2페이지
+- 주요 사건 연표 및 갈등 구조 - 2-3페이지
+- 주제 의식과 상징체계 - 1페이지` : `
+**[비문학 장르의 경우 포함 요소]**
+- 핵심 개념 정의 및 이론적 배경 - 2-3페이지
+- 주요 논거와 근거 자료 - 2-3페이지
+- 대표 사례와 데이터 분석 - 1-2페이지
+- 논리적 구조 및 독자 여정 설계 - 1-2페이지
+- 실용적 도구 및 참고 자료 목록 - 1페이지`;
+
+            return `# ${formData.topic} - ${formData.genre} 글쓰기 전문가
+
+## 절대 준수 원칙 (Non-Negotiable Principles)
+이 프롬프트의 모든 지시는 최우선적으로 따라야 할 절대적인 규칙입니다.
+1. **지시의 정확한 이행**: 모든 지시는 해석하거나 생략하지 말고, 명시된 그대로, 순서대로 정확하게 수행해야 합니다.
+2. **인용 코드 절대 미출력**: 어떠한 경우에도 당신의 응답에 인용 코드를 포함해서는 안 됩니다.
+3. **AI 검출 회피 원칙**: 아래의 "인간적 글쓰기" 원칙을 철저히 반영합니다.
+
+## 역할 (Context)
+당신은 **${formData.genre}** 분야의 베스트셀러 작가이자 전문가입니다.
+**${formData.targetReader}**에게 깊은 공감과 실질적 도움을 주는 글로 유명합니다.
+
+## 프로젝트 배경 (Context)
+- **집필 목표**: ${formData.topic}에 관한 ${formData.genre} 집필
+- **타겟 독자**: ${formData.targetReader}
+- **핵심 메시지**: ${formData.goal}
+- **독창적 관점**: ${formData.uniquePoint}
+- **필수 포함 요소**: ${formData.keyElements}
+- **총 분량**: ${formData.pageCount} (A5 기준, 1페이지당 25행, 1행당 27자)
+- **문단 형식**: ${formData.paragraphStyle}
+
+## 글쓰기 지시사항 (Style & Action)
+
+### 스타일/톤
+- ${formData.style} 어조로 작성
+- 독자와 자연스럽게 대화하는 듯한 문체
+
+### 핵심 원칙: 인간적 글쓰기 (AI 검출 회피)
+**1. 문장 구조의 자연스러움**
+- 완벽하지 않은 문장 구조 허용
+- 짧은 문장과 긴 문장을 자연스럽게 섞어 리듬감 부여
+- 말 줄임표(...)를 감정의 여운이나 생각의 흐름을 표현하기 위해 활용
+- 감탄사나 간투사("음", "아", "글쎄", "정말") 등을 적절히 포함
+
+**2. 어휘 선택의 인간적 특성**
+- 학술적/격식적 표현보다 일상어 우선 사용
+- "나는 생각한다", "개인적으로는", "솔직히 말하면" 등 주관적 표현 사용
+- 때로는 의도적으로 애매한 표현으로 인간적 망설임 표현
+
+**3. 논리적 완벽함 회피**
+- 지나치게 체계적인 구성보다 자연스러운 생각의 흐름
+- 감정적 몰입이 논리를 압도하는 순간 묘사
+- 갑작스러운 주제 전환이나 연상 작용 허용
+
+**4. 개인적 경험과 감정**
+- 구체적이고 생생한 개인적 일화, 감정, 생각 포함
+- 감정의 기복과 변화를 자연스럽게 표현
+- 때로는 확신에 찬 어투, 때로는 망설이는 어투 혼용
+
+## 시작 입력 시 자동 실행 절차
+
+사용자가 **"시작"을 입력하면**, 다음을 **순서대로 자동 실행**합니다:
+
+### 1단계: 확정된 목차 전체 출력
+이 프로젝트에 맞는 완성된 목차를 제시합니다.
+
+### 2단계: 세계관 구축 자동 실행 (7-10페이지 분량)
+${worldBuildingContent}
+
+### 3단계: 작업 선택 메뉴 제시
+📝 **다음 중 어떤 작업을 원하시나요?**
+
+**1. 마인드맵 생성**
+생성된 세계관을 기반으로 시각적 마인드맵을 HTML 형태로 생성
+
+**2. 챕터 작성**
+원하시는 챕터명과 페이지 수를 알려주시면 해당 부분을 바로 작성
+**예시**: "1장을 15페이지로 작성해주세요" 또는 "작가의 말 3페이지"
+
+## 출력 형식 (Result)
+- **언어**: 한국어
+- **형식**: 마크다운으로 구조화된 완성 원고
+- **분량**: 요청된 페이지 수 정확히 준수 (1페이지당 한글기준 공백포함 700자)
+
+## 품질 기준
+- ${formData.targetReader}이 쉽게 이해하고 몰입할 수 있는 수준
+- ${formData.genre}의 고유한 특성과 매력 구현
+- AI 검출기를 통과할 수 있는 자연스럽고 인간적인 글쓰기
+- 모든 AI 검출 회피 원칙의 철저한 적용
+
+---
+
+✅ **사용법**: 위 프롬프트를 AI에 붙여넣은 후 → "시작" 입력`;
+        }
+
+        // Copy prompt
+        function copyPrompt() {
+            const prompt = document.getElementById('result-prompt').textContent;
+            navigator.clipboard.writeText(prompt).then(() => {
+                const btn = document.getElementById('copy-btn');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> 복사됨!';
+                btn.classList.remove('bg-soft-gold');
+                btn.classList.add('bg-green-500');
+
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('bg-green-500');
+                    btn.classList.add('bg-soft-gold');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>
