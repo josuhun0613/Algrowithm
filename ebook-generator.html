@@ -881,9 +881,41 @@
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             if (!isMobile) return;
 
+            // ========== 디버그 UI 생성 ==========
+            const debugPanel = document.createElement('div');
+            debugPanel.id = 'keyboard-debug';
+            debugPanel.style.cssText = `
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: rgba(0,0,0,0.85);
+                color: #0f0;
+                font-family: monospace;
+                font-size: 11px;
+                padding: 8px;
+                z-index: 99999;
+                max-height: 30vh;
+                overflow-y: auto;
+            `;
+            debugPanel.innerHTML = '<div style="color:#ff0;margin-bottom:4px;">🔧 키보드 디버그 (문제 해결 후 제거)</div><div id="debug-log"></div>';
+            document.body.appendChild(debugPanel);
+
+            const debugLog = document.getElementById('debug-log');
+            let logCount = 0;
+            function log(msg, color = '#0f0') {
+                logCount++;
+                const time = new Date().toLocaleTimeString('ko-KR', {hour12:false});
+                debugLog.innerHTML = `<div style="color:${color}">[${logCount}] ${time} ${msg}</div>` + debugLog.innerHTML;
+                if (debugLog.children.length > 30) debugLog.lastChild.remove();
+            }
+            // ========== 디버그 UI 끝 ==========
+
             let keyboardVisible = false;
             let historyPushed = false;
             const initialViewportHeight = window.visualViewport?.height || window.innerHeight;
+
+            log(`초기화: initialHeight=${initialViewportHeight}px`, '#0ff');
 
             // 키보드 상태 감지
             if (window.visualViewport) {
@@ -894,36 +926,61 @@
                     const wasKeyboardVisible = keyboardVisible;
                     keyboardVisible = heightDiff > 150;
 
+                    log(`resize: cur=${Math.round(currentHeight)} diff=${Math.round(heightDiff)} kb=${keyboardVisible}`, '#fff');
+
                     // 키보드가 열릴 때 히스토리 추가 (한 번만)
                     if (keyboardVisible && !wasKeyboardVisible && !historyPushed) {
                         history.pushState({ keyboard: true }, '');
                         historyPushed = true;
+                        log(`⬆️ 키보드 열림 → pushState 완료`, '#0f0');
                     }
 
                     // 키보드가 닫힐 때 히스토리 상태 리셋
                     if (!keyboardVisible && wasKeyboardVisible) {
                         historyPushed = false;
+                        log(`⬇️ 키보드 닫힘 → historyPushed 리셋`, '#ff0');
                     }
                 });
+            } else {
+                log(`❌ visualViewport 미지원!`, '#f00');
             }
+
+            // 포커스 이벤트 추적
+            document.addEventListener('focusin', (e) => {
+                log(`focusin: ${e.target.tagName}#${e.target.id || '?'}`, '#aaf');
+            });
+            document.addEventListener('focusout', (e) => {
+                log(`focusout: ${e.target.tagName}#${e.target.id || '?'}`, '#faa');
+            });
 
             // 뒤로가기 이벤트 처리
             window.addEventListener('popstate', (e) => {
+                log(`🔙 popstate 발생! keyboardVisible=${keyboardVisible}`, '#f0f');
+
                 // 키보드가 열려있을 때만 뒤로가기 방지
                 if (keyboardVisible) {
                     // 뒤로가기 방지 - 히스토리 다시 추가
                     history.pushState({ keyboard: true }, '');
+                    log(`→ pushState로 뒤로가기 방지`, '#0f0');
 
                     // 현재 포커스된 입력창에서 포커스 해제 (키보드 닫기)
                     // setTimeout으로 감싸서 갤럭시 재포커스 버그 방지
                     setTimeout(() => {
                         const activeEl = document.activeElement;
+                        log(`→ activeElement: ${activeEl?.tagName}#${activeEl?.id || '?'}`, '#fff');
                         if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT')) {
                             activeEl.blur();
+                            log(`→ blur() 호출 완료`, '#0f0');
+                        } else {
+                            log(`→ blur 대상 아님`, '#ff0');
                         }
                     }, 10);
+                } else {
+                    log(`→ 키보드 안열림, 뒤로가기 허용`, '#ff0');
                 }
             });
+
+            log(`이벤트 리스너 등록 완료`, '#0ff');
         })();
 
         // Genre selection
