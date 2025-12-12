@@ -178,6 +178,72 @@
             background: #d4af37;
             transform: scale(1.3);
         }
+
+        /* Cover style options */
+        .cover-style-option {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .cover-style-option:hover,
+        .cover-style-option.selected {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .cover-style-preview {
+            width: 100%;
+            aspect-ratio: 2/3;
+            border-radius: 4px;
+            margin-bottom: 4px;
+        }
+
+        /* Gradient presets */
+        .gradient-1 { background: linear-gradient(135deg, #1a1a1a 0%, #434343 100%); }
+        .gradient-2 { background: linear-gradient(135deg, #1e3a5f 0%, #4a7c9b 100%); }
+        .gradient-3 { background: linear-gradient(135deg, #2d4a3e 0%, #5a8f7b 100%); }
+        .gradient-4 { background: linear-gradient(135deg, #d4af37 0%, #f5d17a 100%); }
+        .gradient-5 { background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e); }
+        .gradient-6 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+
+        /* Pattern presets */
+        .pattern-1 {
+            background-color: #1a1a1a;
+            background-image: radial-gradient(#d4af37 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .pattern-2 {
+            background-color: #1e3a5f;
+            background-image: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
+                              linear-gradient(-45deg, rgba(255,255,255,0.1) 25%, transparent 25%);
+            background-size: 30px 30px;
+        }
+        .pattern-3 {
+            background-color: #2d4a3e;
+            background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 25px 25px;
+        }
+        .pattern-4 {
+            background: repeating-linear-gradient(45deg, #1a1a1a, #1a1a1a 10px, #2a2a2a 10px, #2a2a2a 20px);
+        }
+
+        /* Prompt section */
+        .prompt-textarea {
+            font-family: monospace;
+            font-size: 11px;
+            line-height: 1.5;
+            resize: vertical;
+        }
+
+        /* AI cover generation */
+        .ai-cover-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
     </style>
 </head>
 
@@ -225,6 +291,24 @@
             <!-- Left: Settings Panel -->
             <div class="space-y-5">
 
+                <!-- STEP 0: Prompt Review (shown if coming from prompt generator) -->
+                <div id="promptReviewSection" class="bg-white rounded-2xl p-5 shadow-sm hidden">
+                    <h2 class="text-base font-bold text-rich-black mb-4 flex items-center gap-2">
+                        <span class="step-circle bg-soft-gold text-white">
+                            <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+                        </span>
+                        프롬프트 확인 & 수정
+                    </h2>
+                    <p class="text-xs text-gray-500 mb-3">E-book 프롬프트 생성기에서 전달된 프롬프트입니다. 필요시 수정하세요.</p>
+                    <textarea id="promptText" rows="8" class="prompt-textarea w-full px-3 py-2 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none"></textarea>
+                    <div class="flex justify-between items-center mt-3">
+                        <span class="text-xs text-gray-400">이 프롬프트로 AI가 책 내용을 생성합니다</span>
+                        <button onclick="clearPromptData()" class="text-xs text-red-500 hover:text-red-700">
+                            <i class="fa-solid fa-trash mr-1"></i>초기화
+                        </button>
+                    </div>
+                </div>
+
                 <!-- STEP 1: Basic Info -->
                 <div class="bg-white rounded-2xl p-5 shadow-sm">
                     <h2 class="text-base font-bold text-rich-black mb-4 flex items-center gap-2">
@@ -258,42 +342,89 @@
                     </div>
                 </div>
 
-                <!-- STEP 2: Cover Settings -->
+                <!-- STEP 2: Cover Settings (Expanded) -->
                 <div class="bg-white rounded-2xl p-5 shadow-sm">
                     <h2 class="text-base font-bold text-rich-black mb-4 flex items-center gap-2">
                         <span class="step-circle bg-rich-black text-white">2</span>
                         표지 설정
                     </h2>
 
-                    <div class="space-y-3">
-                        <!-- Cover Type Selection -->
-                        <div class="flex gap-4">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" name="coverType" value="generate" checked class="accent-soft-gold">
-                                <span class="text-sm">새 표지 생성</span>
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" name="coverType" value="upload" class="accent-soft-gold">
-                                <span class="text-sm">이미지 업로드</span>
-                            </label>
+                    <div class="space-y-4">
+                        <!-- Cover Style Tabs -->
+                        <div class="flex gap-2 flex-wrap border-b border-gray-100 pb-3">
+                            <button onclick="setCoverStyle('solid')" class="cover-tab px-3 py-1.5 text-xs font-bold rounded-lg bg-rich-black text-white" data-style="solid">단색</button>
+                            <button onclick="setCoverStyle('gradient')" class="cover-tab px-3 py-1.5 text-xs font-bold rounded-lg bg-gray-100 text-gray-600" data-style="gradient">그라데이션</button>
+                            <button onclick="setCoverStyle('pattern')" class="cover-tab px-3 py-1.5 text-xs font-bold rounded-lg bg-gray-100 text-gray-600" data-style="pattern">패턴</button>
+                            <button onclick="setCoverStyle('upload')" class="cover-tab px-3 py-1.5 text-xs font-bold rounded-lg bg-gray-100 text-gray-600" data-style="upload">업로드</button>
+                            <button onclick="setCoverStyle('ai')" class="cover-tab px-3 py-1.5 text-xs font-bold rounded-lg bg-gray-100 text-gray-600" data-style="ai">
+                                <i class="fa-solid fa-wand-magic-sparkles mr-1"></i>AI 생성
+                            </button>
                         </div>
 
-                        <!-- Generate Cover Options -->
-                        <div id="generateCoverOptions">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">배경 색상</label>
+                        <!-- Solid Color Options -->
+                        <div id="solidOptions" class="cover-options">
+                            <label class="block text-xs font-medium text-gray-700 mb-2">배경 색상</label>
                             <div class="flex gap-2 flex-wrap">
-                                <div class="color-option selected" style="background: #1a1a1a" data-color="#1a1a1a"></div>
-                                <div class="color-option" style="background: #1e3a5f" data-color="#1e3a5f"></div>
-                                <div class="color-option" style="background: #2d4a3e" data-color="#2d4a3e"></div>
-                                <div class="color-option" style="background: #4a3728" data-color="#4a3728"></div>
-                                <div class="color-option" style="background: #d4af37" data-color="#d4af37"></div>
-                                <div class="color-option" style="background: #8b5a6b" data-color="#8b5a6b"></div>
-                                <div class="color-option" style="background: #f5f5f5; border: 1px solid #ddd" data-color="#f5f5f5"></div>
+                                <div class="color-option selected" style="background: #1a1a1a" data-color="#1a1a1a" data-type="solid"></div>
+                                <div class="color-option" style="background: #1e3a5f" data-color="#1e3a5f" data-type="solid"></div>
+                                <div class="color-option" style="background: #2d4a3e" data-color="#2d4a3e" data-type="solid"></div>
+                                <div class="color-option" style="background: #4a3728" data-color="#4a3728" data-type="solid"></div>
+                                <div class="color-option" style="background: #d4af37" data-color="#d4af37" data-type="solid"></div>
+                                <div class="color-option" style="background: #8b5a6b" data-color="#8b5a6b" data-type="solid"></div>
+                                <div class="color-option" style="background: #f5f5f5; border: 1px solid #ddd" data-color="#f5f5f5" data-type="solid"></div>
                             </div>
                         </div>
 
-                        <!-- Upload Cover Options -->
-                        <div id="uploadCoverOptions" class="hidden">
+                        <!-- Gradient Options -->
+                        <div id="gradientOptions" class="cover-options hidden">
+                            <label class="block text-xs font-medium text-gray-700 mb-2">그라데이션 선택</label>
+                            <div class="grid grid-cols-6 gap-2">
+                                <div class="cover-style-option selected" data-gradient="gradient-1" onclick="selectGradient('gradient-1')">
+                                    <div class="cover-style-preview gradient-1"></div>
+                                </div>
+                                <div class="cover-style-option" data-gradient="gradient-2" onclick="selectGradient('gradient-2')">
+                                    <div class="cover-style-preview gradient-2"></div>
+                                </div>
+                                <div class="cover-style-option" data-gradient="gradient-3" onclick="selectGradient('gradient-3')">
+                                    <div class="cover-style-preview gradient-3"></div>
+                                </div>
+                                <div class="cover-style-option" data-gradient="gradient-4" onclick="selectGradient('gradient-4')">
+                                    <div class="cover-style-preview gradient-4"></div>
+                                </div>
+                                <div class="cover-style-option" data-gradient="gradient-5" onclick="selectGradient('gradient-5')">
+                                    <div class="cover-style-preview gradient-5"></div>
+                                </div>
+                                <div class="cover-style-option" data-gradient="gradient-6" onclick="selectGradient('gradient-6')">
+                                    <div class="cover-style-preview gradient-6"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pattern Options -->
+                        <div id="patternOptions" class="cover-options hidden">
+                            <label class="block text-xs font-medium text-gray-700 mb-2">패턴 선택</label>
+                            <div class="grid grid-cols-4 gap-2">
+                                <div class="cover-style-option selected" data-pattern="pattern-1" onclick="selectPattern('pattern-1')">
+                                    <div class="cover-style-preview pattern-1"></div>
+                                    <span class="text-[10px] text-gray-500">도트</span>
+                                </div>
+                                <div class="cover-style-option" data-pattern="pattern-2" onclick="selectPattern('pattern-2')">
+                                    <div class="cover-style-preview pattern-2"></div>
+                                    <span class="text-[10px] text-gray-500">체크</span>
+                                </div>
+                                <div class="cover-style-option" data-pattern="pattern-3" onclick="selectPattern('pattern-3')">
+                                    <div class="cover-style-preview pattern-3"></div>
+                                    <span class="text-[10px] text-gray-500">그리드</span>
+                                </div>
+                                <div class="cover-style-option" data-pattern="pattern-4" onclick="selectPattern('pattern-4')">
+                                    <div class="cover-style-preview pattern-4"></div>
+                                    <span class="text-[10px] text-gray-500">스트라이프</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Upload Options -->
+                        <div id="uploadOptions" class="cover-options hidden">
                             <div class="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center cursor-pointer hover:border-soft-gold transition-colors"
                                 onclick="document.getElementById('coverImageInput').click()">
                                 <input type="file" id="coverImageInput" accept="image/*" class="hidden" onchange="handleCoverUpload(event)">
@@ -305,6 +436,33 @@
                                 <div id="coverPreview" class="hidden">
                                     <img id="coverPreviewImg" class="max-h-32 mx-auto rounded">
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Cover Generation -->
+                        <div id="aiOptions" class="cover-options hidden">
+                            <div class="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-4 border border-purple-100">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-purple-500"></i>
+                                    <span class="text-sm font-bold text-purple-700">AI 표지 생성</span>
+                                    <span class="text-[10px] bg-purple-100 text-purple-600 px-2 py-0.5 rounded-full">Gemini 2.5</span>
+                                </div>
+                                <p class="text-xs text-gray-600 mb-3">책 제목과 주제를 기반으로 AI가 표지 이미지를 생성합니다.</p>
+                                <div class="mb-3">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">표지 스타일 힌트 (선택)</label>
+                                    <input type="text" id="aiCoverHint" placeholder="예: 미니멀, 추상적, 자연 풍경, 기하학적 패턴..."
+                                        class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-purple-400 focus:outline-none">
+                                </div>
+                                <button onclick="generateAICover()" id="aiCoverBtn"
+                                    class="w-full py-3 ai-cover-btn text-white rounded-lg font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-sparkles"></i>
+                                    <span id="aiCoverBtnText">AI 표지 생성하기</span>
+                                    <div id="aiCoverSpinner" class="loading-spinner hidden"></div>
+                                </button>
+                                <p class="text-[10px] text-gray-400 mt-2 text-center">* 생성 시 API 토큰이 소모됩니다 (~$0.04/장)</p>
+                            </div>
+                            <div id="aiCoverResult" class="hidden mt-3">
+                                <img id="aiCoverImg" class="w-full rounded-lg shadow-md">
                             </div>
                         </div>
                     </div>
@@ -548,24 +706,117 @@
         let selectedTemplate = 'minimal';
         let uploadedCoverImage = null;
         let generatedPages = [];
+        let coverStyle = 'solid'; // solid, gradient, pattern, upload, ai
+        let selectedGradient = 'gradient-1';
+        let selectedPattern = 'pattern-1';
+        let aiGeneratedCover = null;
+        let promptData = null;
 
-        // Cover type toggle
-        document.querySelectorAll('input[name="coverType"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                document.getElementById('generateCoverOptions').classList.toggle('hidden', e.target.value === 'upload');
-                document.getElementById('uploadCoverOptions').classList.toggle('hidden', e.target.value === 'generate');
-            });
+        // Gradient CSS mappings
+        const gradientStyles = {
+            'gradient-1': 'linear-gradient(135deg, #1a1a1a 0%, #434343 100%)',
+            'gradient-2': 'linear-gradient(135deg, #1e3a5f 0%, #4a7c9b 100%)',
+            'gradient-3': 'linear-gradient(135deg, #2d4a3e 0%, #5a8f7b 100%)',
+            'gradient-4': 'linear-gradient(135deg, #d4af37 0%, #f5d17a 100%)',
+            'gradient-5': 'linear-gradient(to bottom, #0f0c29, #302b63, #24243e)',
+            'gradient-6': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+        };
+
+        // Pattern CSS mappings
+        const patternStyles = {
+            'pattern-1': 'background-color: #1a1a1a; background-image: radial-gradient(#d4af37 1px, transparent 1px); background-size: 20px 20px;',
+            'pattern-2': 'background-color: #1e3a5f; background-image: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%), linear-gradient(-45deg, rgba(255,255,255,0.1) 25%, transparent 25%); background-size: 30px 30px;',
+            'pattern-3': 'background-color: #2d4a3e; background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 25px 25px;',
+            'pattern-4': 'background: repeating-linear-gradient(45deg, #1a1a1a, #1a1a1a 10px, #2a2a2a 10px, #2a2a2a 20px);'
+        };
+
+        // Initialize - Load data from localStorage
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPromptData();
+            initCoverOptions();
+            updatePreview();
         });
 
-        // Color picker
-        document.querySelectorAll('.color-option').forEach(option => {
-            option.addEventListener('click', () => {
-                document.querySelectorAll('.color-option').forEach(o => o.classList.remove('selected'));
-                option.classList.add('selected');
-                selectedCoverColor = option.dataset.color;
-                updatePreview();
+        // Load prompt data from ebook-generator
+        function loadPromptData() {
+            const stored = localStorage.getItem('ebookPromptData');
+            if (stored) {
+                promptData = JSON.parse(stored);
+
+                // Show prompt review section
+                document.getElementById('promptReviewSection').classList.remove('hidden');
+                document.getElementById('promptText').value = promptData.prompt || '';
+
+                // Auto-fill title and topic
+                if (promptData.suggestedTitle) {
+                    document.getElementById('bookTitle').value = promptData.suggestedTitle;
+                }
+                if (promptData.topic) {
+                    document.getElementById('bookTopic').value = promptData.topic;
+                }
+            }
+        }
+
+        // Clear prompt data
+        function clearPromptData() {
+            localStorage.removeItem('ebookPromptData');
+            promptData = null;
+            document.getElementById('promptReviewSection').classList.add('hidden');
+            document.getElementById('promptText').value = '';
+        }
+
+        // Initialize cover options
+        function initCoverOptions() {
+            // Color picker for solid colors
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('#solidOptions .color-option').forEach(o => o.classList.remove('selected'));
+                    option.classList.add('selected');
+                    selectedCoverColor = option.dataset.color;
+                    updatePreview();
+                });
             });
-        });
+        }
+
+        // Set cover style (tabs)
+        function setCoverStyle(style) {
+            coverStyle = style;
+
+            // Update tabs
+            document.querySelectorAll('.cover-tab').forEach(tab => {
+                if (tab.dataset.style === style) {
+                    tab.classList.remove('bg-gray-100', 'text-gray-600');
+                    tab.classList.add('bg-rich-black', 'text-white');
+                } else {
+                    tab.classList.remove('bg-rich-black', 'text-white');
+                    tab.classList.add('bg-gray-100', 'text-gray-600');
+                }
+            });
+
+            // Show/hide options
+            document.querySelectorAll('.cover-options').forEach(opt => opt.classList.add('hidden'));
+            document.getElementById(style + 'Options').classList.remove('hidden');
+
+            updatePreview();
+        }
+
+        // Select gradient
+        function selectGradient(gradient) {
+            selectedGradient = gradient;
+            document.querySelectorAll('#gradientOptions .cover-style-option').forEach(opt => {
+                opt.classList.toggle('selected', opt.dataset.gradient === gradient);
+            });
+            updatePreview();
+        }
+
+        // Select pattern
+        function selectPattern(pattern) {
+            selectedPattern = pattern;
+            document.querySelectorAll('#patternOptions .cover-style-option').forEach(opt => {
+                opt.classList.toggle('selected', opt.dataset.pattern === pattern);
+            });
+            updatePreview();
+        }
 
         // Template selection
         function selectTemplate(template) {
@@ -597,8 +848,58 @@
             }
         }
 
+        // AI Cover Generation
+        async function generateAICover() {
+            const title = document.getElementById('bookTitle').value.trim();
+            const hint = document.getElementById('aiCoverHint').value.trim();
+
+            if (!title) {
+                alert('책 제목을 먼저 입력해주세요.');
+                return;
+            }
+
+            const btn = document.getElementById('aiCoverBtn');
+            const btnText = document.getElementById('aiCoverBtnText');
+            const spinner = document.getElementById('aiCoverSpinner');
+
+            btn.disabled = true;
+            btnText.textContent = 'AI가 표지를 생성하는 중...';
+            spinner.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/api/generate-cover-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: title,
+                        subtitle: document.getElementById('bookSubtitle').value.trim(),
+                        hint: hint,
+                        topic: document.getElementById('bookTopic').value.trim()
+                    })
+                });
+
+                if (!response.ok) throw new Error('AI 표지 생성 실패');
+
+                const data = await response.json();
+                if (data.imageUrl) {
+                    aiGeneratedCover = data.imageUrl;
+                    document.getElementById('aiCoverResult').classList.remove('hidden');
+                    document.getElementById('aiCoverImg').src = data.imageUrl;
+                    updatePreview();
+                }
+            } catch (error) {
+                console.error('AI Cover Error:', error);
+                alert('AI 표지 생성에 실패했습니다. 다시 시도해주세요.');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'AI 표지 생성하기';
+                spinner.classList.add('hidden');
+            }
+        }
+
         // Check if color is light
         function isLightColor(color) {
+            if (!color || color.includes('gradient') || color.includes('linear')) return false;
             const hex = color.replace('#', '');
             const r = parseInt(hex.substr(0, 2), 16);
             const g = parseInt(hex.substr(2, 2), 16);
@@ -606,20 +907,39 @@
             return (r * 299 + g * 587 + b * 114) / 1000 > 155;
         }
 
+        // Get cover background style
+        function getCoverBackground() {
+            switch (coverStyle) {
+                case 'solid':
+                    return { style: `background: ${selectedCoverColor};`, isLight: isLightColor(selectedCoverColor) };
+                case 'gradient':
+                    return { style: `background: ${gradientStyles[selectedGradient]};`, isLight: selectedGradient === 'gradient-4' };
+                case 'pattern':
+                    return { style: patternStyles[selectedPattern], isLight: false };
+                case 'upload':
+                    return { image: uploadedCoverImage };
+                case 'ai':
+                    return { image: aiGeneratedCover };
+                default:
+                    return { style: 'background: #1a1a1a;', isLight: false };
+            }
+        }
+
         // Update preview
         function updatePreview() {
             const title = document.getElementById('bookTitle').value || '책 제목';
             const subtitle = document.getElementById('bookSubtitle').value || '부제목이 여기에';
             const author = document.getElementById('authorName').value || '저자명';
-            const coverType = document.querySelector('input[name="coverType"]:checked').value;
 
+            const coverBg = getCoverBackground();
             let coverHtml;
-            if (coverType === 'upload' && uploadedCoverImage) {
-                coverHtml = `<img src="${uploadedCoverImage}" class="w-full h-full object-cover">`;
+
+            if (coverBg.image) {
+                coverHtml = `<img src="${coverBg.image}" class="w-full h-full object-cover">`;
             } else {
-                const textColor = isLightColor(selectedCoverColor) ? '#1a1a1a' : '#ffffff';
+                const textColor = coverBg.isLight ? '#1a1a1a' : '#ffffff';
                 coverHtml = `
-                    <div class="preview-cover h-full" style="background: ${selectedCoverColor};">
+                    <div class="preview-cover h-full" style="${coverBg.style}">
                         <div class="flex-1 flex flex-col justify-center">
                             <p style="color: ${textColor}; opacity: 0.6;" class="text-[10px] tracking-widest uppercase mb-3">E-BOOK</p>
                             <h1 style="color: ${textColor};" class="text-lg font-serif font-bold mb-2">${title}</h1>

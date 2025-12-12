@@ -518,6 +518,23 @@
                             <i class="fa-solid fa-copy mr-2"></i> 프롬프트 복사
                         </button>
                     </div>
+
+                    <!-- E-book PDF 생성으로 이동 -->
+                    <div class="mt-6 p-6 bg-gradient-to-r from-soft-gold/10 to-yellow-100/50 rounded-xl border border-soft-gold/30">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 bg-soft-gold rounded-full flex items-center justify-center">
+                                <i class="fa-solid fa-file-pdf text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-text-dark">E-book PDF로 바로 만들기</h3>
+                                <p class="text-sm text-gray-600">프롬프트를 수정하고 PDF 전자책으로 바로 제작하세요</p>
+                            </div>
+                        </div>
+                        <button onclick="goToEbookPDF()" class="w-full py-4 bg-soft-gold text-white rounded-xl font-bold hover:bg-yellow-600 transition-colors flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-arrow-right"></i>
+                            <span>E-book PDF 만들러 가기</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -801,6 +818,32 @@ ${worldBuildingContent}
                     btn.classList.add('bg-soft-gold');
                 }, 2000);
             });
+        }
+
+        // Go to E-book PDF generator with data
+        function goToEbookPDF() {
+            const prompt = document.getElementById('result-prompt').textContent;
+
+            // 프롬프트에서 제목 추출 시도
+            const titleMatch = formData.topic.match(/^([^에관한\-–]+)/);
+            const suggestedTitle = titleMatch ? titleMatch[1].trim() : formData.topic.substring(0, 30);
+
+            // localStorage에 데이터 저장
+            const ebookData = {
+                prompt: prompt,
+                genre: formData.genre,
+                topic: formData.topic,
+                suggestedTitle: suggestedTitle,
+                targetReader: formData.targetReader,
+                style: formData.style,
+                pageCount: formData.pageCount,
+                createdAt: new Date().toISOString()
+            };
+
+            localStorage.setItem('ebookPromptData', JSON.stringify(ebookData));
+
+            // PDF 생성 페이지로 이동
+            window.location.href = 'ebook-pdf-generator.html';
         }
     </script>
 </body>
