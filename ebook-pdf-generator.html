@@ -988,7 +988,13 @@
                         <i class="fa-solid fa-download"></i>
                         <span>PDF 다운로드</span>
                     </button>
-                    <p class="text-xs text-gray-400 mt-2 text-center">E-book 생성 후 다운로드 가능</p>
+                    <!-- 공유 버튼 (다운로드 완료 후 표시) -->
+                    <button onclick="sharePDF()" id="shareBtn"
+                        class="hidden w-full mt-2 py-3 bg-soft-gold text-white rounded-xl font-bold text-sm hover:bg-yellow-600 transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-share-nodes"></i>
+                        <span>PDF 공유하기</span>
+                    </button>
+                    <p id="downloadHint" class="text-xs text-gray-400 mt-2 text-center">E-book 생성 후 다운로드 가능</p>
                 </div>
             </div>
         </div>
@@ -1013,6 +1019,8 @@
         let promptData = null;
         let includeCover = true;
         let chapterMode = 'ai'; // ai or manual
+        let lastPdfBlob = null; // 마지막으로 생성된 PDF Blob 저장
+        let lastPdfFileName = ''; // PDF 파일명 저장
 
         // Gradient CSS mappings
         const gradientStyles = {
@@ -2021,29 +2029,33 @@
                 const pdfBlob = pdf.output('blob');
                 const fileName = `${formData.title || 'ebook'}.pdf`;
 
+                // 전역 변수에 저장 (공유 버튼용)
+                lastPdfBlob = pdfBlob;
+                lastPdfFileName = fileName;
+
                 // 모바일 감지
                 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-                if (isMobile && navigator.share) {
-                    // 모바일: Web Share API 사용 (공유 시트 표시)
-                    try {
-                        const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
-                        await navigator.share({
-                            files: [file],
-                            title: formData.title || 'E-book',
-                            text: `${formData.title || 'E-book'} PDF`
-                        });
-                        showToast('공유가 완료되었습니다!');
-                    } catch (shareError) {
-                        // 공유 취소 또는 실패 시 다운로드로 폴백
-                        if (shareError.name !== 'AbortError') {
-                            downloadPdfBlob(pdfBlob, fileName);
-                        }
+                // 먼저 다운로드 실행
+                downloadPdfBlob(pdfBlob, fileName);
+
+                // 다운로드 완료 후 공유 버튼 표시 및 공유 모달 표시
+                setTimeout(() => {
+                    // 공유 버튼 표시
+                    const shareBtn = document.getElementById('shareBtn');
+                    shareBtn.classList.remove('hidden');
+                    shareBtn.classList.add('flex');
+
+                    // 힌트 텍스트 변경
+                    document.getElementById('downloadHint').innerHTML = '<i class="fa-solid fa-check text-green-500 mr-1"></i>다운로드 완료! 공유하기를 눌러 파일을 전송하세요';
+                    document.getElementById('downloadHint').classList.remove('text-gray-400');
+                    document.getElementById('downloadHint').classList.add('text-green-600', 'font-medium');
+
+                    // 모바일에서는 자동으로 공유 모달 표시
+                    if (isMobile && navigator.share && navigator.canShare) {
+                        showShareModal();
                     }
-                } else {
-                    // 데스크톱 또는 Share API 미지원: 일반 다운로드
-                    downloadPdfBlob(pdfBlob, fileName);
-                }
+                }, 500);
 
                 // 캡처 완료 후 다시 숨김
                 container.style.left = '-9999px';
@@ -2063,6 +2075,93 @@
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-download"></i> PDF 다운로드';
             }
+        }
+
+        // PDF 공유 기능
+        async function sharePDF() {
+            if (!lastPdfBlob) {
+                alert('먼저 PDF를 다운로드해주세요.');
+                return;
+            }
+
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+            if (navigator.share && navigator.canShare) {
+                try {
+                    const file = new File([lastPdfBlob], lastPdfFileName, { type: 'application/pdf' });
+
+                    // canShare로 파일 공유 가능 여부 확인
+                    if (navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            files: [file],
+                            title: lastPdfFileName.replace('.pdf', ''),
+                            text: `${lastPdfFileName.replace('.pdf', '')} E-book`
+                        });
+                        showToast('공유가 완료되었습니다!');
+                    } else {
+                        // 파일 공유가 안 되면 URL 공유
+                        showShareFallback();
+                    }
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        console.error('공유 실패:', error);
+                        showShareFallback();
+                    }
+                }
+            } else {
+                showShareFallback();
+            }
+        }
+
+        // 공유 대체 모달 (Web Share API 미지원 시)
+        function showShareFallback() {
+            // 다운로드 폴더 안내
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            const isAndroid = /Android/i.test(navigator.userAgent);
+
+            let message = 'PDF가 다운로드되었습니다.\n\n';
+
+            if (isIOS) {
+                message += '📱 iPhone/iPad에서 파일 찾기:\n';
+                message += '1. "파일" 앱을 엽니다\n';
+                message += '2. "다운로드" 폴더를 확인하세요\n';
+                message += '3. PDF 파일을 탭하여 열기 또는 공유하세요';
+            } else if (isAndroid) {
+                message += '📱 Android에서 파일 찾기:\n';
+                message += '1. 상단 알림바를 내려 다운로드 알림을 탭하세요\n';
+                message += '2. 또는 "파일" 앱 → "다운로드" 폴더를 확인하세요\n';
+                message += '3. PDF 파일을 길게 눌러 공유하세요';
+            } else {
+                message += '💻 데스크톱에서 파일 찾기:\n';
+                message += '다운로드 폴더에서 PDF 파일을 찾으실 수 있습니다.';
+            }
+
+            alert(message);
+        }
+
+        // 모바일 공유 모달 자동 표시
+        function showShareModal() {
+            // 약간의 딜레이 후 공유 시도
+            setTimeout(async () => {
+                if (lastPdfBlob && navigator.share && navigator.canShare) {
+                    try {
+                        const file = new File([lastPdfBlob], lastPdfFileName, { type: 'application/pdf' });
+
+                        if (navigator.canShare({ files: [file] })) {
+                            await navigator.share({
+                                files: [file],
+                                title: lastPdfFileName.replace('.pdf', ''),
+                                text: `${lastPdfFileName.replace('.pdf', '')} E-book`
+                            });
+                        }
+                    } catch (error) {
+                        // 사용자가 취소한 경우 무시
+                        if (error.name !== 'AbortError') {
+                            console.log('자동 공유 모달 표시 실패:', error);
+                        }
+                    }
+                }
+            }, 800);
         }
     </script>
 </body>
