@@ -877,8 +877,7 @@
         }
 
         // 모바일 키보드 뒤로가기 처리 (갤럭시/안드로이드 호환)
-        // 핵심: Android는 키보드 닫기 버튼 누르면 popstate 발생 + 키보드 자동 닫힘
-        // 따라서 pushState를 하지 않고, popstate 발생 시 키보드가 방금 닫혔으면 무시만 함
+        // 원리: 입력창에 포커스가 있을 때만 뒤로가기를 차단
         (function initMobileKeyboard() {
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             if (!isMobile) return;
@@ -900,7 +899,7 @@
                 max-height: 30vh;
                 overflow-y: auto;
             `;
-            debugPanel.innerHTML = '<div style="color:#ff0;margin-bottom:4px;">🔧 키보드 디버그 v2</div><div id="debug-log"></div>';
+            debugPanel.innerHTML = '<div style="color:#ff0;margin-bottom:4px;">🔧 키보드 디버그 v3</div><div id="debug-log"></div>';
             document.body.appendChild(debugPanel);
 
             const debugLog = document.getElementById('debug-log');
@@ -913,68 +912,71 @@
             }
             // ========== 디버그 UI 끝 ==========
 
-            let lastInputFocusTime = 0;  // 마지막 입력창 포커스 시간
-            let lastKeyboardCloseTime = 0;  // 키보드 닫힌 시간
-            let keyboardVisible = false;
-            const initialViewportHeight = window.visualViewport?.height || window.innerHeight;
+            let inputFocused = false;  // 현재 입력창에 포커스 있는지
+            let historyAdded = false;  // 히스토리 추가했는지
 
-            log(`초기화: height=${Math.round(initialViewportHeight)}px`, '#0ff');
+            log(`초기화 완료`, '#0ff');
 
             // 입력창 포커스 감지
             document.addEventListener('focusin', (e) => {
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-                    lastInputFocusTime = Date.now();
-                    log(`focusin: ${e.target.tagName}#${e.target.id || '?'}`, '#aaf');
+                    inputFocused = true;
+                    log(`focusin: ${e.target.tagName}`, '#aaf');
+
+                    // 포커스 시 히스토리 추가 (한 번만)
+                    if (!historyAdded) {
+                        history.pushState({ keyboard: true }, '');
+                        historyAdded = true;
+                        log(`→ pushState 추가`, '#0f0');
+                    }
                 }
             });
 
-            // 키보드 상태 감지 (visualViewport)
-            if (window.visualViewport) {
-                window.visualViewport.addEventListener('resize', () => {
-                    const currentHeight = window.visualViewport.height;
-                    const heightDiff = initialViewportHeight - currentHeight;
-                    const wasKeyboardVisible = keyboardVisible;
-                    keyboardVisible = heightDiff > 150;
-
-                    if (!keyboardVisible && wasKeyboardVisible) {
-                        lastKeyboardCloseTime = Date.now();
-                        log(`⬇️ 키보드 닫힘 (diff=${Math.round(heightDiff)})`, '#ff0');
-                    } else if (keyboardVisible && !wasKeyboardVisible) {
-                        log(`⬆️ 키보드 열림 (diff=${Math.round(heightDiff)})`, '#0f0');
-                    }
-                });
-            }
-
-            // 페이지 진입 시 초기 히스토리 상태 설정
-            // 이렇게 하면 뒤로가기 시 popstate가 발생하고, 우리가 제어 가능
-            if (!history.state || !history.state.page) {
-                history.replaceState({ page: 'ebook-generator' }, '');
-                log(`초기 state 설정`, '#0ff');
-            }
+            // 입력창 포커스 해제 감지
+            document.addEventListener('focusout', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                    // 약간의 딜레이 후 체크 (다른 입력창으로 이동할 수 있으므로)
+                    setTimeout(() => {
+                        const active = document.activeElement;
+                        const stillInInput = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT');
+                        if (!stillInInput) {
+                            inputFocused = false;
+                            historyAdded = false;
+                            log(`focusout: 입력창 벗어남`, '#faa');
+                        }
+                    }, 100);
+                }
+            });
 
             // 뒤로가기 이벤트 처리
             window.addEventListener('popstate', (e) => {
-                const timeSinceKeyboardClose = Date.now() - lastKeyboardCloseTime;
-                const timeSinceFocus = Date.now() - lastInputFocusTime;
+                log(`🔙 popstate! inputFocused=${inputFocused} historyAdded=${historyAdded}`, '#f0f');
 
-                log(`🔙 popstate! closeAge=${timeSinceKeyboardClose}ms focusAge=${timeSinceFocus}ms`, '#f0f');
+                // 입력창에 포커스가 있으면 = 키보드가 열려있는 상태
+                // 뒤로가기 차단하고 키보드만 닫기
+                if (inputFocused || historyAdded) {
+                    log(`→ 입력 중, 뒤로가기 차단`, '#ff0');
 
-                // 키보드가 500ms 이내에 닫혔으면 = 키보드 닫기 버튼으로 인한 popstate
-                // 이 경우 뒤로가기를 막고 현재 페이지 유지
-                if (timeSinceKeyboardClose < 500) {
-                    log(`→ 키보드 닫기로 인한 popstate, 무시`, '#ff0');
-                    // 히스토리를 다시 앞으로 (뒤로가기 취소)
-                    history.pushState({ page: 'ebook-generator' }, '');
+                    // 히스토리 복구
+                    history.pushState({ keyboard: true }, '');
+
+                    // 포커스 해제 (키보드 닫기)
+                    const active = document.activeElement;
+                    if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT')) {
+                        active.blur();
+                        log(`→ blur() 호출`, '#0f0');
+                    }
+
+                    inputFocused = false;
+                    historyAdded = false;
                     return;
                 }
 
-                // 진짜 뒤로가기 - 허용
-                log(`→ 진짜 뒤로가기, 허용`, '#0f0');
-                // 기본 동작 허용 (뒤로가기)
-                history.back();
+                // 진짜 뒤로가기
+                log(`→ 진짜 뒤로가기`, '#0f0');
             });
 
-            log(`v2 리스너 등록 완료`, '#0ff');
+            log(`v3 리스너 등록 완료`, '#0ff');
         })();
 
         // Genre selection
