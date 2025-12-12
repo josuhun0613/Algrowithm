@@ -1058,50 +1058,49 @@
             initMobileKeyboardHandler();
         });
 
-        // 모바일 키보드 뒤로가기 처리 (네이버/유튜브 방식)
+        // 모바일 키보드 처리 (갤럭시/안드로이드 호환)
+        // 기존 history.pushState/forward 방식 제거 - 포커스 트랩 버그 유발
         function initMobileKeyboardHandler() {
-            let isKeyboardOpen = false;
-            let lastFocusedElement = null;
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            if (!isMobile) return;
 
-            // visualViewport API를 사용하여 키보드 상태 감지
+            let prevViewportHeight = window.visualViewport?.height || window.innerHeight;
+            let keyboardVisible = false;
+
+            // 키보드 상태 감지 (visualViewport 리사이즈 기반)
             if (window.visualViewport) {
-                const initialHeight = window.visualViewport.height;
-
                 window.visualViewport.addEventListener('resize', () => {
-                    const heightDiff = initialHeight - window.visualViewport.height;
-                    isKeyboardOpen = heightDiff > 150;
+                    const currentHeight = window.visualViewport.height;
+                    const heightDiff = prevViewportHeight - currentHeight;
+
+                    // 키보드가 올라왔을 때 (높이가 150px 이상 줄어듦)
+                    if (heightDiff > 150) {
+                        keyboardVisible = true;
+                    }
+                    // 키보드가 내려갔을 때 (높이가 늘어남)
+                    else if (heightDiff < -100 && keyboardVisible) {
+                        keyboardVisible = false;
+                        // 키보드가 내려갈 때 강제로 blur 처리하지 않음
+                        // 안드로이드에서 blur 후 재포커스 버그 방지
+                    }
+
+                    prevViewportHeight = currentHeight;
                 });
             }
 
-            // 입력 필드 포커스 추적
-            document.addEventListener('focusin', (e) => {
-                const isInputElement = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT';
-                if (isInputElement) {
-                    lastFocusedElement = e.target;
-                    history.pushState({ keyboard: true }, '');
-                }
-            });
-
-            // 뒤로가기 이벤트 처리
-            window.addEventListener('popstate', (e) => {
+            // 터치로 입력창 외부를 터치하면 키보드 닫기 (선택적)
+            document.addEventListener('touchstart', (e) => {
                 const activeEl = document.activeElement;
-                const isInputActive = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT');
+                const isInputActive = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
 
-                if (isInputActive || isKeyboardOpen) {
-                    history.forward();
-
-                    if (activeEl && isInputActive) {
-                        activeEl.blur();
+                if (isInputActive && keyboardVisible) {
+                    // 터치한 곳이 현재 포커스된 입력창이 아니면
+                    if (e.target !== activeEl && !activeEl.contains(e.target)) {
+                        // blur를 직접 호출하지 않고 자연스럽게 처리되도록 함
+                        // (안드로이드에서 강제 blur 시 재포커스 버그 방지)
                     }
-                    if (lastFocusedElement) {
-                        lastFocusedElement.blur();
-                        lastFocusedElement = null;
-                    }
-
-                    document.body.focus();
-                    isKeyboardOpen = false;
                 }
-            });
+            }, { passive: true });
         }
 
         // Show toast notification
