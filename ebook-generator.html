@@ -876,14 +876,43 @@
             }
         }
 
-        // 모바일 키보드 처리 - 테스트용으로 완전 비활성화
-        // 네이버처럼 아무 처리 없이 기본 동작만 사용
-        // 키보드 닫기 버튼이 정상 작동하는지 확인 후 다시 구현
-        /*
+        // 모바일 키보드 뒤로가기 처리
+        // 참고: 텔레그램 인앱 브라우저에서는 작동 안함 (텔레그램 앱 한계)
+        // 일반 Chrome/Safari에서는 정상 작동
         (function initMobileKeyboard() {
-            // 비활성화됨
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            if (!isMobile) return;
+
+            let historyDepth = 0;
+
+            document.addEventListener('focusin', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                    if (historyDepth === 0) {
+                        history.pushState({ kb: 1 }, '');
+                        historyDepth = 1;
+                    }
+                }
+            });
+
+            document.addEventListener('focusout', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                    setTimeout(() => {
+                        const active = document.activeElement;
+                        const stillInInput = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT');
+                        if (!stillInInput) {
+                            historyDepth = 0;
+                        }
+                    }, 200);
+                }
+            });
+
+            window.addEventListener('popstate', (e) => {
+                if (historyDepth > 0) {
+                    historyDepth = 0;
+                    return;
+                }
+            });
         })();
-        */
 
         // Genre selection
         document.querySelectorAll('.genre-card').forEach(card => {
