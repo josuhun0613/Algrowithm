@@ -913,6 +913,7 @@
 
             let keyboardVisible = false;
             let historyPushed = false;
+            let lastKeyboardCloseTime = 0;  // 키보드 닫힌 시간 기록
             const initialViewportHeight = window.visualViewport?.height || window.innerHeight;
 
             log(`초기화: initialHeight=${initialViewportHeight}px`, '#0ff');
@@ -935,10 +936,11 @@
                         log(`⬆️ 키보드 열림 → pushState 완료`, '#0f0');
                     }
 
-                    // 키보드가 닫힐 때 히스토리 상태 리셋
+                    // 키보드가 닫힐 때 시간 기록
                     if (!keyboardVisible && wasKeyboardVisible) {
+                        lastKeyboardCloseTime = Date.now();
                         historyPushed = false;
-                        log(`⬇️ 키보드 닫힘 → historyPushed 리셋`, '#ff0');
+                        log(`⬇️ 키보드 닫힘 → 시간기록`, '#ff0');
                     }
                 });
             } else {
@@ -955,28 +957,32 @@
 
             // 뒤로가기 이벤트 처리
             window.addEventListener('popstate', (e) => {
-                log(`🔙 popstate 발생! keyboardVisible=${keyboardVisible}`, '#f0f');
+                const timeSinceClose = Date.now() - lastKeyboardCloseTime;
+                const recentlyClosed = timeSinceClose < 300;  // 300ms 이내에 키보드 닫혔으면
 
-                // 키보드가 열려있을 때만 뒤로가기 방지
-                if (keyboardVisible) {
+                log(`🔙 popstate! kb=${keyboardVisible} recent=${recentlyClosed}(${timeSinceClose}ms)`, '#f0f');
+
+                // 키보드가 열려있거나, 방금 닫혔으면 (300ms 이내) 뒤로가기 방지
+                if (keyboardVisible || recentlyClosed) {
                     // 뒤로가기 방지 - 히스토리 다시 추가
                     history.pushState({ keyboard: true }, '');
                     log(`→ pushState로 뒤로가기 방지`, '#0f0');
 
-                    // 현재 포커스된 입력창에서 포커스 해제 (키보드 닫기)
-                    // setTimeout으로 감싸서 갤럭시 재포커스 버그 방지
-                    setTimeout(() => {
-                        const activeEl = document.activeElement;
-                        log(`→ activeElement: ${activeEl?.tagName}#${activeEl?.id || '?'}`, '#fff');
-                        if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT')) {
-                            activeEl.blur();
-                            log(`→ blur() 호출 완료`, '#0f0');
-                        } else {
-                            log(`→ blur 대상 아님`, '#ff0');
-                        }
-                    }, 10);
+                    // 키보드가 아직 열려있으면 blur 처리
+                    if (keyboardVisible) {
+                        setTimeout(() => {
+                            const activeEl = document.activeElement;
+                            log(`→ activeElement: ${activeEl?.tagName}#${activeEl?.id || '?'}`, '#fff');
+                            if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT')) {
+                                activeEl.blur();
+                                log(`→ blur() 호출 완료`, '#0f0');
+                            }
+                        }, 10);
+                    } else {
+                        log(`→ 이미 닫힘, blur 스킵`, '#ff0');
+                    }
                 } else {
-                    log(`→ 키보드 안열림, 뒤로가기 허용`, '#ff0');
+                    log(`→ 뒤로가기 허용`, '#ff0');
                 }
             });
 
