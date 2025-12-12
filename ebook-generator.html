@@ -606,15 +606,16 @@
             selectedTitle: ''
         };
 
-        // 모바일 키보드 뒤로가기 처리 (단순화)
-        // 뒤로가기 1번: 키보드 닫기, 뒤로가기 2번: 페이지 이동
-        let inputHistoryAdded = false;
+        // 모바일 키보드 뒤로가기 처리
+        // 핵심: blur() 후 딜레이를 줘서 키보드가 완전히 닫힌 후 히스토리 처리
+        let keyboardHistoryAdded = false;
+        let isClosingKeyboard = false; // 키보드 닫는 중인지 플래그
 
         // 입력 필드에 포커스될 때 히스토리 추가
         document.addEventListener('focusin', (e) => {
             const isInputElement = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT';
-            if (isInputElement && !inputHistoryAdded) {
-                inputHistoryAdded = true;
+            if (isInputElement && !keyboardHistoryAdded && !isClosingKeyboard) {
+                keyboardHistoryAdded = true;
                 history.pushState({ keyboard: true }, '');
             }
         });
@@ -624,13 +625,26 @@
             const activeEl = document.activeElement;
             const isInputActive = activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT';
 
-            if (isInputActive) {
-                // 키보드가 열려있으면 닫기만 하고 히스토리 다시 추가
+            if (isInputActive && !isClosingKeyboard) {
+                // 키보드 닫는 중 플래그 설정
+                isClosingKeyboard = true;
+
+                // 키보드 닫기
                 activeEl.blur();
-                history.pushState({ keyboard: true }, '');
+
+                // 키보드가 완전히 닫힌 후 히스토리 다시 추가 (300ms 딜레이)
+                setTimeout(() => {
+                    isClosingKeyboard = false;
+                    // 아직 페이지에 있고, 다른 입력 필드로 이동하지 않았다면 히스토리 추가
+                    const currentActive = document.activeElement;
+                    const stillOnInput = currentActive.tagName === 'INPUT' || currentActive.tagName === 'TEXTAREA' || currentActive.tagName === 'SELECT';
+                    if (!stillOnInput) {
+                        history.pushState({ keyboard: true }, '');
+                    }
+                }, 300);
             } else {
-                // 키보드가 이미 닫혀있으면 히스토리 상태 리셋
-                inputHistoryAdded = false;
+                // 키보드가 이미 닫혀있으면 히스토리 상태 리셋하고 뒤로가기 허용
+                keyboardHistoryAdded = false;
             }
         });
 
