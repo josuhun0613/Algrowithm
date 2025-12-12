@@ -411,6 +411,25 @@
             background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);
             border: 1px solid #f59e0b;
         }
+
+        /* Template card selection */
+        .template-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .template-card:hover {
+            border-color: #d4af37;
+        }
+
+        .template-card.selected {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+        }
     </style>
 </head>
 
@@ -1345,7 +1364,16 @@
             document.getElementById('pageIndicator').textContent = `${index + 1} / ${totalPages}`;
             updatePageDots();
             if (generatedPages[index]) {
-                document.getElementById('bookPagePreview').innerHTML = generatedPages[index].preview;
+                const preview = document.getElementById('bookPagePreview');
+                // 레이아웃 튕김 방지: 높이 고정 후 업데이트
+                const currentHeight = preview.offsetHeight;
+                preview.style.minHeight = currentHeight + 'px';
+                requestAnimationFrame(() => {
+                    preview.innerHTML = generatedPages[index].preview;
+                    requestAnimationFrame(() => {
+                        preview.style.minHeight = '';
+                    });
+                });
             }
         }
 
