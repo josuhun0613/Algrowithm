@@ -876,54 +876,14 @@
             }
         }
 
-        // 모바일 키보드 뒤로가기 처리 (갤럭시 S25 / One UI 7 호환)
-        //
-        // 결론: 갤럭시 S25에서 JavaScript로 키보드를 닫는 것은 불가능
-        // - blur(), disabled, scroll, body.click() 모두 실패
-        // - navigator.virtualKeyboard.hide()도 Android에서 미작동 (W3C 이슈)
-        //
-        // 최종 해결책: 뒤로가기 방지만 하고, 키보드는 사용자가 직접 닫도록 함
+        // 모바일 키보드 처리 - 테스트용으로 완전 비활성화
+        // 네이버처럼 아무 처리 없이 기본 동작만 사용
+        // 키보드 닫기 버튼이 정상 작동하는지 확인 후 다시 구현
+        /*
         (function initMobileKeyboard() {
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            if (!isMobile) return;
-
-            let historyDepth = 0;
-
-            // 입력창 포커스 시 히스토리 추가
-            document.addEventListener('focusin', (e) => {
-                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-                    if (historyDepth === 0) {
-                        history.pushState({ kb: 1 }, '');
-                        history.pushState({ kb: 2 }, '');
-                        historyDepth = 2;
-                    }
-                }
-            });
-
-            // 포커스 해제 시 히스토리 리셋
-            document.addEventListener('focusout', (e) => {
-                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-                    setTimeout(() => {
-                        const active = document.activeElement;
-                        const stillInInput = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT');
-                        if (!stillInInput) {
-                            historyDepth = 0;
-                        }
-                    }, 200);
-                }
-            });
-
-            // 뒤로가기 이벤트
-            window.addEventListener('popstate', (e) => {
-                if (historyDepth > 0) {
-                    historyDepth--;
-                    // 페이지 이탈 방지 - 아무 동작 안함
-                    // 키보드는 사용자가 입력창 외부를 터치해서 닫아야 함
-                    return;
-                }
-                // historyDepth가 0이면 진짜 뒤로가기 허용
-            });
+            // 비활성화됨
         })();
+        */
 
         // Genre selection
         document.querySelectorAll('.genre-card').forEach(card => {
