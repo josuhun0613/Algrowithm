@@ -52,6 +52,18 @@
 
     <!-- Inquiry Modal Functions (전역 함수로 먼저 선언) -->
     <script>
+        // Firebase 초기화 (전역)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBK37wEth9Hoz_q17Ca0Ulm1W-JNEyllIk",
+            authDomain: "algrowithm-feea0.firebaseapp.com",
+            projectId: "algrowithm-feea0",
+            storageBucket: "algrowithm-feea0.firebasestorage.app",
+            messagingSenderId: "665224680106",
+            appId: "1:665224680106:web:86a2d938ac636751e336d3"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         // 전역 함수 선언 (HTML 파싱 전에 정의되어야 함)
         function openInquiryModal() {
             document.getElementById('inquiryModal').classList.add('active');
@@ -68,6 +80,53 @@
         function closeInquirySuccessModal() {
             document.getElementById('inquirySuccessModal').classList.remove('active');
             document.body.style.overflow = '';
+        }
+
+        // Submit Inquiry (Firebase 저장) - 전역 함수
+        async function submitInquiry(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('inquirySubmitBtn');
+            const btnText = document.getElementById('inquiryBtnText');
+            const spinner = document.getElementById('inquirySpinner');
+
+            // 버튼 로딩 상태
+            submitBtn.disabled = true;
+            btnText.textContent = '전송 중...';
+            spinner.classList.remove('hidden');
+
+            const name = document.getElementById('inquiryName').value;
+            const phone = document.getElementById('inquiryPhone').value;
+            const email = document.getElementById('inquiryEmail').value;
+            const program = document.getElementById('inquiryProgram')?.value || '';
+            const message = document.getElementById('inquiryMessage').value;
+
+            try {
+                // Firestore에 데이터 저장
+                await db.collection('inquiries').add({
+                    name: name,
+                    phone: phone,
+                    email: email || '',
+                    program: program,
+                    message: message || '',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    status: 'pending'
+                });
+
+                // 성공 시 모달 전환
+                closeInquiryModal();
+                document.getElementById('inquirySuccessModal').classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+            } catch (error) {
+                console.error('문의 저장 실패:', error);
+                alert('문의 전송에 실패했습니다. 다시 시도해 주세요.\n오류: ' + error.message);
+            } finally {
+                // 버튼 원래 상태로
+                submitBtn.disabled = false;
+                btnText.textContent = '문의하기';
+                spinner.classList.add('hidden');
+            }
         }
     </script>
 
@@ -1268,67 +1327,6 @@
                 document.body.style.overflow = '';
             }
         });
-
-        // Firebase 초기화
-        const firebaseConfig = {
-            apiKey: "AIzaSyBK37wEth9Hoz_q17Ca0Ulm1W-JNEyllIk",
-            authDomain: "algrowithm-feea0.firebaseapp.com",
-            projectId: "algrowithm-feea0",
-            storageBucket: "algrowithm-feea0.firebasestorage.app",
-            messagingSenderId: "665224680106",
-            appId: "1:665224680106:web:86a2d938ac636751e336d3"
-        };
-
-        // Firebase 앱 초기화
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        // Submit Inquiry (Firebase 저장)
-        window.submitInquiry = async function(e) {
-            e.preventDefault();
-
-            const submitBtn = document.getElementById('inquirySubmitBtn');
-            const btnText = document.getElementById('inquiryBtnText');
-            const spinner = document.getElementById('inquirySpinner');
-
-            // 버튼 로딩 상태
-            submitBtn.disabled = true;
-            btnText.textContent = '전송 중...';
-            spinner.classList.remove('hidden');
-
-            const name = document.getElementById('inquiryName').value;
-            const phone = document.getElementById('inquiryPhone').value;
-            const email = document.getElementById('inquiryEmail').value;
-            const program = document.getElementById('inquiryProgram')?.value || '';
-            const message = document.getElementById('inquiryMessage').value;
-
-            try {
-                // Firestore에 데이터 저장
-                await db.collection('inquiries').add({
-                    name: name,
-                    phone: phone,
-                    email: email || '',
-                    program: program,
-                    message: message || '',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    status: 'pending'
-                });
-
-                // 성공 시 모달 전환
-                closeInquiryModal();
-                document.getElementById('inquirySuccessModal').classList.add('active');
-                document.body.style.overflow = 'hidden';
-
-            } catch (error) {
-                console.error('문의 저장 실패:', error);
-                alert('문의 전송에 실패했습니다. 다시 시도해 주세요.');
-            } finally {
-                // 버튼 원래 상태로
-                submitBtn.disabled = false;
-                btnText.textContent = '문의 보내기';
-                spinner.classList.add('hidden');
-            }
-        }
 
         // Section Navigation System
         const sections = ['hero', 'philosophy', 'ai-tools', 'reviews', 'quote'];
