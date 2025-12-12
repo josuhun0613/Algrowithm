@@ -83,6 +83,22 @@
             page-break-inside: avoid;
             box-sizing: border-box;
             overflow: hidden;
+            /* 자연스러운 줄바꿈 설정 */
+            word-break: keep-all; /* 한글 어절 단위 줄바꿈 */
+            overflow-wrap: break-word; /* 긴 단어 줄바꿈 */
+            word-wrap: break-word;
+        }
+
+        /* PDF 텍스트 요소 줄바꿈 최적화 */
+        .pdf-page h1, .pdf-page h2, .pdf-page p {
+            word-break: keep-all;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            -webkit-hyphens: auto;
+        }
+
+        .pdf-page h1, .pdf-page h2 {
+            line-height: 1.4;
         }
 
         .pdf-cover {
@@ -1766,8 +1782,8 @@
                             <div style="width: 100%; height: 100%; ${coverBg.style} position: relative;">
                                 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 80%;">
                                     <p style="color: ${textColor}; opacity: 0.6; font-size: 10px; letter-spacing: 3px; margin-bottom: 20px;">E-BOOK</p>
-                                    <h1 style="color: ${textColor}; font-size: 28px; font-weight: bold; margin-bottom: 15px; font-family: 'Playfair Display', serif;">${formData.title}</h1>
-                                    ${formData.subtitle ? `<p style="color: ${textColor}; opacity: 0.7; font-size: 14px;">${formData.subtitle}</p>` : ''}
+                                    <h1 style="color: ${textColor}; font-size: 28px; font-weight: bold; margin-bottom: 15px; font-family: 'Playfair Display', serif; word-break: keep-all; line-height: 1.4;">${formData.title}</h1>
+                                    ${formData.subtitle ? `<p style="color: ${textColor}; opacity: 0.7; font-size: 14px; word-break: keep-all;">${formData.subtitle}</p>` : ''}
                                 </div>
                                 <p style="color: ${textColor}; opacity: 0.5; font-size: 12px; position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);">${formData.author}</p>
                             </div>
@@ -1781,7 +1797,7 @@
                 if (document.getElementById('includeHalfTitle').checked) {
                     container.appendChild(createPdfPage(`
                         <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
-                            <h1 style="font-size: 24px; font-weight: bold; text-align: center;">${formData.title}</h1>
+                            <h1 style="font-size: 24px; font-weight: bold; text-align: center; word-break: keep-all; line-height: 1.4;">${formData.title}</h1>
                         </div>
                     `, { showHeaderFooter: false }));
                 }
@@ -1816,20 +1832,20 @@
                 if (document.getElementById('includePreface').checked) {
                     const prefaceContent = document.getElementById('prefaceText').value.trim() || ebookData.preface || '';
                     container.appendChild(createPdfPage(`
-                        <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 20px; text-align: center;">서문</h2>
-                        <p style="font-size: 12px; line-height: 2; text-align: justify;">${prefaceContent}</p>
+                        <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 20px; text-align: center; word-break: keep-all;">서문</h2>
+                        <p style="font-size: 12px; line-height: 2; text-align: justify; word-break: keep-all;">${prefaceContent}</p>
                     `));
                 }
 
                 // TOC
                 if (document.getElementById('includeToc').checked && ebookData.chapters) {
                     const tocItems = ebookData.chapters.map((ch, i) =>
-                        `<p style="font-size: 12px; padding: 8px 0; border-bottom: 1px dotted #ddd; display: flex; justify-content: space-between;">
+                        `<p style="font-size: 12px; padding: 8px 0; border-bottom: 1px dotted #ddd; display: flex; justify-content: space-between; word-break: keep-all;">
                             <span>${i + 1}. ${ch.title}</span>
                         </p>`
                     ).join('');
                     container.appendChild(createPdfPage(`
-                        <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 30px; text-align: center;">목차</h2>
+                        <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 30px; text-align: center; word-break: keep-all;">목차</h2>
                         ${tocItems}
                     `));
                 }
@@ -1862,8 +1878,8 @@
                             const testSentences = [...currentSentences];
                             if (sentence) testSentences.push(sentence);
 
-                            // 측정용 HTML 생성
-                            const testHtml = `<p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em; margin: 0;">${testSentences.join(' ')}</p>`;
+                            // 측정용 HTML 생성 (word-break: keep-all 적용하여 자연스러운 줄바꿈)
+                            const testHtml = `<p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em; margin: 0; word-break: keep-all;">${testSentences.join(' ')}</p>`;
                             measureContainer.innerHTML = testHtml;
 
                             const maxHeight = isFirstPage ? FIRST_PAGE_HEIGHT : PAGE_HEIGHT;
@@ -1878,17 +1894,17 @@
                                         <div style="padding-top: 40px;">
                                             <div style="text-align: center; margin-bottom: 40px;">
                                                 <p style="color: #d4af37; font-size: 10px; letter-spacing: 3px; margin-bottom: 15px;">CHAPTER ${i + 1}</p>
-                                                <h2 style="font-size: 18px; font-weight: bold; margin: 0;">${chapter.title}</h2>
+                                                <h2 style="font-size: 18px; font-weight: bold; margin: 0; word-break: keep-all; line-height: 1.4;">${chapter.title}</h2>
                                             </div>
                                             <div>
-                                                <p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em; margin: 0;">${pageText}</p>
+                                                <p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em; margin: 0; word-break: keep-all;">${pageText}</p>
                                             </div>
                                         </div>
                                     `));
                                     isFirstPage = false;
                                 } else {
                                     container.appendChild(createPdfPage(`
-                                        <p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em; margin: 0;">${pageText}</p>
+                                        <p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em; margin: 0; word-break: keep-all;">${pageText}</p>
                                     `));
                                 }
 
@@ -1907,16 +1923,16 @@
                                     <div style="padding-top: 40px;">
                                         <div style="text-align: center; margin-bottom: 40px;">
                                             <p style="color: #d4af37; font-size: 10px; letter-spacing: 3px; margin-bottom: 15px;">CHAPTER ${i + 1}</p>
-                                            <h2 style="font-size: 18px; font-weight: bold; margin: 0;">${chapter.title}</h2>
+                                            <h2 style="font-size: 18px; font-weight: bold; margin: 0; word-break: keep-all; line-height: 1.4;">${chapter.title}</h2>
                                         </div>
                                         <div>
-                                            <p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em; margin: 0;">${pageText}</p>
+                                            <p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em; margin: 0; word-break: keep-all;">${pageText}</p>
                                         </div>
                                     </div>
                                 `));
                             } else {
                                 container.appendChild(createPdfPage(`
-                                    <p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em; margin: 0;">${pageText}</p>
+                                    <p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em; margin: 0; word-break: keep-all;">${pageText}</p>
                                 `));
                             }
                         }
@@ -1929,16 +1945,16 @@
                 // Epilogue
                 if (document.getElementById('includeEpilogue').checked && ebookData.epilogue) {
                     container.appendChild(createPdfPage(`
-                        <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 20px; text-align: center;">에필로그</h2>
-                        <p style="font-size: 12px; line-height: 2; text-align: justify;">${ebookData.epilogue}</p>
+                        <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 20px; text-align: center; word-break: keep-all;">에필로그</h2>
+                        <p style="font-size: 12px; line-height: 2; text-align: justify; word-break: keep-all;">${ebookData.epilogue}</p>
                     `));
                 }
 
                 // Author Bio
                 if (document.getElementById('includeAuthorBio').checked && ebookData.authorBio) {
                     container.appendChild(createPdfPage(`
-                        <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 20px; text-align: center;">저자 소개</h2>
-                        <p style="font-size: 12px; line-height: 2; text-align: justify;">${ebookData.authorBio}</p>
+                        <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 20px; text-align: center; word-break: keep-all;">저자 소개</h2>
+                        <p style="font-size: 12px; line-height: 2; text-align: justify; word-break: keep-all;">${ebookData.authorBio}</p>
                     `));
                 }
 

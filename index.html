@@ -395,48 +395,10 @@
     </div>
 
     <!-- Navigation - More transparent -->
-    <nav class="fixed w-full z-50 header-blur transition-all duration-300" id="navbar">
-        <div class="w-full px-[60px] py-3 flex justify-between items-center">
-            <a href="/" class="flex items-center gap-3">
-                <img src="./assets/logo.svg" alt="Logo" class="w-10 h-10">
-                <span class="text-2xl font-serif font-bold tracking-tight">Algrowithm</span>
-            </a>
-
-            <div class="hidden md:flex items-center gap-12 text-lg font-medium text-gray-700">
-                <a href="about.html" class="hover:text-soft-gold transition-colors">About</a>
-
-                <div class="dropdown">
-                    <button class="hover:text-soft-gold transition-colors flex items-center gap-1">
-                        실습
-                        <i class="fa-solid fa-chevron-down text-[12px] ml-1"></i>
-                    </button>
-                    <div class="dropdown-menu">
-                        <a href="workbook_1.html" class="dropdown-item">
-                            <span class="text-soft-gold font-bold mr-2">01</span> 나는 누구인가
-                        </a>
-                        <a href="workbook_2.html" class="dropdown-item">
-                            <span class="text-soft-gold font-bold mr-2">02</span> 이미지 아이덴티티
-                        </a>
-                        <a href="workbook_3.html" class="dropdown-item">
-                            <span class="text-soft-gold font-bold mr-2">03</span> 커리어 브랜딩
-                        </a>
-                        <div class="border-t border-gray-100 my-2"></div>
-                        <a href="prompt-studio.html" class="dropdown-item">
-                            <i class="fa-solid fa-wand-magic-sparkles text-soft-gold mr-2"></i> 프롬프트 생성기
-                        </a>
-                        <a href="ebook-generator.html" class="dropdown-item">
-                            <i class="fa-solid fa-pen-fancy text-soft-gold mr-2"></i> E-book 프롬프트
-                        </a>
-                        <a href="ebook-pdf-generator.html" class="dropdown-item">
-                            <i class="fa-solid fa-file-pdf text-soft-gold mr-2"></i> E-book PDF 생성
-                        </a>
-                    </div>
-                </div>
-
-                <a href="schedule.html" class="hover:text-soft-gold transition-colors">일정</a>
-            </div>
-        </div>
-    </nav>
+    <!-- Header - 공통 컴포넌트로 로드 -->
+    <div id="header-placeholder"></div>
+    <script src="./js/header.js"></script>
+    <script>initHeader({ showStartButton: false });</script>
 
     <!-- Hero Section - Full Screen Image Slider -->
     <section id="hero" class="relative">
@@ -990,6 +952,7 @@
                         <li><a href="workbook_1.html" class="hover:text-white transition-colors">01 나는 누구인가</a></li>
                         <li><a href="workbook_2.html" class="hover:text-white transition-colors">02 이미지 아이덴티티</a></li>
                         <li><a href="workbook_3.html" class="hover:text-white transition-colors">03 커리어 브랜딩</a></li>
+                        <li><a href="workbook_4.html" class="hover:text-white transition-colors">04 내가 원하는 삶</a></li>
                     </ul>
                 </div>
 
@@ -998,7 +961,7 @@
                     <ul class="space-y-4 text-gray-400 text-lg">
                         <li><a href="about.html" class="hover:text-white transition-colors">About</a></li>
                         <li><a href="schedule.html" class="hover:text-white transition-colors">일정</a></li>
-                        <li><a href="prompt-studio.html" class="hover:text-white transition-colors">프롬프트 생성기</a></li>
+                        <li><a href="prompt-studio.html" class="hover:text-white transition-colors">웹사이트 생성 프롬프트</a></li>
                         <li><a href="ebook-generator.html" class="hover:text-white transition-colors">E-book 프롬프트</a></li>
                         <li><a href="ebook-pdf-generator.html" class="hover:text-white transition-colors">E-book PDF 생성</a></li>
                     </ul>
@@ -1065,6 +1028,139 @@
 
         // GSAP ScrollTrigger Animations
         gsap.registerPlugin(ScrollTrigger);
+
+        // 섹션 스크롤 전환 효과 (책 넘기기)
+        const sections = document.querySelectorAll('section');
+        let isScrolling = false;
+        let currentSectionIndex = 0;
+
+        // 각 섹션의 위치 계산
+        function getSectionPositions() {
+            return Array.from(sections).map(section => ({
+                element: section,
+                top: section.offsetTop,
+                bottom: section.offsetTop + section.offsetHeight,
+                height: section.offsetHeight
+            }));
+        }
+
+        // 현재 섹션 인덱스 찾기
+        function getCurrentSection() {
+            const scrollY = window.scrollY;
+            const positions = getSectionPositions();
+
+            for (let i = 0; i < positions.length; i++) {
+                if (scrollY >= positions[i].top - 100 && scrollY < positions[i].bottom - 100) {
+                    return i;
+                }
+            }
+            return currentSectionIndex;
+        }
+
+        // 섹션으로 스크롤
+        function scrollToSection(index) {
+            if (index < 0 || index >= sections.length || isScrolling) return;
+
+            isScrolling = true;
+            currentSectionIndex = index;
+
+            lenis.scrollTo(sections[index], {
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                onComplete: () => {
+                    setTimeout(() => {
+                        isScrolling = false;
+                    }, 100);
+                }
+            });
+        }
+
+        // 휠 이벤트로 섹션 전환
+        let wheelTimeout = null;
+        let accumulatedDelta = 0;
+        const SCROLL_THRESHOLD = 50; // 스크롤 감도
+
+        window.addEventListener('wheel', (e) => {
+            // 모달이 열려있으면 무시
+            if (document.querySelector('.modal-overlay.active')) return;
+
+            const positions = getSectionPositions();
+            const scrollY = window.scrollY;
+            const viewportHeight = window.innerHeight;
+
+            // 현재 섹션 찾기
+            currentSectionIndex = getCurrentSection();
+            const currentSection = positions[currentSectionIndex];
+
+            if (!currentSection) return;
+
+            // 섹션 경계에서만 스냅 동작
+            const atSectionTop = Math.abs(scrollY - currentSection.top) < 50;
+            const atSectionBottom = Math.abs((scrollY + viewportHeight) - currentSection.bottom) < 50;
+
+            // 아래로 스크롤 (섹션 하단에서)
+            if (e.deltaY > 0 && atSectionBottom && currentSectionIndex < sections.length - 1) {
+                e.preventDefault();
+                accumulatedDelta += e.deltaY;
+
+                if (accumulatedDelta > SCROLL_THRESHOLD) {
+                    scrollToSection(currentSectionIndex + 1);
+                    accumulatedDelta = 0;
+                }
+            }
+            // 위로 스크롤 (섹션 상단에서)
+            else if (e.deltaY < 0 && atSectionTop && currentSectionIndex > 0) {
+                e.preventDefault();
+                accumulatedDelta += Math.abs(e.deltaY);
+
+                if (accumulatedDelta > SCROLL_THRESHOLD) {
+                    scrollToSection(currentSectionIndex - 1);
+                    accumulatedDelta = 0;
+                }
+            }
+
+            // 타임아웃으로 누적값 리셋
+            clearTimeout(wheelTimeout);
+            wheelTimeout = setTimeout(() => {
+                accumulatedDelta = 0;
+            }, 150);
+        }, { passive: false });
+
+        // 터치 이벤트 (모바일)
+        let touchStartY = 0;
+        let touchEndY = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            if (document.querySelector('.modal-overlay.active')) return;
+
+            touchEndY = e.changedTouches[0].clientY;
+            const deltaY = touchStartY - touchEndY;
+
+            const positions = getSectionPositions();
+            const scrollY = window.scrollY;
+            const viewportHeight = window.innerHeight;
+
+            currentSectionIndex = getCurrentSection();
+            const currentSection = positions[currentSectionIndex];
+
+            if (!currentSection) return;
+
+            const atSectionTop = Math.abs(scrollY - currentSection.top) < 100;
+            const atSectionBottom = Math.abs((scrollY + viewportHeight) - currentSection.bottom) < 100;
+
+            // 아래로 스와이프
+            if (deltaY > 80 && atSectionBottom && currentSectionIndex < sections.length - 1) {
+                scrollToSection(currentSectionIndex + 1);
+            }
+            // 위로 스와이프
+            else if (deltaY < -80 && atSectionTop && currentSectionIndex > 0) {
+                scrollToSection(currentSectionIndex - 1);
+            }
+        }, { passive: true });
 
         // Grid card animations
         gsap.utils.toArray('.grid-card').forEach((card, i) => {

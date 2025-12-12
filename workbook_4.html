@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workbook Session 4 - Algrowithm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'soft-gold': '#d4af37',
+                        'rich-black': '#0a0a0a',
+                        'off-white': '#fcfcfc',
+                        'warm-cream': '#faf8f5',
+                        'deep-purple': '#4a3c6d',
+                        'soft-teal': '#5a9e9e',
+                    },
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f3f4f6;
+            color: #0a0a0a;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 0;
+            }
+
+            html, body {
+                margin: 0;
+                padding: 0;
+                background: white;
+                height: auto;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .print-container {
+                width: 297mm;
+                height: 210mm;
+                margin: 0 auto;
+                background-color: white;
+                overflow: hidden;
+                border: none;
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+
+            .print-container:first-of-type {
+                page-break-after: always;
+            }
+
+            .print-container:last-of-type {
+                page-break-after: avoid;
+                page-break-before: auto;
+            }
+
+            .h-14 {
+                display: none !important;
+            }
+
+            textarea,
+            input {
+                border: none !important;
+                border-bottom: 1px solid #ddd !important;
+                resize: none;
+                background: transparent !important;
+            }
+
+            .fold-line {
+                border-left: 1px dashed #ccc !important;
+            }
+        }
+
+        @media screen {
+            .print-container {
+                width: 297mm;
+                height: 210mm;
+                margin: 2rem auto;
+                background-color: white;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+                position: relative;
+                overflow: hidden;
+            }
+        }
+
+        ::placeholder {
+            color: #9ca3af;
+            opacity: 0.4;
+            font-size: 10px;
+        }
+
+        .fold-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 0;
+            border-left: 2px dashed #e5e7eb;
+            z-index: 10;
+        }
+
+        .question-card {
+            background: linear-gradient(135deg, rgba(212,175,55,0.03) 0%, rgba(255,255,255,0.8) 100%);
+            border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .question-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0a0a0a;
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .question-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(212,175,55,0.3);
+            resize: none;
+            font-size: 11px;
+            line-height: 1.6;
+            color: #374151;
+        }
+
+        .question-input:focus {
+            outline: none;
+            border-bottom-color: #d4af37;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .section-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37 0%, #f5d17a 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0a0a0a;
+        }
+
+        .decorative-line {
+            height: 2px;
+            background: linear-gradient(90deg, #d4af37, transparent);
+            margin: 8px 0;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen font-sans text-rich-black">
+    <nav class="no-print fixed top-0 w-full z-50 px-6 py-4" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3">
+                <img src="./assets/logo.svg" alt="Logo" class="w-8 h-8">
+                <span class="text-xl font-serif font-bold tracking-tight text-rich-black">Algrowithm</span>
+            </a>
+            <div class="flex items-center gap-8">
+                <a href="about.html" class="text-sm font-medium text-gray-700 hover:text-soft-gold transition-colors">About</a>
+                <div class="relative group">
+                    <button class="text-soft-gold text-sm font-medium transition-colors flex items-center gap-1">
+                        실습
+                        <i class="fa-solid fa-chevron-down text-[10px] ml-1"></i>
+                    </button>
+                    <div class="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                        <div class="bg-white rounded-xl shadow-xl border border-gray-100 py-2 min-w-[200px]">
+                            <a href="workbook_1.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-soft-gold/10 hover:text-soft-gold transition-colors">
+                                <span class="text-soft-gold font-bold mr-2">01</span> 나는 누구인가
+                            </a>
+                            <a href="workbook_2.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-soft-gold/10 hover:text-soft-gold transition-colors">
+                                <span class="text-soft-gold font-bold mr-2">02</span> 이미지 아이덴티티
+                            </a>
+                            <a href="workbook_3.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-soft-gold/10 hover:text-soft-gold transition-colors">
+                                <span class="text-soft-gold font-bold mr-2">03</span> 커리어 브랜딩
+                            </a>
+                            <a href="workbook_4.html" class="block px-4 py-2 text-sm text-soft-gold bg-soft-gold/10">
+                                <span class="font-bold mr-2">04</span> 내가 원하는 삶
+                            </a>
+                            <div class="border-t border-gray-100 my-2"></div>
+                            <a href="prompt-studio.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-soft-gold/10 hover:text-soft-gold transition-colors">
+                                <i class="fa-solid fa-wand-magic-sparkles text-soft-gold mr-2"></i> 웹사이트 생성 프롬프트
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <a href="schedule.html" class="text-sm font-medium text-gray-700 hover:text-soft-gold transition-colors">일정</a>
+            </div>
+            <button onclick="window.print()"
+                class="px-5 py-2 bg-rich-black text-white rounded-full text-sm font-bold hover:bg-soft-gold transition-colors shadow-lg flex items-center gap-2">
+                <i class="fa-solid fa-print"></i> Print A4
+            </button>
+        </div>
+    </nav>
+    <div class="h-14 no-print"></div>
+
+    <!-- 페이지 1: 섹션3 (왼쪽) + 표지 (오른쪽) - 반 접기 구조 -->
+    <div class="print-container relative flex">
+        <!-- 접는 선 -->
+        <div class="fold-line"></div>
+
+        <!-- 왼쪽: 섹션 3 - 가치관, 기여 탐색 -->
+        <div class="w-1/2 h-full flex flex-col p-5 relative" style="background: linear-gradient(180deg, #faf8f5 0%, #fff 100%);">
+            <!-- 헤더 -->
+            <div class="border-b-2 border-soft-gold/30 pb-2 mb-4">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="bg-soft-gold text-white text-[9px] font-bold px-2 py-0.5 rounded">4회차 워크지</span>
+                    <span class="text-soft-gold font-bold tracking-widest text-[9px] uppercase">Section 3</span>
+                </div>
+                <h1 class="text-base font-serif font-bold text-rich-black leading-tight">
+                    가치관, 기여 탐색
+                </h1>
+            </div>
+
+            <!-- 섹션 3 질문들 -->
+            <div class="flex-1 flex flex-col gap-2">
+                <div class="question-card flex-1 flex flex-col">
+                    <p class="question-title">
+                        <i class="fa-solid fa-trophy text-soft-gold mr-2 text-xs"></i>
+                        가장 뿌듯했던 순간은 언제인가요?
+                    </p>
+                    <textarea class="question-input flex-1 min-h-[32px]" placeholder="성취감을 느꼈던 구체적인 경험을 떠올려보세요..."></textarea>
+                </div>
+
+                <div class="question-card flex-1 flex flex-col">
+                    <p class="question-title">
+                        <i class="fa-solid fa-gift text-soft-gold mr-2 text-xs"></i>
+                        타인이 나를 통해 '무엇'을 얻길 원하나요?
+                    </p>
+                    <textarea class="question-input flex-1 min-h-[32px]" placeholder="나와의 만남을 통해 상대가 얻어가길 바라는 것은?"></textarea>
+                </div>
+
+                <div class="question-card flex-1 flex flex-col">
+                    <p class="question-title">
+                        <i class="fa-solid fa-heart text-soft-gold mr-2 text-xs"></i>
+                        돈을 받지 않아도 계속 할 수 있는 일은 무엇인가요?
+                    </p>
+                    <textarea class="question-input flex-1 min-h-[32px]" placeholder="보상 없이도 기꺼이 하게 되는 활동은?"></textarea>
+                </div>
+
+                <div class="question-card flex-1 flex flex-col">
+                    <p class="question-title">
+                        <i class="fa-solid fa-globe text-soft-gold mr-2 text-xs"></i>
+                        내가 만들고 싶은 문화, 해결하고 싶은 사회문제는?
+                    </p>
+                    <textarea class="question-input flex-1 min-h-[32px]" placeholder="세상에 남기고 싶은 변화나 해결하고 싶은 문제를 적어보세요..."></textarea>
+                </div>
+            </div>
+
+            <!-- 하단 인사이트 박스 -->
+            <div class="mt-2 bg-gradient-to-r from-soft-gold/10 to-transparent p-2 rounded-lg border-l-4 border-soft-gold">
+                <p class="text-[10px] text-gray-600 italic">
+                    <i class="fa-solid fa-lightbulb text-soft-gold mr-1"></i>
+                    "내가 세상에 기여할 수 있는 고유한 가치를 발견하세요."
+                </p>
+            </div>
+
+            <!-- 푸터 -->
+            <footer class="mt-2 pt-2 border-t border-gray-200 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-[8px] font-bold bg-soft-gold text-white px-1.5 py-0.5 rounded">Algrowithm</span>
+                    <span class="text-[8px] text-gray-400">Copyright 2025</span>
+                </div>
+                <p class="text-[8px] text-gray-500 italic">내가 원하는 삶을 찾는 여정</p>
+            </footer>
+        </div>
+
+        <!-- 오른쪽: 표지 -->
+        <div class="w-1/2 h-full flex flex-col items-center justify-center p-8 relative overflow-hidden" style="background: linear-gradient(135deg, #fefefe 0%, #f8f8f8 50%, rgba(212,175,55,0.08) 100%);">
+            <!-- 배경 패턴 -->
+            <div class="absolute inset-0 opacity-20" style="background-image: url('data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23d4af37\' fill-opacity=\'0.1\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'20\' cy=\'20\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E');"></div>
+
+            <!-- 아이콘 -->
+            <div class="mb-6">
+                <div class="w-32 h-32 rounded-full bg-gradient-to-br from-soft-gold/20 to-soft-gold/5 flex items-center justify-center">
+                    <i class="fa-solid fa-compass text-5xl text-soft-gold"></i>
+                </div>
+            </div>
+
+            <!-- 메인 타이틀 -->
+            <div class="text-center relative z-10">
+                <p class="text-soft-gold font-bold tracking-[0.2em] text-[10px] uppercase mb-3">Self Discovery Journey</p>
+                <h1 class="text-2xl font-serif font-bold text-rich-black mb-2 leading-tight">
+                    내가 원하는 삶을<br>찾는 여정
+                </h1>
+                <h2 class="text-lg font-serif text-gray-500 mb-4">
+                    워크북
+                </h2>
+                <div class="w-16 h-0.5 bg-soft-gold mx-auto mb-5"></div>
+
+                <!-- 명언 -->
+                <p class="text-xs text-gray-500 italic font-serif max-w-[180px] mx-auto leading-relaxed">
+                    "진정한 발견의 여정은<br>새로운 풍경을 찾는 것이 아니라<br>새로운 눈을 갖는 것이다."
+                </p>
+                <p class="text-[10px] text-gray-400 mt-2">- 마르셀 프루스트</p>
+            </div>
+
+            <!-- 개인 정보 입력 -->
+            <div class="mt-6 flex flex-col gap-2">
+                <div class="flex items-center gap-3">
+                    <p class="text-[9px] text-soft-gold font-bold tracking-wider uppercase w-12">Name</p>
+                    <input type="text"
+                        class="bg-transparent border-b-2 border-soft-gold/40 w-32 text-sm font-serif font-bold text-center text-rich-black focus:border-soft-gold focus:outline-none py-1"
+                        placeholder="">
+                </div>
+                <div class="flex items-center gap-3">
+                    <p class="text-[9px] text-soft-gold font-bold tracking-wider uppercase w-12">Birth</p>
+                    <input type="text"
+                        class="bg-transparent border-b-2 border-soft-gold/40 w-32 text-sm font-serif font-bold text-center text-rich-black focus:border-soft-gold focus:outline-none py-1"
+                        placeholder="">
+                </div>
+                <div class="flex items-center gap-3">
+                    <p class="text-[9px] text-soft-gold font-bold tracking-wider uppercase w-12">Phone</p>
+                    <input type="text"
+                        class="bg-transparent border-b-2 border-soft-gold/40 w-32 text-sm font-serif font-bold text-center text-rich-black focus:border-soft-gold focus:outline-none py-1"
+                        placeholder="">
+                </div>
+            </div>
+
+            <!-- 로고 -->
+            <div class="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2">
+                <span class="text-lg font-serif font-bold text-soft-gold tracking-wide">Algrowithm</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 페이지 2: 섹션 1 (왼쪽) + 섹션 2 (오른쪽) -->
+    <div class="print-container relative flex">
+        <!-- 접는 선 -->
+        <div class="fold-line"></div>
+
+        <!-- 왼쪽: 섹션 1 - 자아정체성 탐색 -->
+        <div class="w-1/2 h-full flex flex-col p-5 relative" style="background: linear-gradient(180deg, #faf8f5 0%, #fff 100%);">
+            <!-- 헤더 -->
+            <div class="border-b-2 border-soft-gold/30 pb-2 mb-4">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="bg-rich-black text-white text-[9px] font-bold px-2 py-0.5 rounded">4회차 워크지</span>
+                    <span class="text-soft-gold font-bold tracking-widest text-[9px] uppercase">Section 1</span>
+                </div>
+                <h1 class="text-base font-serif font-bold text-rich-black leading-tight">
+                    자아정체성 탐색
+                </h1>
+            </div>
+
+            <!-- 섹션 1 질문들 -->
+            <div class="flex-1 flex flex-col gap-2">
+                <div class="question-card flex-1 flex flex-col">
+                    <p class="question-title">
+                        <i class="fa-solid fa-star text-soft-gold mr-2 text-xs"></i>
+                        어린시절 많이 받은 칭찬은 무엇인가요?
+                    </p>
+                    <textarea class="question-input flex-1 min-h-[32px]" placeholder="어릴 때 주변에서 자주 들었던 칭찬을 떠올려보세요..."></textarea>
+                </div>
+
+                <div class="question-card flex-1 flex flex-col">
+                    <p class="question-title">
+                        <i class="fa-solid fa-users text-soft-gold mr-2 text-xs"></i>
+                        타인이 말하는 나는 어떤 사람인가요?
+                    </p>
+                    <textarea class="question-input flex-1 min-h-[32px]" placeholder="주변 사람들이 나를 어떻게 표현하는지 적어보세요..."></textarea>
+                </div>
+
+                <div class="question-card flex-1 flex flex-col">
+                    <p class="question-title">
+                        <i class="fa-solid fa-spa text-soft-gold mr-2 text-xs"></i>
+                        내가 가장 편안함을 느끼는 순간은?
+                    </p>
+                    <textarea class="question-input flex-1 min-h-[32px]" placeholder="마음이 편안해지는 상황이나 환경을 떠올려보세요..."></textarea>
+                </div>
+
+                <div class="question-card flex-1 flex flex-col">
+                    <p class="question-title">
+                        <i class="fa-solid fa-tag text-soft-gold mr-2 text-xs"></i>
+                        사람들이 나에게 자주 붙여주는 수식어는?<br>
+                        <span class="text-[10px] font-normal text-gray-500">그게 마음에 드나요?</span>
+                    </p>
+                    <textarea class="question-input flex-1 min-h-[32px]" placeholder="나를 표현하는 별명이나 수식어를 적고, 그에 대한 생각을 써보세요..."></textarea>
+                </div>
+            </div>
+
+            <!-- 하단 인사이트 박스 -->
+            <div class="mt-2 bg-gradient-to-r from-soft-gold/10 to-transparent p-2 rounded-lg border-l-4 border-soft-gold">
+                <p class="text-[10px] text-gray-600 italic">
+                    <i class="fa-solid fa-lightbulb text-soft-gold mr-1"></i>
+                    "나를 아는 것이 모든 지혜의 시작입니다."
+                </p>
+            </div>
+
+            <!-- 푸터 -->
+            <footer class="mt-2 pt-2 border-t border-gray-200 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-[8px] font-bold bg-soft-gold text-white px-1.5 py-0.5 rounded">Algrowithm</span>
+                    <span class="text-[8px] text-gray-400">Copyright 2025</span>
+                </div>
+                <p class="text-[8px] text-gray-500 italic">내가 원하는 삶을 찾는 여정</p>
+            </footer>
+        </div>
+
+        <!-- 오른쪽: 섹션 2 - 욕구&방향성 탐색 -->
+        <div class="w-1/2 h-full flex flex-col p-5 relative" style="background: linear-gradient(180deg, #fff 0%, #faf8f5 100%);">
+            <!-- 헤더 -->
+            <div class="border-b-2 border-soft-gold/30 pb-2 mb-4">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="bg-soft-gold text-white text-[9px] font-bold px-2 py-0.5 rounded">4회차 워크지</span>
+                    <span class="text-soft-gold font-bold tracking-widest text-[9px] uppercase">Section 2</span>
+                </div>
+                <h1 class="text-base font-serif font-bold text-rich-black leading-tight">
+                    욕구 & 방향성 탐색
+                </h1>
+            </div>
+
+            <!-- 섹션 2 질문들 -->
+            <div class="flex-1 flex flex-col gap-2">
+                <div class="question-card flex-1 flex flex-col">
+                    <p class="question-title">
+                        <i class="fa-solid fa-child text-soft-gold mr-2 text-xs"></i>
+                        어린시절 내 꿈은 무엇이었나요?
+                    </p>
+                    <textarea class="question-input flex-1 min-h-[24px]" placeholder="어릴 때 꿈꿨던 미래의 모습을 적어보세요..."></textarea>
+                </div>
+
+                <div class="question-card flex-1 flex flex-col">
+                    <p class="question-title">
+                        <i class="fa-solid fa-fire text-soft-gold mr-2 text-xs"></i>
+                        내 삶에서 가장 충족시키고 싶은 욕구는?
+                        <span class="text-[9px] font-normal text-gray-500 block mt-0.5">(안정/성장/인정/자유/영향력/창조성 등)</span>
+                    </p>
+                    <textarea class="question-input flex-1 min-h-[24px]" placeholder="가장 강하게 느끼는 욕구를 선택하고 이유를 적어보세요..."></textarea>
+                </div>
+
+                <div class="question-card flex-1 flex flex-col">
+                    <p class="question-title">
+                        <i class="fa-solid fa-calendar-alt text-soft-gold mr-2 text-xs"></i>
+                        5년 뒤 나는 어떤 삶을 살기를 바라나요?
+                    </p>
+                    <textarea class="question-input flex-1 min-h-[24px]" placeholder="5년 후 이상적인 나의 모습을 구체적으로 그려보세요..."></textarea>
+                </div>
+
+                <div class="question-card flex-1 flex flex-col">
+                    <p class="question-title">
+                        <i class="fa-solid fa-binoculars text-soft-gold mr-2 text-xs"></i>
+                        10년 뒤 나는 어떤 삶을 살기를 바라나요?
+                    </p>
+                    <textarea class="question-input flex-1 min-h-[24px]" placeholder="10년 후 이상적인 나의 모습을 구체적으로 그려보세요..."></textarea>
+                </div>
+
+                <div class="question-card flex-1 flex flex-col">
+                    <p class="question-title">
+                        <i class="fa-solid fa-question-circle text-soft-gold mr-2 text-xs"></i>
+                        이것은 진짜 내 목표인가요,<br>
+                        <span class="text-[10px] font-normal text-gray-500">타인이 기대하는 목표인가요?</span>
+                    </p>
+                    <textarea class="question-input flex-1 min-h-[24px]" placeholder="위의 목표들이 진정 나의 것인지 점검해보세요..."></textarea>
+                </div>
+            </div>
+
+            <!-- 하단 인사이트 박스 -->
+            <div class="mt-2 bg-gradient-to-r from-transparent to-soft-gold/10 p-2 rounded-lg border-r-4 border-soft-gold">
+                <p class="text-[10px] text-gray-600 italic text-right">
+                    "진정한 목표는 내 안에서 우러나온 것이어야 합니다."
+                    <i class="fa-solid fa-lightbulb text-soft-gold ml-1"></i>
+                </p>
+            </div>
+
+            <!-- 푸터 -->
+            <footer class="mt-2 pt-2 border-t border-gray-200 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-[8px] font-bold bg-soft-gold text-white px-1.5 py-0.5 rounded">Algrowithm</span>
+                    <span class="text-[8px] text-gray-400">Copyright 2025</span>
+                </div>
+                <p class="text-[8px] text-gray-500 italic">내가 원하는 삶을 찾는 여정</p>
+            </footer>
+        </div>
+    </div>
+</body>
+
+</html>
