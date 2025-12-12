@@ -46,6 +46,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
         rel="stylesheet">
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
     <style>
         html.lenis, html.lenis body {
             height: auto;
@@ -445,9 +449,13 @@
             <h1 class="text-5xl md:text-7xl font-serif font-bold leading-none mb-4">
                 Algrowithm
             </h1>
-            <p class="text-lg md:text-xl font-light opacity-90 max-w-xl">
+            <p class="text-lg md:text-xl font-light opacity-90 max-w-xl mb-6">
                 내 성장 알고리즘을 만들다
             </p>
+            <button onclick="openInquiryModal()" class="px-8 py-3 bg-soft-gold text-white rounded-full font-bold text-base hover:bg-yellow-600 transition-all duration-300 shadow-lg flex items-center gap-2 mx-auto">
+                <i class="fa-solid fa-paper-plane"></i>
+                <span>참여 문의하기</span>
+            </button>
         </div>
 
         <!-- Scroll Indicator -->
@@ -868,8 +876,10 @@
             </div>
             <div class="p-8">
                 <div class="text-center mb-8">
-                    <span class="text-soft-gold font-bold tracking-[0.2em] uppercase text-sm">Inquiry</span>
-                    <h3 class="text-2xl font-bold mt-2">프로그램 참여 문의</h3>
+                    <div class="w-16 h-16 bg-soft-gold/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-paper-plane text-2xl text-soft-gold"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold">프로그램 참여 문의</h3>
                     <p class="text-gray-500 mt-2 text-sm">아래 양식을 작성해주시면 담당자가 연락드리겠습니다.</p>
                 </div>
 
@@ -901,10 +911,11 @@
                             <select id="inquiryProgram"
                                 class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none">
                                 <option value="">선택해주세요</option>
-                                <option value="전체 프로그램">전체 프로그램 (1~3회차)</option>
+                                <option value="전체 프로그램">전체 프로그램 (1~4회차)</option>
                                 <option value="1회차">1회차 - 나는 누구인가</option>
                                 <option value="2회차">2회차 - 이미지 아이덴티티</option>
                                 <option value="3회차">3회차 - 커리어 브랜딩</option>
+                                <option value="4회차">4회차 - 내가 원하는 삶</option>
                             </select>
                         </div>
 
@@ -916,17 +927,34 @@
                         </div>
                     </div>
 
-                    <div class="flex gap-3 mt-6">
-                        <button type="button" onclick="closeInquiryModal()"
-                            class="flex-1 py-3 border border-gray-200 rounded-xl font-medium hover:bg-gray-50 transition-colors">
-                            취소
-                        </button>
-                        <button type="submit"
-                            class="flex-1 py-3 bg-soft-gold text-white rounded-xl font-medium hover:bg-yellow-600 transition-colors">
-                            문의하기
-                        </button>
-                    </div>
+                    <button type="submit" id="inquirySubmitBtn"
+                        class="w-full mt-6 py-4 bg-soft-gold text-white rounded-xl font-bold hover:bg-yellow-600 transition-colors flex items-center justify-center gap-2">
+                        <span id="inquiryBtnText">문의하기</span>
+                        <div id="inquirySpinner" class="hidden">
+                            <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        </div>
+                    </button>
+                    <p class="text-xs text-gray-400 text-center mt-4">
+                        제출하신 정보는 프로그램 안내 목적으로만 사용됩니다.
+                    </p>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inquiry Success Modal -->
+    <div id="inquirySuccessModal" class="modal-overlay" onclick="closeInquirySuccessModal()">
+        <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 400px;">
+            <div class="p-8 text-center">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fa-solid fa-check text-4xl text-green-500"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-2">문의가 접수되었습니다!</h3>
+                <p class="text-gray-500 mb-6">빠른 시일 내에 연락드리겠습니다.<br>감사합니다.</p>
+                <button onclick="closeInquirySuccessModal()"
+                    class="px-8 py-3 bg-soft-gold text-white rounded-xl font-bold hover:bg-yellow-600 transition-colors">
+                    확인
+                </button>
             </div>
         </div>
     </div>
@@ -1225,6 +1253,20 @@
             }
         });
 
+        // Firebase 초기화
+        const firebaseConfig = {
+            apiKey: "AIzaSyBK37wEth9Hoz_q17Ca0Ulm1W-JNEyllIk",
+            authDomain: "algrowithm-feea0.firebaseapp.com",
+            projectId: "algrowithm-feea0",
+            storageBucket: "algrowithm-feea0.firebasestorage.app",
+            messagingSenderId: "665224680106",
+            appId: "1:665224680106:web:86a2d938ac636751e336d3"
+        };
+
+        // Firebase 앱 초기화
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         // Inquiry Modal functions
         function openInquiryModal() {
             document.getElementById('inquiryModal').classList.add('active');
@@ -1237,22 +1279,55 @@
             document.getElementById('inquiryForm').reset();
         }
 
-        function submitInquiry(e) {
+        function closeInquirySuccessModal() {
+            document.getElementById('inquirySuccessModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        async function submitInquiry(e) {
             e.preventDefault();
+
+            const submitBtn = document.getElementById('inquirySubmitBtn');
+            const btnText = document.getElementById('inquiryBtnText');
+            const spinner = document.getElementById('inquirySpinner');
+
+            // 버튼 로딩 상태
+            submitBtn.disabled = true;
+            btnText.textContent = '전송 중...';
+            spinner.classList.remove('hidden');
 
             const name = document.getElementById('inquiryName').value;
             const phone = document.getElementById('inquiryPhone').value;
             const email = document.getElementById('inquiryEmail').value;
-            const program = document.getElementById('inquiryProgram').value;
+            const program = document.getElementById('inquiryProgram')?.value || '';
             const message = document.getElementById('inquiryMessage').value;
 
-            // Here you would typically send this data to a server
-            console.log('문의 접수:', { name, phone, email, program, message });
+            try {
+                // Firestore에 데이터 저장
+                await db.collection('inquiries').add({
+                    name: name,
+                    phone: phone,
+                    email: email || '',
+                    program: program,
+                    message: message || '',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    status: 'pending'
+                });
 
-            // Show success message
-            alert(`${name}님, 문의가 접수되었습니다!\n담당자가 빠른 시일 내에 연락드리겠습니다.`);
+                // 성공 시 모달 전환
+                closeInquiryModal();
+                document.getElementById('inquirySuccessModal').classList.add('active');
+                document.body.style.overflow = 'hidden';
 
-            closeInquiryModal();
+            } catch (error) {
+                console.error('문의 저장 실패:', error);
+                alert('문의 전송에 실패했습니다. 다시 시도해 주세요.');
+            } finally {
+                // 버튼 원래 상태로
+                submitBtn.disabled = false;
+                btnText.textContent = '문의 보내기';
+                spinner.classList.add('hidden');
+            }
         }
 
         // Section Navigation System
