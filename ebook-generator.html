@@ -878,125 +878,51 @@
 
         // 모바일 키보드 뒤로가기 처리 (갤럭시 S25 / One UI 7 호환)
         //
-        // 리서치 결과:
-        // 1. 삼성 네비게이션 바의 "키보드 숨기기 버튼"은 popstate 발생 + 키보드 안닫음
-        // 2. blur()는 Android Chrome에서 키보드를 닫지 못함
-        // 3. navigator.virtualKeyboard.hide()도 Android에서 작동 안함 (W3C 이슈)
+        // 결론: 갤럭시 S25에서 JavaScript로 키보드를 닫는 것은 불가능
+        // - blur(), disabled, scroll, body.click() 모두 실패
+        // - navigator.virtualKeyboard.hide()도 Android에서 미작동 (W3C 이슈)
         //
-        // 해결책: readOnly + 숨겨진 버튼 포커스로 키보드 강제 닫기
+        // 최종 해결책: 뒤로가기 방지만 하고, 키보드는 사용자가 직접 닫도록 함
         (function initMobileKeyboard() {
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             if (!isMobile) return;
 
-            // ========== 디버그 UI 생성 ==========
-            const debugPanel = document.createElement('div');
-            debugPanel.id = 'keyboard-debug';
-            debugPanel.style.cssText = `
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background: rgba(0,0,0,0.85);
-                color: #0f0;
-                font-family: monospace;
-                font-size: 11px;
-                padding: 8px;
-                z-index: 99999;
-                max-height: 30vh;
-                overflow-y: auto;
-            `;
-            debugPanel.innerHTML = '<div style="color:#ff0;margin-bottom:4px;">🔧 키보드 디버그 v6</div><div id="debug-log"></div>';
-            document.body.appendChild(debugPanel);
-
-            const debugLog = document.getElementById('debug-log');
-            let logCount = 0;
-            function log(msg, color = '#0f0') {
-                logCount++;
-                const time = new Date().toLocaleTimeString('ko-KR', {hour12:false});
-                debugLog.innerHTML = `<div style="color:${color}">[${logCount}] ${time} ${msg}</div>` + debugLog.innerHTML;
-                if (debugLog.children.length > 30) debugLog.lastChild.remove();
-            }
-            // ========== 디버그 UI 끝 ==========
-
             let historyDepth = 0;
-            let lastFocusedInput = null;
-
-            log(`v6 초기화`, '#0ff');
 
             // 입력창 포커스 시 히스토리 추가
             document.addEventListener('focusin', (e) => {
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-                    lastFocusedInput = e.target;
-                    log(`focusin: ${e.target.tagName}`, '#aaf');
-
                     if (historyDepth === 0) {
                         history.pushState({ kb: 1 }, '');
                         history.pushState({ kb: 2 }, '');
                         historyDepth = 2;
-                        log(`→ pushState x2`, '#0f0');
                     }
                 }
             });
 
-            // 키보드 강제 닫기 함수 - 여러 방법 시도
-            function forceCloseKeyboard() {
-                if (!lastFocusedInput) return;
-
-                log(`키보드 닫기 시도 (다중 방법)`, '#ff0');
-
-                const input = lastFocusedInput;
-                const wasReadOnly = input.readOnly;
-                const wasDisabled = input.disabled;
-
-                // 방법 1: disabled + blur 조합
-                input.disabled = true;
-                input.blur();
-                log(`→ 방법1: disabled + blur`, '#0f0');
-
-                setTimeout(() => {
-                    input.disabled = wasDisabled;
-
-                    // 방법 2: 페이지 상단으로 스크롤 (일부 브라우저에서 키보드 닫힘)
-                    const scrollPos = window.scrollY;
-                    window.scrollTo(0, 0);
-                    log(`→ 방법2: 스크롤 트릭`, '#0f0');
-
+            // 포커스 해제 시 히스토리 리셋
+            document.addEventListener('focusout', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
                     setTimeout(() => {
-                        window.scrollTo(0, scrollPos);
-
-                        // 방법 3: 페이지 내 실제 버튼으로 포커스 이동
-                        const realBtn = document.querySelector('button:not([disabled])');
-                        if (realBtn) {
-                            realBtn.focus();
-                            realBtn.blur();
-                            log(`→ 방법3: 실제 버튼 포커스`, '#0f0');
+                        const active = document.activeElement;
+                        const stillInInput = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT');
+                        if (!stillInInput) {
+                            historyDepth = 0;
                         }
-
-                        // 방법 4: body 클릭 시뮬레이션
-                        document.body.click();
-                        log(`→ 방법4: body 클릭`, '#0f0');
-
-                    }, 50);
-                }, 50);
-            }
+                    }, 200);
+                }
+            });
 
             // 뒤로가기 이벤트
             window.addEventListener('popstate', (e) => {
-                log(`🔙 popstate! depth=${historyDepth}`, '#f0f');
-
                 if (historyDepth > 0) {
                     historyDepth--;
-                    log(`→ 내부 뒤로가기 (남은=${historyDepth})`, '#ff0');
-
-                    // 키보드 강제 닫기 시도
-                    forceCloseKeyboard();
+                    // 페이지 이탈 방지 - 아무 동작 안함
+                    // 키보드는 사용자가 입력창 외부를 터치해서 닫아야 함
                     return;
                 }
-
-                log(`→ 진짜 뒤로가기`, '#0f0');
+                // historyDepth가 0이면 진짜 뒤로가기 허용
             });
-
-            log(`v5 리스너 등록 완료`, '#0ff');
         })();
 
         // Genre selection
