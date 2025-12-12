@@ -876,7 +876,9 @@
             }
         }
 
-        // 모바일 키보드 뒤로가기 처리 (갤럭시/안드로이드 호환 개선)
+        // 모바일 키보드 뒤로가기 처리 (갤럭시/안드로이드 호환)
+        // 핵심: Android는 키보드 닫기 버튼 누르면 popstate 발생 + 키보드 자동 닫힘
+        // 따라서 pushState를 하지 않고, popstate 발생 시 키보드가 방금 닫혔으면 무시만 함
         (function initMobileKeyboard() {
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             if (!isMobile) return;
@@ -898,7 +900,7 @@
                 max-height: 30vh;
                 overflow-y: auto;
             `;
-            debugPanel.innerHTML = '<div style="color:#ff0;margin-bottom:4px;">🔧 키보드 디버그 (문제 해결 후 제거)</div><div id="debug-log"></div>';
+            debugPanel.innerHTML = '<div style="color:#ff0;margin-bottom:4px;">🔧 키보드 디버그 v2</div><div id="debug-log"></div>';
             document.body.appendChild(debugPanel);
 
             const debugLog = document.getElementById('debug-log');
@@ -911,98 +913,68 @@
             }
             // ========== 디버그 UI 끝 ==========
 
+            let lastInputFocusTime = 0;  // 마지막 입력창 포커스 시간
+            let lastKeyboardCloseTime = 0;  // 키보드 닫힌 시간
             let keyboardVisible = false;
-            let historyPushed = false;
-            let lastKeyboardCloseTime = 0;  // 키보드 닫힌 시간 기록
             const initialViewportHeight = window.visualViewport?.height || window.innerHeight;
 
-            log(`초기화: initialHeight=${initialViewportHeight}px`, '#0ff');
+            log(`초기화: height=${Math.round(initialViewportHeight)}px`, '#0ff');
 
-            // 키보드 상태 감지
+            // 입력창 포커스 감지
+            document.addEventListener('focusin', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                    lastInputFocusTime = Date.now();
+                    log(`focusin: ${e.target.tagName}#${e.target.id || '?'}`, '#aaf');
+                }
+            });
+
+            // 키보드 상태 감지 (visualViewport)
             if (window.visualViewport) {
                 window.visualViewport.addEventListener('resize', () => {
                     const currentHeight = window.visualViewport.height;
                     const heightDiff = initialViewportHeight - currentHeight;
-
                     const wasKeyboardVisible = keyboardVisible;
                     keyboardVisible = heightDiff > 150;
 
-                    log(`resize: cur=${Math.round(currentHeight)} diff=${Math.round(heightDiff)} kb=${keyboardVisible}`, '#fff');
-
-                    // 키보드가 열릴 때 히스토리 추가 (한 번만)
-                    if (keyboardVisible && !wasKeyboardVisible && !historyPushed) {
-                        history.pushState({ keyboard: true }, '');
-                        historyPushed = true;
-                        log(`⬆️ 키보드 열림 → pushState 완료`, '#0f0');
-                    }
-
-                    // 키보드가 닫힐 때 시간 기록
                     if (!keyboardVisible && wasKeyboardVisible) {
                         lastKeyboardCloseTime = Date.now();
-                        historyPushed = false;
-                        log(`⬇️ 키보드 닫힘 → 시간기록`, '#ff0');
+                        log(`⬇️ 키보드 닫힘 (diff=${Math.round(heightDiff)})`, '#ff0');
+                    } else if (keyboardVisible && !wasKeyboardVisible) {
+                        log(`⬆️ 키보드 열림 (diff=${Math.round(heightDiff)})`, '#0f0');
                     }
                 });
-            } else {
-                log(`❌ visualViewport 미지원!`, '#f00');
             }
 
-            // 포커스 이벤트 추적
-            document.addEventListener('focusin', (e) => {
-                log(`focusin: ${e.target.tagName}#${e.target.id || '?'}`, '#aaf');
-            });
-            document.addEventListener('focusout', (e) => {
-                log(`focusout: ${e.target.tagName}#${e.target.id || '?'}`, '#faa');
-            });
+            // 페이지 진입 시 초기 히스토리 상태 설정
+            // 이렇게 하면 뒤로가기 시 popstate가 발생하고, 우리가 제어 가능
+            if (!history.state || !history.state.page) {
+                history.replaceState({ page: 'ebook-generator' }, '');
+                log(`초기 state 설정`, '#0ff');
+            }
 
             // 뒤로가기 이벤트 처리
             window.addEventListener('popstate', (e) => {
-                const timeSinceClose = Date.now() - lastKeyboardCloseTime;
-                const recentlyClosed = timeSinceClose < 300;  // 300ms 이내에 키보드 닫혔으면
+                const timeSinceKeyboardClose = Date.now() - lastKeyboardCloseTime;
+                const timeSinceFocus = Date.now() - lastInputFocusTime;
 
-                log(`🔙 popstate! kb=${keyboardVisible} recent=${recentlyClosed}(${timeSinceClose}ms)`, '#f0f');
+                log(`🔙 popstate! closeAge=${timeSinceKeyboardClose}ms focusAge=${timeSinceFocus}ms`, '#f0f');
 
-                // 키보드가 열려있거나, 방금 닫혔으면 (300ms 이내) 뒤로가기 방지
-                if (keyboardVisible || recentlyClosed) {
-                    // 뒤로가기 방지 - 히스토리 다시 추가
-                    history.pushState({ keyboard: true }, '');
-                    log(`→ pushState로 뒤로가기 방지`, '#0f0');
-
-                    // 키보드 닫기: 스크롤 트릭 사용
-                    log(`→ 키보드 닫기 시도`, '#0f0');
-
-                    // 방법: 페이지를 살짝 스크롤하여 키보드 강제 닫기
-                    const scrollY = window.scrollY;
-                    window.scrollTo(0, scrollY + 1);
-
-                    setTimeout(() => {
-                        const activeEl = document.activeElement;
-                        log(`→ activeElement: ${activeEl?.tagName}#${activeEl?.id || '?'}`, '#fff');
-
-                        if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT')) {
-                            // inputmode를 none으로 변경하여 키보드 차단
-                            const prevInputMode = activeEl.inputMode;
-                            activeEl.inputMode = 'none';
-                            activeEl.blur();
-                            log(`→ blur() + inputMode=none`, '#0f0');
-
-                            // 원래 inputMode 복구
-                            setTimeout(() => {
-                                activeEl.inputMode = prevInputMode || '';
-                                log(`→ inputMode 복구`, '#0f0');
-                            }, 300);
-                        }
-
-                        // 스크롤 복구
-                        window.scrollTo(0, scrollY);
-                        log(`→ 스크롤 복구`, '#0f0');
-                    }, 10);
-                } else {
-                    log(`→ 뒤로가기 허용`, '#ff0');
+                // 키보드가 500ms 이내에 닫혔으면 = 키보드 닫기 버튼으로 인한 popstate
+                // 이 경우 뒤로가기를 막고 현재 페이지 유지
+                if (timeSinceKeyboardClose < 500) {
+                    log(`→ 키보드 닫기로 인한 popstate, 무시`, '#ff0');
+                    // 히스토리를 다시 앞으로 (뒤로가기 취소)
+                    history.pushState({ page: 'ebook-generator' }, '');
+                    return;
                 }
+
+                // 진짜 뒤로가기 - 허용
+                log(`→ 진짜 뒤로가기, 허용`, '#0f0');
+                // 기본 동작 허용 (뒤로가기)
+                history.back();
             });
 
-            log(`이벤트 리스너 등록 완료`, '#0ff');
+            log(`v2 리스너 등록 완료`, '#0ff');
         })();
 
         // Genre selection
