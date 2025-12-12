@@ -50,6 +50,27 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
+    <!-- Inquiry Modal Functions (전역 함수로 먼저 선언) -->
+    <script>
+        // 전역 함수 선언 (HTML 파싱 전에 정의되어야 함)
+        function openInquiryModal() {
+            document.getElementById('inquiryModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeInquiryModal() {
+            document.getElementById('inquiryModal').classList.remove('active');
+            document.body.style.overflow = '';
+            var form = document.getElementById('inquiryForm');
+            if (form) form.reset();
+        }
+
+        function closeInquirySuccessModal() {
+            document.getElementById('inquirySuccessModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    </script>
+
     <style>
         html.lenis, html.lenis body {
             height: auto;
@@ -1267,24 +1288,8 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Inquiry Modal functions
-        function openInquiryModal() {
-            document.getElementById('inquiryModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeInquiryModal() {
-            document.getElementById('inquiryModal').classList.remove('active');
-            document.body.style.overflow = '';
-            document.getElementById('inquiryForm').reset();
-        }
-
-        function closeInquirySuccessModal() {
-            document.getElementById('inquirySuccessModal').classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        async function submitInquiry(e) {
+        // Submit Inquiry (Firebase 저장)
+        window.submitInquiry = async function(e) {
             e.preventDefault();
 
             const submitBtn = document.getElementById('inquirySubmitBtn');
