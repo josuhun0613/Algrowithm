@@ -99,6 +99,54 @@
             text-align: center;
         }
 
+        /* Book page header/footer styles */
+        .pdf-page-inner {
+            position: relative;
+            height: 100%;
+            padding: 15mm 15mm 20mm 15mm;
+            box-sizing: border-box;
+        }
+
+        .pdf-page-header {
+            position: absolute;
+            top: 10mm;
+            left: 15mm;
+            right: 15mm;
+            height: 5mm;
+            border-bottom: 0.5px solid #e0e0e0;
+        }
+
+        .pdf-page-footer {
+            position: absolute;
+            bottom: 10mm;
+            left: 15mm;
+            right: 15mm;
+            height: 5mm;
+            border-top: 0.5px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            padding-top: 2mm;
+        }
+
+        .pdf-page-footer.even {
+            justify-content: flex-start;
+        }
+
+        .pdf-page-footer.odd {
+            justify-content: flex-end;
+        }
+
+        .pdf-page-number {
+            font-size: 9px;
+            color: #888;
+        }
+
+        .pdf-page-content {
+            margin-top: 10mm;
+            height: calc(100% - 15mm);
+            overflow: hidden;
+        }
+
         /* Color Picker */
         .color-option {
             width: 32px;
@@ -1543,7 +1591,7 @@
             showPage(0);
         }
 
-        // Download PDF
+        // Download PDF - 로컬에서도 작동
         async function downloadPDF() {
             if (!ebookData) return;
 
@@ -1551,18 +1599,197 @@
             btn.disabled = true;
             btn.innerHTML = '<div class="loading-spinner"></div> PDF 생성 중...';
 
-            // Build full PDF content
-            const container = document.getElementById('pdfContainer');
-            // ... PDF generation logic here ...
+            try {
+                // Build full PDF content
+                const container = document.getElementById('pdfContainer');
+                container.innerHTML = '';
+                container.style.display = 'block';
 
-            showToast('PDF 다운로드가 시작됩니다!');
+                const formData = {
+                    title: document.getElementById('bookTitle').value.trim(),
+                    subtitle: document.getElementById('bookSubtitle').value.trim(),
+                    author: document.getElementById('authorName').value.trim(),
+                    bodyFont: document.getElementById('bodyFont').value,
+                    startPage: parseInt(document.getElementById('startPage').value) || 1
+                };
 
-            // Simple download trigger (placeholder)
-            setTimeout(() => {
+                let pageNumber = formData.startPage;
+                let pdfPageIndex = 0;
+
+                // Helper to create PDF page with header/footer
+                function createPdfPage(content, options = {}) {
+                    const { showHeaderFooter = true, isChapterTitle = false } = options;
+                    const page = document.createElement('div');
+                    page.className = 'pdf-page';
+                    page.style.fontFamily = `'${formData.bodyFont}', serif`;
+
+                    if (showHeaderFooter && !isChapterTitle) {
+                        const isEven = pdfPageIndex % 2 === 0;
+                        page.innerHTML = `
+                            <div class="pdf-page-inner">
+                                <div class="pdf-page-header"></div>
+                                <div class="pdf-page-content">${content}</div>
+                                <div class="pdf-page-footer ${isEven ? 'even' : 'odd'}">
+                                    <span class="pdf-page-number">${pageNumber}</span>
+                                </div>
+                            </div>
+                        `;
+                        pageNumber++;
+                    } else {
+                        page.innerHTML = `<div style="padding: 15mm;">${content}</div>`;
+                    }
+                    pdfPageIndex++;
+                    return page;
+                }
+
+                // Cover page (no header/footer)
+                if (includeCover) {
+                    const coverBg = getCoverBackground();
+                    const coverPage = document.createElement('div');
+                    coverPage.className = 'pdf-page';
+
+                    if (coverBg.image) {
+                        coverPage.innerHTML = `
+                            <div class="pdf-cover" style="padding: 0;">
+                                <img src="${coverBg.image}" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                        `;
+                    } else {
+                        const textColor = coverBg.isLight ? '#1a1a1a' : '#ffffff';
+                        coverPage.innerHTML = `
+                            <div class="pdf-cover" style="${coverBg.style}">
+                                <p style="color: ${textColor}; opacity: 0.6; font-size: 10px; letter-spacing: 3px; margin-bottom: 40px;">E-BOOK</p>
+                                <h1 style="color: ${textColor}; font-size: 28px; font-weight: bold; margin-bottom: 15px; font-family: 'Playfair Display', serif;">${formData.title}</h1>
+                                ${formData.subtitle ? `<p style="color: ${textColor}; opacity: 0.7; font-size: 14px; margin-bottom: 60px;">${formData.subtitle}</p>` : ''}
+                                <p style="color: ${textColor}; opacity: 0.5; font-size: 12px; margin-top: auto;">${formData.author}</p>
+                            </div>
+                        `;
+                    }
+                    container.appendChild(coverPage);
+                    pdfPageIndex++;
+                }
+
+                // Half Title page
+                if (document.getElementById('includeHalfTitle').checked) {
+                    container.appendChild(createPdfPage(`
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                            <h1 style="font-size: 24px; font-weight: bold; text-align: center;">${formData.title}</h1>
+                        </div>
+                    `, { showHeaderFooter: false }));
+                }
+
+                // Copyright page
+                if (document.getElementById('includeCopyright').checked) {
+                    container.appendChild(createPdfPage(`
+                        <div style="display: flex; flex-direction: column; justify-content: flex-end; height: 100%; font-size: 10px; color: #666;">
+                            <p style="font-weight: bold; color: #333; margin-bottom: 5px;">${formData.title}</p>
+                            <p>저자: ${formData.author}</p>
+                            <p style="margin-top: 15px;">© ${new Date().getFullYear()} ${formData.author}</p>
+                            <p>All rights reserved.</p>
+                            <p style="margin-top: 10px;">이 책의 저작권은 저자에게 있습니다.</p>
+                            <p>무단 전재와 복제를 금합니다.</p>
+                        </div>
+                    `, { showHeaderFooter: false }));
+                }
+
+                // Dedication page
+                if (document.getElementById('includeDedication').checked) {
+                    const dedicationText = document.getElementById('dedicationText').value.trim();
+                    if (dedicationText) {
+                        container.appendChild(createPdfPage(`
+                            <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                                <p style="font-style: italic; text-align: center; color: #555; font-size: 14px; line-height: 2;">${dedicationText}</p>
+                            </div>
+                        `, { showHeaderFooter: false }));
+                    }
+                }
+
+                // Preface
+                if (document.getElementById('includePreface').checked) {
+                    const prefaceContent = document.getElementById('prefaceText').value.trim() || ebookData.preface || '';
+                    container.appendChild(createPdfPage(`
+                        <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 20px; text-align: center;">서문</h2>
+                        <p style="font-size: 12px; line-height: 2; text-align: justify;">${prefaceContent}</p>
+                    `));
+                }
+
+                // TOC
+                if (document.getElementById('includeToc').checked && ebookData.chapters) {
+                    const tocItems = ebookData.chapters.map((ch, i) =>
+                        `<p style="font-size: 12px; padding: 8px 0; border-bottom: 1px dotted #ddd; display: flex; justify-content: space-between;">
+                            <span>${i + 1}. ${ch.title}</span>
+                        </p>`
+                    ).join('');
+                    container.appendChild(createPdfPage(`
+                        <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 30px; text-align: center;">목차</h2>
+                        ${tocItems}
+                    `));
+                }
+
+                // Chapters
+                if (ebookData.chapters) {
+                    ebookData.chapters.forEach((chapter, i) => {
+                        // Chapter title page (no page number)
+                        container.appendChild(createPdfPage(`
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                                <p style="color: #d4af37; font-size: 12px; letter-spacing: 2px; margin-bottom: 20px;">CHAPTER ${i + 1}</p>
+                                <h2 style="font-size: 22px; font-weight: bold; text-align: center;">${chapter.title}</h2>
+                            </div>
+                        `, { showHeaderFooter: false, isChapterTitle: true }));
+
+                        // Chapter content
+                        container.appendChild(createPdfPage(`
+                            <p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em;">${chapter.content.replace(/\n/g, '</p><p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em;">')}</p>
+                        `));
+                    });
+                }
+
+                // Epilogue
+                if (document.getElementById('includeEpilogue').checked && ebookData.epilogue) {
+                    container.appendChild(createPdfPage(`
+                        <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 20px; text-align: center;">에필로그</h2>
+                        <p style="font-size: 12px; line-height: 2; text-align: justify;">${ebookData.epilogue}</p>
+                    `));
+                }
+
+                // Author Bio
+                if (document.getElementById('includeAuthorBio').checked && ebookData.authorBio) {
+                    container.appendChild(createPdfPage(`
+                        <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 20px; text-align: center;">저자 소개</h2>
+                        <p style="font-size: 12px; line-height: 2; text-align: justify;">${ebookData.authorBio}</p>
+                    `));
+                }
+
+                // Generate PDF using html2pdf.js (works locally!)
+                const opt = {
+                    margin: 0,
+                    filename: `${formData.title || 'ebook'}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: {
+                        scale: 2,
+                        useCORS: true,
+                        logging: false
+                    },
+                    jsPDF: {
+                        unit: 'mm',
+                        format: [140, 210], // A5 size
+                        orientation: 'portrait'
+                    },
+                    pagebreak: { mode: 'css', before: '.pdf-page' }
+                };
+
+                await html2pdf().set(opt).from(container).save();
+
+                container.style.display = 'none';
+                showToast('PDF 다운로드가 완료되었습니다!');
+
+            } catch (error) {
+                console.error('PDF Error:', error);
+                alert('PDF 생성 중 오류가 발생했습니다.');
+            } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-download"></i> PDF 다운로드';
-                alert('PDF 다운로드 기능은 Vercel 배포 후 완전히 작동합니다.');
-            }, 1500);
+            }
         }
     </script>
 </body>

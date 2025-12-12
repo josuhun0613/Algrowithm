@@ -735,7 +735,11 @@
 
                 currentStep = 4;
                 updateStepDisplay();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                // 부드럽게 스크롤 (requestAnimationFrame 사용으로 튕김 방지)
+                requestAnimationFrame(() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
             }, 1500);
         }
 
