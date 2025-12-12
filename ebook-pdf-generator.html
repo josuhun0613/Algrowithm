@@ -1629,6 +1629,19 @@
             showPage(0);
         }
 
+        // PDF Blob 다운로드 헬퍼 함수
+        function downloadPdfBlob(blob, fileName) {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            showToast('PDF 다운로드가 완료되었습니다!');
+        }
+
         // Download PDF - 로컬에서도 작동
         async function downloadPDF() {
             if (!ebookData) return;
@@ -1938,15 +1951,38 @@
                     console.log(`페이지 ${i + 1}/${pages.length} 캡처 완료`);
                 }
 
-                // PDF 저장
-                pdf.save(`${formData.title || 'ebook'}.pdf`);
+                // PDF를 Blob으로 생성
+                const pdfBlob = pdf.output('blob');
+                const fileName = `${formData.title || 'ebook'}.pdf`;
+
+                // 모바일 감지
+                const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+                if (isMobile && navigator.share) {
+                    // 모바일: Web Share API 사용 (공유 시트 표시)
+                    try {
+                        const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+                        await navigator.share({
+                            files: [file],
+                            title: formData.title || 'E-book',
+                            text: `${formData.title || 'E-book'} PDF`
+                        });
+                        showToast('공유가 완료되었습니다!');
+                    } catch (shareError) {
+                        // 공유 취소 또는 실패 시 다운로드로 폴백
+                        if (shareError.name !== 'AbortError') {
+                            downloadPdfBlob(pdfBlob, fileName);
+                        }
+                    }
+                } else {
+                    // 데스크톱 또는 Share API 미지원: 일반 다운로드
+                    downloadPdfBlob(pdfBlob, fileName);
+                }
 
                 // 캡처 완료 후 다시 숨김
                 container.style.left = '-9999px';
                 container.style.opacity = '0';
                 container.style.visibility = 'hidden';
-
-                showToast('PDF 다운로드가 완료되었습니다!');
 
             } catch (error) {
                 console.error('PDF Error:', error);

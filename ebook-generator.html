@@ -606,6 +606,41 @@
             selectedTitle: ''
         };
 
+        // 모바일 키보드 뒤로가기 방지 (입력 중 뒤로가기 방지)
+        let isInputFocused = false;
+
+        // 입력 필드에 포커스될 때 히스토리 추가
+        document.addEventListener('focusin', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                if (!isInputFocused) {
+                    isInputFocused = true;
+                    history.pushState({ inputFocused: true }, '');
+                }
+            }
+        });
+
+        // 입력 필드에서 포커스 해제될 때
+        document.addEventListener('focusout', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                // 다른 입력 필드로 이동하는 경우가 아니면 상태 리셋
+                setTimeout(() => {
+                    const activeEl = document.activeElement;
+                    if (activeEl.tagName !== 'INPUT' && activeEl.tagName !== 'TEXTAREA' && activeEl.tagName !== 'SELECT') {
+                        isInputFocused = false;
+                    }
+                }, 100);
+            }
+        });
+
+        // 뒤로가기 이벤트 처리
+        window.addEventListener('popstate', (e) => {
+            if (e.state && e.state.inputFocused) {
+                // 입력 중 뒤로가기면 다시 히스토리 추가하고 키보드만 닫기
+                history.pushState({ inputFocused: true }, '');
+                document.activeElement.blur();
+            }
+        });
+
         // Genre selection
         document.querySelectorAll('.genre-card').forEach(card => {
             card.addEventListener('click', () => {
