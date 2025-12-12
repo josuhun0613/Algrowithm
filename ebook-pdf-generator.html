@@ -1031,7 +1031,54 @@
             loadPromptData();
             initCoverOptions();
             updatePreview();
+            initMobileKeyboardHandler();
         });
+
+        // 모바일 키보드 뒤로가기 처리 (네이버/유튜브 방식)
+        function initMobileKeyboardHandler() {
+            let isKeyboardOpen = false;
+            let lastFocusedElement = null;
+
+            // visualViewport API를 사용하여 키보드 상태 감지
+            if (window.visualViewport) {
+                const initialHeight = window.visualViewport.height;
+
+                window.visualViewport.addEventListener('resize', () => {
+                    const heightDiff = initialHeight - window.visualViewport.height;
+                    isKeyboardOpen = heightDiff > 150;
+                });
+            }
+
+            // 입력 필드 포커스 추적
+            document.addEventListener('focusin', (e) => {
+                const isInputElement = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT';
+                if (isInputElement) {
+                    lastFocusedElement = e.target;
+                    history.pushState({ keyboard: true }, '');
+                }
+            });
+
+            // 뒤로가기 이벤트 처리
+            window.addEventListener('popstate', (e) => {
+                const activeEl = document.activeElement;
+                const isInputActive = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT');
+
+                if (isInputActive || isKeyboardOpen) {
+                    history.forward();
+
+                    if (activeEl && isInputActive) {
+                        activeEl.blur();
+                    }
+                    if (lastFocusedElement) {
+                        lastFocusedElement.blur();
+                        lastFocusedElement = null;
+                    }
+
+                    document.body.focus();
+                    isKeyboardOpen = false;
+                }
+            });
+        }
 
         // Show toast notification
         function showToast(message = '완료되었습니다!') {
@@ -1787,93 +1834,96 @@
                     `));
                 }
 
-                // Chapters - 제목과 내용을 한 페이지에 통합, 긴 내용은 자동 분할
+                // Chapters - 실제 높이 측정 기반 자동 페이지 분할
                 if (ebookData.chapters) {
-                    // 페이지당 최대 글자 수 (대략적인 계산)
-                    const MAX_CHARS_PER_PAGE = 800;
-                    const MAX_CHARS_FIRST_PAGE = 500; // 첫 페이지는 제목 포함으로 더 적게
+                    // 측정용 임시 컨테이너 생성
+                    const measureContainer = document.createElement('div');
+                    measureContainer.style.cssText = 'position: absolute; left: -9999px; top: 0; width: 110mm; visibility: hidden;';
+                    measureContainer.style.fontFamily = `'${formData.bodyFont}', serif`;
+                    document.body.appendChild(measureContainer);
 
-                    ebookData.chapters.forEach((chapter, i) => {
+                    // 페이지 내용 영역 높이 (210mm 전체 - 상단 패딩 15mm - 헤더 5mm - 하단 footer 15mm = 175mm → 약 145mm 실제 사용 가능)
+                    // footer 가로선 위 공간까지 고려하여 여유있게 설정
+                    const PAGE_HEIGHT = 140 * 3.78; // mm to px (약 529px) - footer 가로선 공간 고려
+                    const FIRST_PAGE_HEIGHT = 100 * 3.78; // 첫 페이지는 제목 공간 때문에 더 적음 (약 378px)
+
+                    for (let i = 0; i < ebookData.chapters.length; i++) {
+                        const chapter = ebookData.chapters[i];
                         const content = chapter.content || '';
-                        const paragraphs = content.split('\n').filter(p => p.trim());
 
-                        // 내용이 짧으면 한 페이지에 출력
-                        if (content.length <= MAX_CHARS_FIRST_PAGE) {
-                            container.appendChild(createPdfPage(`
-                                <div style="padding-top: 50px;">
-                                    <div style="text-align: center; margin-bottom: 50px;">
-                                        <p style="color: #d4af37; font-size: 10px; letter-spacing: 3px; margin-bottom: 20px;">CHAPTER ${i + 1}</p>
-                                        <h2 style="font-size: 18px; font-weight: bold;">${chapter.title}</h2>
-                                    </div>
-                                    <div style="padding-top: 10px;">
-                                        <p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em;">${content.replace(/\n/g, '</p><p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em;">')}</p>
-                                    </div>
-                                </div>
-                            `));
-                        } else {
-                            // 긴 내용은 여러 페이지로 분할
-                            let currentChars = 0;
-                            let currentParagraphs = [];
-                            let isFirstPage = true;
+                        // 문장 단위로 분할 (마침표, 물음표, 느낌표 기준)
+                        const sentences = content.split(/(?<=[.!?。])\s*/).filter(s => s.trim());
 
-                            paragraphs.forEach((para, pIdx) => {
-                                const maxChars = isFirstPage ? MAX_CHARS_FIRST_PAGE : MAX_CHARS_PER_PAGE;
+                        let isFirstPage = true;
+                        let currentSentences = [];
 
-                                if (currentChars + para.length > maxChars && currentParagraphs.length > 0) {
-                                    // 현재 페이지 출력
-                                    const pageContent = currentParagraphs.join('</p><p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em;">');
+                        for (let sIdx = 0; sIdx <= sentences.length; sIdx++) {
+                            const sentence = sentences[sIdx] || '';
+                            const testSentences = [...currentSentences];
+                            if (sentence) testSentences.push(sentence);
 
-                                    if (isFirstPage) {
-                                        container.appendChild(createPdfPage(`
-                                            <div style="padding-top: 50px;">
-                                                <div style="text-align: center; margin-bottom: 50px;">
-                                                    <p style="color: #d4af37; font-size: 10px; letter-spacing: 3px; margin-bottom: 20px;">CHAPTER ${i + 1}</p>
-                                                    <h2 style="font-size: 18px; font-weight: bold;">${chapter.title}</h2>
-                                                </div>
-                                                <div style="padding-top: 10px;">
-                                                    <p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em;">${pageContent}</p>
-                                                </div>
-                                            </div>
-                                        `));
-                                        isFirstPage = false;
-                                    } else {
-                                        container.appendChild(createPdfPage(`
-                                            <p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em;">${pageContent}</p>
-                                        `));
-                                    }
+                            // 측정용 HTML 생성
+                            const testHtml = `<p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em; margin: 0;">${testSentences.join(' ')}</p>`;
+                            measureContainer.innerHTML = testHtml;
 
-                                    currentParagraphs = [para];
-                                    currentChars = para.length;
-                                } else {
-                                    currentParagraphs.push(para);
-                                    currentChars += para.length;
-                                }
-                            });
+                            const maxHeight = isFirstPage ? FIRST_PAGE_HEIGHT : PAGE_HEIGHT;
+                            const currentHeight = measureContainer.offsetHeight;
 
-                            // 남은 내용 출력
-                            if (currentParagraphs.length > 0) {
-                                const pageContent = currentParagraphs.join('</p><p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em;">');
+                            // 높이 초과 시 현재까지의 내용으로 페이지 생성
+                            if (currentHeight > maxHeight && currentSentences.length > 0) {
+                                const pageText = currentSentences.join(' ');
 
                                 if (isFirstPage) {
                                     container.appendChild(createPdfPage(`
-                                        <div style="padding-top: 50px;">
-                                            <div style="text-align: center; margin-bottom: 50px;">
-                                                <p style="color: #d4af37; font-size: 10px; letter-spacing: 3px; margin-bottom: 20px;">CHAPTER ${i + 1}</p>
-                                                <h2 style="font-size: 18px; font-weight: bold;">${chapter.title}</h2>
+                                        <div style="padding-top: 40px;">
+                                            <div style="text-align: center; margin-bottom: 40px;">
+                                                <p style="color: #d4af37; font-size: 10px; letter-spacing: 3px; margin-bottom: 15px;">CHAPTER ${i + 1}</p>
+                                                <h2 style="font-size: 18px; font-weight: bold; margin: 0;">${chapter.title}</h2>
                                             </div>
-                                            <div style="padding-top: 10px;">
-                                                <p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em;">${pageContent}</p>
+                                            <div>
+                                                <p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em; margin: 0;">${pageText}</p>
                                             </div>
                                         </div>
                                     `));
+                                    isFirstPage = false;
                                 } else {
                                     container.appendChild(createPdfPage(`
-                                        <p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em;">${pageContent}</p>
+                                        <p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em; margin: 0;">${pageText}</p>
                                     `));
                                 }
+
+                                currentSentences = sentence ? [sentence] : [];
+                            } else if (sentence) {
+                                currentSentences.push(sentence);
                             }
                         }
-                    });
+
+                        // 남은 내용 출력
+                        if (currentSentences.length > 0) {
+                            const pageText = currentSentences.join(' ');
+
+                            if (isFirstPage) {
+                                container.appendChild(createPdfPage(`
+                                    <div style="padding-top: 40px;">
+                                        <div style="text-align: center; margin-bottom: 40px;">
+                                            <p style="color: #d4af37; font-size: 10px; letter-spacing: 3px; margin-bottom: 15px;">CHAPTER ${i + 1}</p>
+                                            <h2 style="font-size: 18px; font-weight: bold; margin: 0;">${chapter.title}</h2>
+                                        </div>
+                                        <div>
+                                            <p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em; margin: 0;">${pageText}</p>
+                                        </div>
+                                    </div>
+                                `));
+                            } else {
+                                container.appendChild(createPdfPage(`
+                                    <p style="font-size: 12px; line-height: 2; text-align: justify; text-indent: 2em; margin: 0;">${pageText}</p>
+                                `));
+                            }
+                        }
+                    }
+
+                    // 측정용 컨테이너 제거
+                    document.body.removeChild(measureContainer);
                 }
 
                 // Epilogue

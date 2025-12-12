@@ -606,16 +606,28 @@
             selectedTitle: ''
         };
 
-        // 모바일 키보드 뒤로가기 처리
-        // 핵심: blur() 후 딜레이를 줘서 키보드가 완전히 닫힌 후 히스토리 처리
-        let keyboardHistoryAdded = false;
-        let isClosingKeyboard = false; // 키보드 닫는 중인지 플래그
+        // 모바일 키보드 뒤로가기 처리 (네이버/유튜브 방식)
+        // 핵심: visualViewport API로 키보드 상태 감지 + history.forward()로 뒤로가기 취소
+        let isKeyboardOpen = false;
+        let lastFocusedElement = null;
 
-        // 입력 필드에 포커스될 때 히스토리 추가
+        // visualViewport API를 사용하여 키보드 상태 감지 (모바일에서만)
+        if (window.visualViewport) {
+            const initialHeight = window.visualViewport.height;
+
+            window.visualViewport.addEventListener('resize', () => {
+                // 뷰포트 높이가 줄어들면 키보드가 올라온 것
+                const heightDiff = initialHeight - window.visualViewport.height;
+                isKeyboardOpen = heightDiff > 150; // 150px 이상 차이나면 키보드 열림으로 판단
+            });
+        }
+
+        // 입력 필드 포커스 추적
         document.addEventListener('focusin', (e) => {
             const isInputElement = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT';
-            if (isInputElement && !keyboardHistoryAdded && !isClosingKeyboard) {
-                keyboardHistoryAdded = true;
+            if (isInputElement) {
+                lastFocusedElement = e.target;
+                // 포커스 시 히스토리 추가
                 history.pushState({ keyboard: true }, '');
             }
         });
@@ -623,28 +635,25 @@
         // 뒤로가기 이벤트 처리
         window.addEventListener('popstate', (e) => {
             const activeEl = document.activeElement;
-            const isInputActive = activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT';
+            const isInputActive = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT');
 
-            if (isInputActive && !isClosingKeyboard) {
-                // 키보드 닫는 중 플래그 설정
-                isClosingKeyboard = true;
+            // 키보드가 열려있거나 입력 필드에 포커스가 있으면
+            if (isInputActive || isKeyboardOpen) {
+                // 뒤로가기 취소 (앞으로 다시 이동)
+                history.forward();
 
                 // 키보드 닫기
-                activeEl.blur();
+                if (activeEl && isInputActive) {
+                    activeEl.blur();
+                }
+                if (lastFocusedElement) {
+                    lastFocusedElement.blur();
+                    lastFocusedElement = null;
+                }
 
-                // 키보드가 완전히 닫힌 후 히스토리 다시 추가 (300ms 딜레이)
-                setTimeout(() => {
-                    isClosingKeyboard = false;
-                    // 아직 페이지에 있고, 다른 입력 필드로 이동하지 않았다면 히스토리 추가
-                    const currentActive = document.activeElement;
-                    const stillOnInput = currentActive.tagName === 'INPUT' || currentActive.tagName === 'TEXTAREA' || currentActive.tagName === 'SELECT';
-                    if (!stillOnInput) {
-                        history.pushState({ keyboard: true }, '');
-                    }
-                }, 300);
-            } else {
-                // 키보드가 이미 닫혀있으면 히스토리 상태 리셋하고 뒤로가기 허용
-                keyboardHistoryAdded = false;
+                // body에 포커스 이동하여 키보드 완전히 닫기
+                document.body.focus();
+                isKeyboardOpen = false;
             }
         });
 
