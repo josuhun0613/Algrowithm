@@ -877,7 +877,9 @@
         }
 
         // 모바일 키보드 뒤로가기 처리 (갤럭시/안드로이드 호환)
-        // 원리: 입력창에 포커스가 있을 때만 뒤로가기를 차단
+        // 핵심: 갤럭시에서 blur()로는 키보드가 안 닫힘
+        // 해결: 키보드 닫기 버튼 = Android 시스템이 키보드를 닫음 + popstate 발생
+        // 우리는 그냥 페이지 이탈만 방지하면 됨 (키보드는 시스템이 닫아줌)
         (function initMobileKeyboard() {
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             if (!isMobile) return;
@@ -899,7 +901,7 @@
                 max-height: 30vh;
                 overflow-y: auto;
             `;
-            debugPanel.innerHTML = '<div style="color:#ff0;margin-bottom:4px;">🔧 키보드 디버그 v3</div><div id="debug-log"></div>';
+            debugPanel.innerHTML = '<div style="color:#ff0;margin-bottom:4px;">🔧 키보드 디버그 v4</div><div id="debug-log"></div>';
             document.body.appendChild(debugPanel);
 
             const debugLog = document.getElementById('debug-log');
@@ -912,71 +914,42 @@
             }
             // ========== 디버그 UI 끝 ==========
 
-            let inputFocused = false;  // 현재 입력창에 포커스 있는지
-            let historyAdded = false;  // 히스토리 추가했는지
+            let historyDepth = 0;  // 추가한 히스토리 개수
 
             log(`초기화 완료`, '#0ff');
 
-            // 입력창 포커스 감지
+            // 입력창 포커스 시 히스토리 2개 추가
+            // (키보드 닫기 1번 소모 + 실수로 한번 더 눌러도 안전)
             document.addEventListener('focusin', (e) => {
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-                    inputFocused = true;
                     log(`focusin: ${e.target.tagName}`, '#aaf');
 
-                    // 포커스 시 히스토리 추가 (한 번만)
-                    if (!historyAdded) {
-                        history.pushState({ keyboard: true }, '');
-                        historyAdded = true;
-                        log(`→ pushState 추가`, '#0f0');
+                    if (historyDepth === 0) {
+                        history.pushState({ kb: 1 }, '');
+                        history.pushState({ kb: 2 }, '');
+                        historyDepth = 2;
+                        log(`→ pushState x2 (depth=${historyDepth})`, '#0f0');
                     }
                 }
             });
 
-            // 입력창 포커스 해제 감지
-            document.addEventListener('focusout', (e) => {
-                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-                    // 약간의 딜레이 후 체크 (다른 입력창으로 이동할 수 있으므로)
-                    setTimeout(() => {
-                        const active = document.activeElement;
-                        const stillInInput = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT');
-                        if (!stillInInput) {
-                            inputFocused = false;
-                            historyAdded = false;
-                            log(`focusout: 입력창 벗어남`, '#faa');
-                        }
-                    }, 100);
-                }
-            });
-
-            // 뒤로가기 이벤트 처리
+            // 뒤로가기 이벤트
             window.addEventListener('popstate', (e) => {
-                log(`🔙 popstate! inputFocused=${inputFocused} historyAdded=${historyAdded}`, '#f0f');
+                log(`🔙 popstate! depth=${historyDepth}`, '#f0f');
 
-                // 입력창에 포커스가 있으면 = 키보드가 열려있는 상태
-                // 뒤로가기 차단하고 키보드만 닫기
-                if (inputFocused || historyAdded) {
-                    log(`→ 입력 중, 뒤로가기 차단`, '#ff0');
-
-                    // 히스토리 복구
-                    history.pushState({ keyboard: true }, '');
-
-                    // 포커스 해제 (키보드 닫기)
-                    const active = document.activeElement;
-                    if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT')) {
-                        active.blur();
-                        log(`→ blur() 호출`, '#0f0');
-                    }
-
-                    inputFocused = false;
-                    historyAdded = false;
+                if (historyDepth > 0) {
+                    historyDepth--;
+                    log(`→ 내부 뒤로가기 소모 (남은=${historyDepth})`, '#ff0');
+                    // 페이지 이탈 없이 종료
+                    // 키보드는 Android 시스템이 닫아줌
                     return;
                 }
 
-                // 진짜 뒤로가기
+                // depth가 0이면 진짜 뒤로가기 허용
                 log(`→ 진짜 뒤로가기`, '#0f0');
             });
 
-            log(`v3 리스너 등록 완료`, '#0ff');
+            log(`v4 리스너 등록 완료`, '#0ff');
         })();
 
         // Genre selection
