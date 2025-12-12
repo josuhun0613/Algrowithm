@@ -222,10 +222,46 @@
         .step-content.active {
             display: block;
         }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1a1a1a;
+            color: white;
+            padding: 16px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast i {
+            color: #10b981;
+        }
     </style>
 </head>
 
 <body class="antialiased min-h-screen">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-check-circle"></i>
+        <span id="toast-message">복사되었습니다!</span>
+    </div>
 
     <!-- Navigation -->
     <nav class="fixed w-full z-50 header-blur transition-all duration-300">
@@ -450,17 +486,23 @@
                             <div>
                                 <label class="block text-sm font-bold mb-2">6. 전체 분량 (A5 기준)</label>
                                 <select id="page-count" class="form-input form-select">
+                                    <option value="20-40페이지">20-40페이지 (소책자/짧은 글)</option>
+                                    <option value="40-60페이지">40-60페이지 (미니북)</option>
+                                    <option value="60-80페이지">60-80페이지 (포토에세이)</option>
+                                    <option value="80-100페이지" selected>80-100페이지 (일반)</option>
                                     <option value="100-150페이지">100-150페이지 (에세이/시집)</option>
-                                    <option value="150-200페이지" selected>150-200페이지 (일반)</option>
-                                    <option value="200-250페이지">200-250페이지 (전문서)</option>
-                                    <option value="250-300페이지">250-300페이지 (대작)</option>
+                                    <option value="150-200페이지">150-200페이지 (전문서)</option>
+                                    <option value="200-300페이지">200-300페이지 (대작)</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-sm font-bold mb-2">7. 문단 형식</label>
                                 <select id="paragraph-style" class="form-input form-select">
-                                    <option value="A타입: 전통적 문단">A타입: 전통적 문단</option>
-                                    <option value="B타입: 시적 행갈이">B타입: 시적 행갈이</option>
+                                    <option value="전통적 문단 (들여쓰기)">전통적 문단 (들여쓰기)</option>
+                                    <option value="시적 행갈이 (줄바꿈)">시적 행갈이 (줄바꿈)</option>
+                                    <option value="대화체 중심">대화체 중심</option>
+                                    <option value="짧은 문장 나열">짧은 문장 나열</option>
+                                    <option value="블로그/SNS 스타일">블로그/SNS 스타일</option>
                                 </select>
                             </div>
                         </div>
@@ -513,9 +555,6 @@
                     <div class="flex gap-4 mt-8">
                         <button onclick="resetAll()" class="flex-1 py-4 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-colors">
                             <i class="fa-solid fa-rotate-left mr-2"></i> 처음부터 다시
-                        </button>
-                        <button onclick="copyPrompt()" class="flex-1 py-4 bg-text-dark text-white rounded-xl font-bold hover:bg-soft-gold transition-colors">
-                            <i class="fa-solid fa-copy mr-2"></i> 프롬프트 복사
                         </button>
                     </div>
 
@@ -802,15 +841,30 @@ ${worldBuildingContent}
 ✅ **사용법**: 위 프롬프트를 AI에 붙여넣은 후 → "시작" 입력`;
         }
 
+        // Show toast notification
+        function showToast(message = '복사되었습니다!') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = message;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
         // Copy prompt
         function copyPrompt() {
             const prompt = document.getElementById('result-prompt').textContent;
             navigator.clipboard.writeText(prompt).then(() => {
+                // Update button state
                 const btn = document.getElementById('copy-btn');
                 const originalHTML = btn.innerHTML;
                 btn.innerHTML = '<i class="fa-solid fa-check"></i> 복사됨!';
                 btn.classList.remove('bg-soft-gold');
                 btn.classList.add('bg-green-500');
+
+                // Show toast
+                showToast('프롬프트가 클립보드에 복사되었습니다!');
 
                 setTimeout(() => {
                     btn.innerHTML = originalHTML;
