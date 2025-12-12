@@ -876,10 +876,14 @@
             }
         }
 
-        // 모바일 키보드 뒤로가기 처리 (갤럭시/안드로이드 호환)
-        // 핵심: 갤럭시에서 blur()로는 키보드가 안 닫힘
-        // 해결: 키보드 닫기 버튼 = Android 시스템이 키보드를 닫음 + popstate 발생
-        // 우리는 그냥 페이지 이탈만 방지하면 됨 (키보드는 시스템이 닫아줌)
+        // 모바일 키보드 뒤로가기 처리 (갤럭시 S25 / One UI 7 호환)
+        //
+        // 리서치 결과:
+        // 1. 삼성 네비게이션 바의 "키보드 숨기기 버튼"은 popstate 발생 + 키보드 안닫음
+        // 2. blur()는 Android Chrome에서 키보드를 닫지 못함
+        // 3. navigator.virtualKeyboard.hide()도 Android에서 작동 안함 (W3C 이슈)
+        //
+        // 해결책: readOnly + 숨겨진 버튼 포커스로 키보드 강제 닫기
         (function initMobileKeyboard() {
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             if (!isMobile) return;
@@ -901,7 +905,7 @@
                 max-height: 30vh;
                 overflow-y: auto;
             `;
-            debugPanel.innerHTML = '<div style="color:#ff0;margin-bottom:4px;">🔧 키보드 디버그 v4</div><div id="debug-log"></div>';
+            debugPanel.innerHTML = '<div style="color:#ff0;margin-bottom:4px;">🔧 키보드 디버그 v5</div><div id="debug-log"></div>';
             document.body.appendChild(debugPanel);
 
             const debugLog = document.getElementById('debug-log');
@@ -914,24 +918,60 @@
             }
             // ========== 디버그 UI 끝 ==========
 
-            let historyDepth = 0;  // 추가한 히스토리 개수
+            // 키보드 강제 닫기용 숨겨진 버튼 생성
+            const hiddenBtn = document.createElement('button');
+            hiddenBtn.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;pointer-events:none;';
+            hiddenBtn.setAttribute('tabindex', '-1');
+            document.body.appendChild(hiddenBtn);
 
-            log(`초기화 완료`, '#0ff');
+            let historyDepth = 0;
+            let lastFocusedInput = null;
 
-            // 입력창 포커스 시 히스토리 2개 추가
-            // (키보드 닫기 1번 소모 + 실수로 한번 더 눌러도 안전)
+            log(`v5 초기화`, '#0ff');
+
+            // 입력창 포커스 시 히스토리 추가
             document.addEventListener('focusin', (e) => {
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                    lastFocusedInput = e.target;
                     log(`focusin: ${e.target.tagName}`, '#aaf');
 
                     if (historyDepth === 0) {
                         history.pushState({ kb: 1 }, '');
                         history.pushState({ kb: 2 }, '');
                         historyDepth = 2;
-                        log(`→ pushState x2 (depth=${historyDepth})`, '#0f0');
+                        log(`→ pushState x2`, '#0f0');
                     }
                 }
             });
+
+            // 키보드 강제 닫기 함수
+            function forceCloseKeyboard() {
+                if (!lastFocusedInput) return;
+
+                log(`키보드 강제 닫기 시도`, '#ff0');
+
+                // 1단계: readOnly로 설정하여 키보드 재오픈 방지
+                const wasReadOnly = lastFocusedInput.readOnly;
+                lastFocusedInput.readOnly = true;
+
+                // 2단계: 숨겨진 버튼으로 포커스 이동 (버튼은 키보드를 열지 않음)
+                hiddenBtn.focus();
+                log(`→ 숨겨진 버튼으로 포커스 이동`, '#0f0');
+
+                // 3단계: 버튼 blur
+                setTimeout(() => {
+                    hiddenBtn.blur();
+                    log(`→ 버튼 blur`, '#0f0');
+
+                    // 4단계: readOnly 복구 (약간의 딜레이 후)
+                    setTimeout(() => {
+                        if (lastFocusedInput) {
+                            lastFocusedInput.readOnly = wasReadOnly;
+                            log(`→ readOnly 복구`, '#0f0');
+                        }
+                    }, 300);
+                }, 50);
+            }
 
             // 뒤로가기 이벤트
             window.addEventListener('popstate', (e) => {
@@ -939,17 +979,17 @@
 
                 if (historyDepth > 0) {
                     historyDepth--;
-                    log(`→ 내부 뒤로가기 소모 (남은=${historyDepth})`, '#ff0');
-                    // 페이지 이탈 없이 종료
-                    // 키보드는 Android 시스템이 닫아줌
+                    log(`→ 내부 뒤로가기 (남은=${historyDepth})`, '#ff0');
+
+                    // 키보드 강제 닫기 시도
+                    forceCloseKeyboard();
                     return;
                 }
 
-                // depth가 0이면 진짜 뒤로가기 허용
                 log(`→ 진짜 뒤로가기`, '#0f0');
             });
 
-            log(`v4 리스너 등록 완료`, '#0ff');
+            log(`v5 리스너 등록 완료`, '#0ff');
         })();
 
         // Genre selection
