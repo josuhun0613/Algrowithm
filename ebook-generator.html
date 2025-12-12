@@ -968,32 +968,35 @@
                     history.pushState({ keyboard: true }, '');
                     log(`→ pushState로 뒤로가기 방지`, '#0f0');
 
-                    // 항상 blur 시도 (재포커스 방지)
+                    // 키보드 닫기: 스크롤 트릭 사용
+                    log(`→ 키보드 닫기 시도`, '#0f0');
+
+                    // 방법: 페이지를 살짝 스크롤하여 키보드 강제 닫기
+                    const scrollY = window.scrollY;
+                    window.scrollTo(0, scrollY + 1);
+
                     setTimeout(() => {
                         const activeEl = document.activeElement;
                         log(`→ activeElement: ${activeEl?.tagName}#${activeEl?.id || '?'}`, '#fff');
+
                         if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT')) {
-                            // readonly 속성 임시 추가하여 재포커스 시 키보드 안뜨게
-                            const wasReadonly = activeEl.readOnly;
-                            activeEl.readOnly = true;
+                            // inputmode를 none으로 변경하여 키보드 차단
+                            const prevInputMode = activeEl.inputMode;
+                            activeEl.inputMode = 'none';
                             activeEl.blur();
-                            log(`→ blur() + readonly`, '#0f0');
+                            log(`→ blur() + inputMode=none`, '#0f0');
 
-                            // 포커스를 버튼으로 이동 (키보드 안뜸)
-                            const btn = document.querySelector('button');
-                            if (btn) {
-                                btn.focus();
-                                btn.blur();
-                                log(`→ 버튼으로 포커스 이동`, '#0f0');
-                            }
-
-                            // readonly 복구 (약간의 딜레이 후)
+                            // 원래 inputMode 복구
                             setTimeout(() => {
-                                activeEl.readOnly = wasReadonly;
-                                log(`→ readonly 복구`, '#0f0');
-                            }, 150);
+                                activeEl.inputMode = prevInputMode || '';
+                                log(`→ inputMode 복구`, '#0f0');
+                            }, 300);
                         }
-                    }, 50);
+
+                        // 스크롤 복구
+                        window.scrollTo(0, scrollY);
+                        log(`→ 스크롤 복구`, '#0f0');
+                    }, 10);
                 } else {
                     log(`→ 뒤로가기 허용`, '#ff0');
                 }
