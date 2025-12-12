@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-book PDF 생성기 - Algrowithm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'soft-gold': '#d4af37',
+                        'rich-black': '#0a0a0a',
+                        'off-white': '#fcfcfc',
+                    },
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Noto+Serif+KR:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- html2pdf.js for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #f3f4f6;
+            color: #0a0a0a;
+        }
+
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #d4af37;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Book Preview Styles */
+        .book-preview {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border-radius: 16px;
+            padding: 24px;
+            min-height: 400px;
+        }
+
+        .book-page {
+            background: white;
+            aspect-ratio: 2/3;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        /* PDF Page Styles */
+        .pdf-page {
+            width: 140mm;
+            height: 210mm;
+            background: white;
+            font-family: 'Noto Serif KR', serif;
+            color: #1a1a1a;
+            line-height: 1.8;
+            page-break-after: always;
+        }
+
+        .pdf-cover {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .pdf-chapter-title {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* Color Picker */
+        .color-option {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .color-option:hover,
+        .color-option.selected {
+            border-color: #d4af37;
+            transform: scale(1.1);
+        }
+
+        /* Template Selection */
+        .template-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .template-card:hover,
+        .template-card.selected {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        /* Step indicator */
+        .step-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* Accordion */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .accordion-content.open {
+            max-height: 500px;
+        }
+
+        /* Preview content styling */
+        .preview-cover {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Page navigation */
+        .page-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .page-dot.active {
+            background: #d4af37;
+            transform: scale(1.3);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 px-6 py-3" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="index.html"
+                class="text-lg font-serif font-bold text-rich-black hover:text-soft-gold transition-colors">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Algrowithm
+            </a>
+            <div class="flex gap-3 flex-wrap">
+                <a href="workbook_1.html"
+                    class="px-3 py-1.5 bg-white text-gray-400 hover:text-rich-black rounded-full text-xs font-bold transition-colors">Session 1</a>
+                <a href="workbook_2.html"
+                    class="px-3 py-1.5 bg-white text-gray-400 hover:text-rich-black rounded-full text-xs font-bold transition-colors">Session 2</a>
+                <a href="workbook_3.html"
+                    class="px-3 py-1.5 bg-white text-gray-400 hover:text-rich-black rounded-full text-xs font-bold transition-colors">Session 3</a>
+                <a href="ebook-pdf-generator.html"
+                    class="px-3 py-1.5 bg-soft-gold/10 text-soft-gold hover:bg-soft-gold hover:text-white rounded-full text-xs font-bold transition-colors border border-soft-gold">
+                    <i class="fa-solid fa-book mr-1"></i>E-book PDF</a>
+            </div>
+            <div class="w-20"></div>
+        </div>
+    </nav>
+    <div class="h-14"></div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center gap-2 bg-soft-gold/10 text-soft-gold px-4 py-1.5 rounded-full text-sm font-bold mb-4">
+                <i class="fa-solid fa-book"></i>
+                <span>E-book PDF Generator</span>
+            </div>
+            <h1 class="text-2xl md:text-4xl font-serif font-bold text-rich-black mb-3">
+                나만의 전자책 PDF 만들기
+            </h1>
+            <p class="text-gray-500 text-sm max-w-xl mx-auto">
+                AI가 당신의 이야기를 담은 전자책을 만들어 드립니다.<br>표지, 목차, 본문이 자동으로 생성됩니다.
+            </p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-6">
+            <!-- Left: Settings Panel -->
+            <div class="space-y-5">
+
+                <!-- STEP 1: Basic Info -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm">
+                    <h2 class="text-base font-bold text-rich-black mb-4 flex items-center gap-2">
+                        <span class="step-circle bg-rich-black text-white">1</span>
+                        기본 정보
+                    </h2>
+
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">책 제목 *</label>
+                            <input type="text" id="bookTitle" placeholder="예: 나의 성장 이야기"
+                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">부제목 (선택)</label>
+                            <input type="text" id="bookSubtitle" placeholder="예: 평범한 직장인에서 브랜드가 되기까지"
+                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none text-sm">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">저자명 *</label>
+                                <input type="text" id="authorName" placeholder="홍길동"
+                                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">시작 페이지</label>
+                                <input type="number" id="startPage" value="1" min="1"
+                                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none text-sm">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Cover Settings -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm">
+                    <h2 class="text-base font-bold text-rich-black mb-4 flex items-center gap-2">
+                        <span class="step-circle bg-rich-black text-white">2</span>
+                        표지 설정
+                    </h2>
+
+                    <div class="space-y-3">
+                        <!-- Cover Type Selection -->
+                        <div class="flex gap-4">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="coverType" value="generate" checked class="accent-soft-gold">
+                                <span class="text-sm">새 표지 생성</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="coverType" value="upload" class="accent-soft-gold">
+                                <span class="text-sm">이미지 업로드</span>
+                            </label>
+                        </div>
+
+                        <!-- Generate Cover Options -->
+                        <div id="generateCoverOptions">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">배경 색상</label>
+                            <div class="flex gap-2 flex-wrap">
+                                <div class="color-option selected" style="background: #1a1a1a" data-color="#1a1a1a"></div>
+                                <div class="color-option" style="background: #1e3a5f" data-color="#1e3a5f"></div>
+                                <div class="color-option" style="background: #2d4a3e" data-color="#2d4a3e"></div>
+                                <div class="color-option" style="background: #4a3728" data-color="#4a3728"></div>
+                                <div class="color-option" style="background: #d4af37" data-color="#d4af37"></div>
+                                <div class="color-option" style="background: #8b5a6b" data-color="#8b5a6b"></div>
+                                <div class="color-option" style="background: #f5f5f5; border: 1px solid #ddd" data-color="#f5f5f5"></div>
+                            </div>
+                        </div>
+
+                        <!-- Upload Cover Options -->
+                        <div id="uploadCoverOptions" class="hidden">
+                            <div class="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center cursor-pointer hover:border-soft-gold transition-colors"
+                                onclick="document.getElementById('coverImageInput').click()">
+                                <input type="file" id="coverImageInput" accept="image/*" class="hidden" onchange="handleCoverUpload(event)">
+                                <div id="coverUploadPlaceholder">
+                                    <i class="fa-solid fa-image text-2xl text-gray-300 mb-2"></i>
+                                    <p class="text-gray-500 text-sm">클릭하여 표지 이미지 업로드</p>
+                                    <p class="text-gray-400 text-xs mt-1">JPG, PNG (권장: 800x1200px)</p>
+                                </div>
+                                <div id="coverPreview" class="hidden">
+                                    <img id="coverPreviewImg" class="max-h-32 mx-auto rounded">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Page Selection -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm">
+                    <h2 class="text-base font-bold text-rich-black mb-4 flex items-center gap-2">
+                        <span class="step-circle bg-rich-black text-white">3</span>
+                        포함할 페이지
+                    </h2>
+
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-lg text-sm">
+                            <input type="checkbox" id="includeCover" checked disabled class="accent-soft-gold w-4 h-4">
+                            <span class="font-medium">표지</span>
+                            <span class="text-xs text-gray-400">(필수)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2.5 hover:bg-gray-50 rounded-lg cursor-pointer text-sm">
+                            <input type="checkbox" id="includeHalfTitle" checked class="accent-soft-gold w-4 h-4">
+                            <span>속표지</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2.5 hover:bg-gray-50 rounded-lg cursor-pointer text-sm">
+                            <input type="checkbox" id="includeCopyright" checked class="accent-soft-gold w-4 h-4">
+                            <span>저작권 페이지</span>
+                        </label>
+
+                        <!-- Dedication -->
+                        <div class="border border-gray-100 rounded-lg overflow-hidden">
+                            <label class="flex items-center gap-3 p-2.5 hover:bg-gray-50 cursor-pointer text-sm" onclick="toggleAccordion('dedicationContent')">
+                                <input type="checkbox" id="includeDedication" class="accent-soft-gold w-4 h-4">
+                                <span>헌정사</span>
+                                <i class="fa-solid fa-chevron-down text-gray-400 text-xs ml-auto"></i>
+                            </label>
+                            <div id="dedicationContent" class="accordion-content px-3">
+                                <textarea id="dedicationText" rows="2" placeholder="예: 이 책을 나의 가족에게 바칩니다..."
+                                    class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-soft-gold focus:outline-none mb-2"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Preface -->
+                        <div class="border border-gray-100 rounded-lg overflow-hidden">
+                            <label class="flex items-center gap-3 p-2.5 hover:bg-gray-50 cursor-pointer text-sm" onclick="toggleAccordion('prefaceContent')">
+                                <input type="checkbox" id="includePreface" class="accent-soft-gold w-4 h-4">
+                                <span>서문</span>
+                                <span class="text-xs text-soft-gold ml-1">AI 생성</span>
+                                <i class="fa-solid fa-chevron-down text-gray-400 text-xs ml-auto"></i>
+                            </label>
+                            <div id="prefaceContent" class="accordion-content px-3">
+                                <textarea id="prefaceText" rows="2" placeholder="직접 입력하거나 비워두면 AI가 생성..."
+                                    class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-soft-gold focus:outline-none mb-2"></textarea>
+                            </div>
+                        </div>
+
+                        <label class="flex items-center gap-3 p-2.5 hover:bg-gray-50 rounded-lg cursor-pointer text-sm">
+                            <input type="checkbox" id="includeToc" checked class="accent-soft-gold w-4 h-4">
+                            <span>목차</span>
+                            <span class="text-xs text-gray-400">(자동 생성)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2.5 bg-soft-gold/5 rounded-lg text-sm">
+                            <input type="checkbox" id="includeChapters" checked disabled class="accent-soft-gold w-4 h-4">
+                            <span class="font-medium">본문 챕터</span>
+                            <span class="text-xs text-gray-400">(필수)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2.5 hover:bg-gray-50 rounded-lg cursor-pointer text-sm">
+                            <input type="checkbox" id="includeEpilogue" class="accent-soft-gold w-4 h-4">
+                            <span>에필로그</span>
+                            <span class="text-xs text-soft-gold ml-1">AI 생성</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2.5 hover:bg-gray-50 rounded-lg cursor-pointer text-sm">
+                            <input type="checkbox" id="includeAuthorBio" checked class="accent-soft-gold w-4 h-4">
+                            <span>저자 소개</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Content Generation -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm">
+                    <h2 class="text-base font-bold text-rich-black mb-4 flex items-center gap-2">
+                        <span class="step-circle bg-rich-black text-white">4</span>
+                        본문 생성
+                    </h2>
+
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">책 주제/내용 설명 *</label>
+                            <textarea id="bookTopic" rows="3" placeholder="예: 10년간 마케팅 업계에서 일하며 깨달은 개인 브랜딩의 중요성과 실천 방법에 대한 자기계발서"
+                                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none text-sm"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">챕터 수</label>
+                            <select id="chapterCount" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none text-sm">
+                                <option value="3">3개</option>
+                                <option value="5" selected>5개</option>
+                                <option value="7">7개</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 5: Design -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm">
+                    <h2 class="text-base font-bold text-rich-black mb-4 flex items-center gap-2">
+                        <span class="step-circle bg-rich-black text-white">5</span>
+                        디자인
+                    </h2>
+
+                    <div class="grid grid-cols-3 gap-3 mb-4">
+                        <div class="template-card selected" data-template="minimal" onclick="selectTemplate('minimal')">
+                            <div class="aspect-[2/3] bg-gray-50 rounded-lg mb-2 flex flex-col items-center justify-center p-3">
+                                <div class="w-full h-1 bg-gray-300 mb-1"></div>
+                                <div class="w-3/4 h-0.5 bg-gray-200 mb-2"></div>
+                                <div class="w-full space-y-0.5">
+                                    <div class="h-0.5 bg-gray-200"></div>
+                                    <div class="h-0.5 bg-gray-200"></div>
+                                </div>
+                            </div>
+                            <p class="text-xs font-medium text-center">미니멀</p>
+                        </div>
+                        <div class="template-card" data-template="classic" onclick="selectTemplate('classic')">
+                            <div class="aspect-[2/3] bg-amber-50 rounded-lg mb-2 flex flex-col items-center justify-center p-3 border border-amber-200">
+                                <div class="w-6 h-6 border border-amber-300 rounded-full mb-1"></div>
+                                <div class="w-full h-1 bg-amber-300 mb-1"></div>
+                                <div class="w-full space-y-0.5">
+                                    <div class="h-0.5 bg-amber-200"></div>
+                                    <div class="h-0.5 bg-amber-200"></div>
+                                </div>
+                            </div>
+                            <p class="text-xs font-medium text-center">클래식</p>
+                        </div>
+                        <div class="template-card" data-template="modern" onclick="selectTemplate('modern')">
+                            <div class="aspect-[2/3] bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg mb-2 flex flex-col items-center justify-center p-3">
+                                <div class="w-full h-1 bg-soft-gold mb-1"></div>
+                                <div class="w-3/4 h-0.5 bg-gray-600 mb-2"></div>
+                                <div class="w-full space-y-0.5">
+                                    <div class="h-0.5 bg-gray-700"></div>
+                                    <div class="h-0.5 bg-gray-700"></div>
+                                </div>
+                            </div>
+                            <p class="text-xs font-medium text-center">모던</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">폰트</label>
+                            <select id="bodyFont" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-soft-gold focus:outline-none">
+                                <option value="noto-serif">명조체</option>
+                                <option value="pretendard">고딕체</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">크기</label>
+                            <select id="fontSize" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-soft-gold focus:outline-none">
+                                <option value="10">10pt</option>
+                                <option value="11" selected>11pt</option>
+                                <option value="12">12pt</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generate Button -->
+                <button id="generateBtn" onclick="generateEbook()"
+                    class="w-full py-4 bg-rich-black text-white rounded-xl font-bold text-lg transition-all hover:bg-soft-gold flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span id="generateBtnText">E-book 생성하기</span>
+                    <div id="generateSpinner" class="loading-spinner hidden"></div>
+                </button>
+            </div>
+
+            <!-- Right: Preview Panel -->
+            <div class="lg:sticky lg:top-20 space-y-5">
+                <div class="book-preview">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-white font-bold flex items-center gap-2 text-sm">
+                            <i class="fa-solid fa-eye"></i> 미리보기
+                        </h3>
+                        <div class="flex items-center gap-2">
+                            <button onclick="prevPage()" class="w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full text-white text-sm transition-colors">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </button>
+                            <span id="pageIndicator" class="text-white/60 text-sm min-w-[50px] text-center">1 / 1</span>
+                            <button onclick="nextPage()" class="w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full text-white text-sm transition-colors">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Page dots -->
+                    <div id="pageDots" class="flex justify-center gap-1.5 mb-4">
+                        <div class="page-dot active"></div>
+                    </div>
+
+                    <div class="flex justify-center">
+                        <div id="bookPagePreview" class="book-page w-full max-w-[240px]">
+                            <div class="preview-cover h-full" style="background: #1a1a1a;">
+                                <div class="flex-1 flex flex-col justify-center">
+                                    <p class="text-white/60 text-[10px] tracking-widest uppercase mb-3">E-BOOK</p>
+                                    <h1 class="text-white text-lg font-serif font-bold mb-2">책 제목</h1>
+                                    <p class="text-white/60 text-xs">부제목이 여기에</p>
+                                </div>
+                                <p class="text-white/40 text-xs mt-auto">저자명</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Download Button -->
+                <button id="downloadBtn" onclick="downloadPDF()" disabled
+                    class="w-full py-4 bg-soft-gold text-white rounded-xl font-bold text-lg transition-all hover:bg-yellow-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-download"></i>
+                    <span id="downloadBtnText">PDF 다운로드</span>
+                </button>
+
+                <!-- Info -->
+                <div class="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                    <h3 class="text-sm font-bold text-blue-800 mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-info-circle"></i> 안내
+                    </h3>
+                    <ul class="text-xs text-blue-700 space-y-1">
+                        <li>• 생성에 30초~1분 정도 소요됩니다</li>
+                        <li>• PDF는 가로:세로 = 2:3 비율입니다</li>
+                        <li>• 모바일에서도 생성/다운로드 가능</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Hidden PDF Content -->
+    <div id="pdfContent" class="hidden" style="position: absolute; left: -9999px;">
+    </div>
+
+    <script>
+        // Global State
+        let ebookData = null;
+        let currentPage = 0;
+        let totalPages = 1;
+        let selectedCoverColor = '#1a1a1a';
+        let selectedTemplate = 'minimal';
+        let uploadedCoverImage = null;
+        let generatedPages = [];
+
+        // Cover type toggle
+        document.querySelectorAll('input[name="coverType"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                document.getElementById('generateCoverOptions').classList.toggle('hidden', e.target.value === 'upload');
+                document.getElementById('uploadCoverOptions').classList.toggle('hidden', e.target.value === 'generate');
+            });
+        });
+
+        // Color picker
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.color-option').forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedCoverColor = option.dataset.color;
+                updatePreview();
+            });
+        });
+
+        // Template selection
+        function selectTemplate(template) {
+            selectedTemplate = template;
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.classList.toggle('selected', card.dataset.template === template);
+            });
+        }
+
+        // Accordion toggle
+        function toggleAccordion(id) {
+            const content = document.getElementById(id);
+            content.classList.toggle('open');
+        }
+
+        // Cover image upload
+        function handleCoverUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedCoverImage = e.target.result;
+                    document.getElementById('coverUploadPlaceholder').classList.add('hidden');
+                    document.getElementById('coverPreview').classList.remove('hidden');
+                    document.getElementById('coverPreviewImg').src = uploadedCoverImage;
+                    updatePreview();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Check if color is light
+        function isLightColor(color) {
+            const hex = color.replace('#', '');
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+            return (r * 299 + g * 587 + b * 114) / 1000 > 155;
+        }
+
+        // Update preview
+        function updatePreview() {
+            const title = document.getElementById('bookTitle').value || '책 제목';
+            const subtitle = document.getElementById('bookSubtitle').value || '부제목이 여기에';
+            const author = document.getElementById('authorName').value || '저자명';
+            const coverType = document.querySelector('input[name="coverType"]:checked').value;
+
+            let coverHtml;
+            if (coverType === 'upload' && uploadedCoverImage) {
+                coverHtml = `<img src="${uploadedCoverImage}" class="w-full h-full object-cover">`;
+            } else {
+                const textColor = isLightColor(selectedCoverColor) ? '#1a1a1a' : '#ffffff';
+                coverHtml = `
+                    <div class="preview-cover h-full" style="background: ${selectedCoverColor};">
+                        <div class="flex-1 flex flex-col justify-center">
+                            <p style="color: ${textColor}; opacity: 0.6;" class="text-[10px] tracking-widest uppercase mb-3">E-BOOK</p>
+                            <h1 style="color: ${textColor};" class="text-lg font-serif font-bold mb-2">${title}</h1>
+                            <p style="color: ${textColor}; opacity: 0.6;" class="text-xs">${subtitle}</p>
+                        </div>
+                        <p style="color: ${textColor}; opacity: 0.4;" class="text-xs mt-auto">${author}</p>
+                    </div>
+                `;
+            }
+
+            if (generatedPages.length === 0) {
+                document.getElementById('bookPagePreview').innerHTML = coverHtml;
+            }
+        }
+
+        // Live preview
+        ['bookTitle', 'bookSubtitle', 'authorName'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updatePreview);
+        });
+
+        // Page navigation
+        function updatePageDots() {
+            const dotsContainer = document.getElementById('pageDots');
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i < totalPages; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'page-dot' + (i === currentPage ? ' active' : '');
+                dot.onclick = () => goToPage(i);
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        function goToPage(index) {
+            if (index >= 0 && index < totalPages) {
+                currentPage = index;
+                showPage(currentPage);
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 0) goToPage(currentPage - 1);
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages - 1) goToPage(currentPage + 1);
+        }
+
+        function showPage(index) {
+            document.getElementById('pageIndicator').textContent = `${index + 1} / ${totalPages}`;
+            updatePageDots();
+            if (generatedPages[index]) {
+                document.getElementById('bookPagePreview').innerHTML = generatedPages[index].preview;
+            }
+        }
+
+        // Generate E-book
+        async function generateEbook() {
+            const title = document.getElementById('bookTitle').value.trim();
+            const author = document.getElementById('authorName').value.trim();
+            const topic = document.getElementById('bookTopic').value.trim();
+
+            if (!title || !author) {
+                alert('책 제목과 저자명은 필수입니다.');
+                return;
+            }
+
+            if (!topic) {
+                alert('책 주제/내용 설명을 입력해주세요.');
+                return;
+            }
+
+            // Show loading
+            const btn = document.getElementById('generateBtn');
+            const btnText = document.getElementById('generateBtnText');
+            const spinner = document.getElementById('generateSpinner');
+            btn.disabled = true;
+            btnText.textContent = '생성 중...';
+            spinner.classList.remove('hidden');
+
+            try {
+                const formData = {
+                    title: title,
+                    subtitle: document.getElementById('bookSubtitle').value.trim(),
+                    author: author,
+                    topic: topic,
+                    chapterCount: parseInt(document.getElementById('chapterCount').value),
+                    includeHalfTitle: document.getElementById('includeHalfTitle').checked,
+                    includeCopyright: document.getElementById('includeCopyright').checked,
+                    includeDedication: document.getElementById('includeDedication').checked,
+                    dedicationText: document.getElementById('dedicationText').value.trim(),
+                    includePreface: document.getElementById('includePreface').checked,
+                    prefaceText: document.getElementById('prefaceText').value.trim(),
+                    includeToc: document.getElementById('includeToc').checked,
+                    includeEpilogue: document.getElementById('includeEpilogue').checked,
+                    includeAuthorBio: document.getElementById('includeAuthorBio').checked,
+                    template: selectedTemplate,
+                    coverColor: selectedCoverColor,
+                    startPage: parseInt(document.getElementById('startPage').value) || 1
+                };
+
+                // Call API
+                const response = await fetch('/api/generate-ebook-pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('API 요청 실패');
+                }
+
+                const data = await response.json();
+                ebookData = data;
+
+                // Build pages
+                buildEbookPages(data, formData);
+
+                // Enable download
+                document.getElementById('downloadBtn').disabled = false;
+                alert('E-book이 생성되었습니다! 미리보기를 확인하고 PDF를 다운로드하세요.');
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('E-book 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'E-book 생성하기';
+                spinner.classList.add('hidden');
+            }
+        }
+
+        // Build pages
+        function buildEbookPages(data, formData) {
+            generatedPages = [];
+            const textColor = isLightColor(selectedCoverColor) ? '#1a1a1a' : '#ffffff';
+            const coverType = document.querySelector('input[name="coverType"]:checked').value;
+
+            // 1. Cover
+            if (coverType === 'upload' && uploadedCoverImage) {
+                generatedPages.push({
+                    preview: `<img src="${uploadedCoverImage}" class="w-full h-full object-cover">`,
+                    pdf: `<div class="pdf-page"><img src="${uploadedCoverImage}" style="width:100%;height:100%;object-fit:cover;"></div>`
+                });
+            } else {
+                generatedPages.push({
+                    preview: `
+                        <div class="preview-cover h-full" style="background: ${selectedCoverColor};">
+                            <div class="flex-1 flex flex-col justify-center">
+                                <p style="color: ${textColor}; opacity: 0.6;" class="text-[10px] tracking-widest uppercase mb-3">E-BOOK</p>
+                                <h1 style="color: ${textColor};" class="text-lg font-serif font-bold mb-2">${formData.title}</h1>
+                                ${formData.subtitle ? `<p style="color: ${textColor}; opacity: 0.6;" class="text-xs">${formData.subtitle}</p>` : ''}
+                            </div>
+                            <p style="color: ${textColor}; opacity: 0.4;" class="text-xs mt-auto">${formData.author}</p>
+                        </div>
+                    `,
+                    pdf: `
+                        <div class="pdf-page" style="background: ${selectedCoverColor};">
+                            <div style="height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:40px;">
+                                <p style="color: ${textColor}; opacity: 0.6; font-size:10px; letter-spacing:3px; text-transform:uppercase; margin-bottom:20px;">E-BOOK</p>
+                                <h1 style="color: ${textColor}; font-size:28px; font-weight:bold; margin-bottom:10px; font-family:'Playfair Display',serif;">${formData.title}</h1>
+                                ${formData.subtitle ? `<p style="color: ${textColor}; opacity: 0.6; font-size:14px;">${formData.subtitle}</p>` : ''}
+                                <p style="color: ${textColor}; opacity: 0.4; font-size:12px; margin-top:auto;">${formData.author}</p>
+                            </div>
+                        </div>
+                    `
+                });
+            }
+
+            // 2. Half Title
+            if (formData.includeHalfTitle) {
+                generatedPages.push({
+                    preview: `<div class="preview-cover h-full bg-white"><div class="flex-1 flex flex-col justify-center"><h1 class="text-lg font-serif font-bold text-gray-800">${formData.title}</h1></div></div>`,
+                    pdf: `<div class="pdf-page" style="background:white;display:flex;align-items:center;justify-content:center;"><h1 style="font-size:24px;font-weight:bold;font-family:'Playfair Display',serif;">${formData.title}</h1></div>`
+                });
+            }
+
+            // 3. Copyright
+            if (formData.includeCopyright) {
+                const copyrightHtml = `
+                    <div class="text-[8px] text-gray-500 space-y-1">
+                        <p class="font-bold text-[10px]">${formData.title}</p>
+                        <p>저자: ${formData.author}</p>
+                        <p>발행일: ${new Date().toLocaleDateString('ko-KR')}</p>
+                        <p class="mt-2">© ${new Date().getFullYear()} ${formData.author}</p>
+                        <p>All rights reserved.</p>
+                    </div>
+                `;
+                generatedPages.push({
+                    preview: `<div class="h-full bg-white p-4 flex flex-col justify-end">${copyrightHtml}</div>`,
+                    pdf: `<div class="pdf-page" style="background:white;padding:40px;display:flex;flex-direction:column;justify-content:flex-end;"><div style="font-size:10px;color:#666;line-height:1.6;"><p style="font-weight:bold;font-size:12px;">${formData.title}</p><p>저자: ${formData.author}</p><p>발행일: ${new Date().toLocaleDateString('ko-KR')}</p><p style="margin-top:15px;">© ${new Date().getFullYear()} ${formData.author}. All rights reserved.</p><p>이 책의 저작권은 저자에게 있습니다. 무단 전재 및 복제를 금합니다.</p></div></div>`
+                });
+            }
+
+            // 4. Dedication
+            if (formData.includeDedication && formData.dedicationText) {
+                generatedPages.push({
+                    preview: `<div class="preview-cover h-full bg-white"><div class="flex-1 flex flex-col justify-center"><p class="text-gray-600 italic text-center text-xs leading-relaxed px-4">${formData.dedicationText}</p></div></div>`,
+                    pdf: `<div class="pdf-page" style="background:white;display:flex;align-items:center;justify-content:center;padding:60px;"><p style="font-style:italic;color:#666;text-align:center;line-height:1.8;font-size:14px;">${formData.dedicationText}</p></div>`
+                });
+            }
+
+            // 5. Preface
+            if (formData.includePreface && data.preface) {
+                generatedPages.push({
+                    preview: `<div class="h-full bg-white p-4 overflow-hidden"><h2 class="text-sm font-serif font-bold mb-3 text-gray-800">서문</h2><p class="text-[8px] text-gray-600 leading-relaxed">${data.preface.substring(0, 300)}...</p></div>`,
+                    pdf: `<div class="pdf-page" style="background:white;padding:40px;"><h2 style="font-size:18px;font-weight:bold;margin-bottom:20px;font-family:'Playfair Display',serif;">서문</h2><p style="font-size:11px;color:#333;line-height:1.8;white-space:pre-wrap;">${data.preface}</p></div>`
+                });
+            }
+
+            // 6. Table of Contents
+            if (formData.includeToc && data.chapters) {
+                let tocItems = data.chapters.map((ch, i) =>
+                    `<div class="flex justify-between items-center border-b border-gray-100 py-1"><span class="text-[8px] text-gray-700">Chapter ${i + 1}. ${ch.title}</span><span class="text-[7px] text-gray-400">${formData.startPage + i * 2}</span></div>`
+                ).join('');
+                let tocPdfItems = data.chapters.map((ch, i) =>
+                    `<div style="display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:8px 0;"><span style="font-size:12px;">${i + 1}. ${ch.title}</span><span style="font-size:10px;color:#999;">${formData.startPage + i * 2}</span></div>`
+                ).join('');
+
+                generatedPages.push({
+                    preview: `<div class="h-full bg-white p-4"><h2 class="text-sm font-serif font-bold mb-3 text-gray-800">목차</h2><div class="space-y-1">${tocItems}</div></div>`,
+                    pdf: `<div class="pdf-page" style="background:white;padding:40px;"><h2 style="font-size:20px;font-weight:bold;margin-bottom:30px;font-family:'Playfair Display',serif;">목차</h2><div>${tocPdfItems}</div></div>`
+                });
+            }
+
+            // 7. Chapters
+            if (data.chapters) {
+                data.chapters.forEach((chapter, i) => {
+                    // Chapter title page
+                    generatedPages.push({
+                        preview: `<div class="preview-cover h-full bg-white"><p class="text-soft-gold text-[8px] tracking-widest uppercase mb-1">Chapter ${i + 1}</p><h2 class="text-sm font-serif font-bold text-gray-800">${chapter.title}</h2></div>`,
+                        pdf: `<div class="pdf-page" style="background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;"><p style="color:#d4af37;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Chapter ${i + 1}</p><h2 style="font-size:22px;font-weight:bold;font-family:'Playfair Display',serif;">${chapter.title}</h2></div>`
+                    });
+                    // Chapter content
+                    generatedPages.push({
+                        preview: `<div class="h-full bg-white p-4 overflow-hidden"><p class="text-[8px] text-gray-600 leading-relaxed">${chapter.content.substring(0, 400)}...</p></div>`,
+                        pdf: `<div class="pdf-page" style="background:white;padding:40px;"><p style="font-size:11px;color:#333;line-height:1.9;white-space:pre-wrap;">${chapter.content}</p></div>`
+                    });
+                });
+            }
+
+            // 8. Epilogue
+            if (formData.includeEpilogue && data.epilogue) {
+                generatedPages.push({
+                    preview: `<div class="h-full bg-white p-4 overflow-hidden"><h2 class="text-sm font-serif font-bold mb-3 text-gray-800">에필로그</h2><p class="text-[8px] text-gray-600 leading-relaxed">${data.epilogue.substring(0, 300)}...</p></div>`,
+                    pdf: `<div class="pdf-page" style="background:white;padding:40px;"><h2 style="font-size:18px;font-weight:bold;margin-bottom:20px;font-family:'Playfair Display',serif;">에필로그</h2><p style="font-size:11px;color:#333;line-height:1.8;white-space:pre-wrap;">${data.epilogue}</p></div>`
+                });
+            }
+
+            // 9. Author Bio
+            if (formData.includeAuthorBio) {
+                const bio = data.authorBio || `${formData.author}은(는) 이 책의 저자입니다.`;
+                generatedPages.push({
+                    preview: `<div class="h-full bg-white p-4 flex flex-col justify-center"><h2 class="text-xs font-serif font-bold mb-2 text-gray-800">저자 소개</h2><p class="text-[8px] text-gray-600 leading-relaxed">${bio}</p></div>`,
+                    pdf: `<div class="pdf-page" style="background:white;padding:40px;display:flex;flex-direction:column;justify-content:center;"><h2 style="font-size:16px;font-weight:bold;margin-bottom:15px;font-family:'Playfair Display',serif;">저자 소개</h2><p style="font-size:11px;color:#333;line-height:1.8;">${bio}</p></div>`
+                });
+            }
+
+            totalPages = generatedPages.length;
+            currentPage = 0;
+            showPage(0);
+        }
+
+        // Download PDF
+        async function downloadPDF() {
+            if (generatedPages.length === 0) {
+                alert('먼저 E-book을 생성해주세요.');
+                return;
+            }
+
+            const btn = document.getElementById('downloadBtn');
+            const btnText = document.getElementById('downloadBtnText');
+            btn.disabled = true;
+            btnText.textContent = 'PDF 생성 중...';
+
+            try {
+                const title = document.getElementById('bookTitle').value.trim() || 'ebook';
+                const pdfContainer = document.getElementById('pdfContent');
+
+                // Build PDF HTML
+                let fullHtml = '<div style="font-family: Noto Serif KR, serif;">';
+                generatedPages.forEach(page => {
+                    fullHtml += page.pdf;
+                });
+                fullHtml += '</div>';
+
+                pdfContainer.innerHTML = fullHtml;
+                pdfContainer.style.display = 'block';
+
+                const opt = {
+                    margin: 0,
+                    filename: `${title}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: {
+                        scale: 2,
+                        useCORS: true,
+                        logging: false
+                    },
+                    jsPDF: {
+                        unit: 'mm',
+                        format: [140, 210],
+                        orientation: 'portrait'
+                    },
+                    pagebreak: { mode: 'css', before: '.pdf-page', avoid: 'img' }
+                };
+
+                await html2pdf().set(opt).from(pdfContainer).save();
+
+                pdfContainer.style.display = 'none';
+                pdfContainer.innerHTML = '';
+
+            } catch (error) {
+                console.error('PDF Error:', error);
+                alert('PDF 생성 중 오류가 발생했습니다.');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'PDF 다운로드';
+            }
+        }
+
+        // Initialize
+        updatePreview();
+    </script>
+</body>
+
+</html>
