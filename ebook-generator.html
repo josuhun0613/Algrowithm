@@ -905,7 +905,7 @@
                 max-height: 30vh;
                 overflow-y: auto;
             `;
-            debugPanel.innerHTML = '<div style="color:#ff0;margin-bottom:4px;">🔧 키보드 디버그 v5</div><div id="debug-log"></div>';
+            debugPanel.innerHTML = '<div style="color:#ff0;margin-bottom:4px;">🔧 키보드 디버그 v6</div><div id="debug-log"></div>';
             document.body.appendChild(debugPanel);
 
             const debugLog = document.getElementById('debug-log');
@@ -918,16 +918,10 @@
             }
             // ========== 디버그 UI 끝 ==========
 
-            // 키보드 강제 닫기용 숨겨진 버튼 생성
-            const hiddenBtn = document.createElement('button');
-            hiddenBtn.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;pointer-events:none;';
-            hiddenBtn.setAttribute('tabindex', '-1');
-            document.body.appendChild(hiddenBtn);
-
             let historyDepth = 0;
             let lastFocusedInput = null;
 
-            log(`v5 초기화`, '#0ff');
+            log(`v6 초기화`, '#0ff');
 
             // 입력창 포커스 시 히스토리 추가
             document.addEventListener('focusin', (e) => {
@@ -944,32 +938,45 @@
                 }
             });
 
-            // 키보드 강제 닫기 함수
+            // 키보드 강제 닫기 함수 - 여러 방법 시도
             function forceCloseKeyboard() {
                 if (!lastFocusedInput) return;
 
-                log(`키보드 강제 닫기 시도`, '#ff0');
+                log(`키보드 닫기 시도 (다중 방법)`, '#ff0');
 
-                // 1단계: readOnly로 설정하여 키보드 재오픈 방지
-                const wasReadOnly = lastFocusedInput.readOnly;
-                lastFocusedInput.readOnly = true;
+                const input = lastFocusedInput;
+                const wasReadOnly = input.readOnly;
+                const wasDisabled = input.disabled;
 
-                // 2단계: 숨겨진 버튼으로 포커스 이동 (버튼은 키보드를 열지 않음)
-                hiddenBtn.focus();
-                log(`→ 숨겨진 버튼으로 포커스 이동`, '#0f0');
+                // 방법 1: disabled + blur 조합
+                input.disabled = true;
+                input.blur();
+                log(`→ 방법1: disabled + blur`, '#0f0');
 
-                // 3단계: 버튼 blur
                 setTimeout(() => {
-                    hiddenBtn.blur();
-                    log(`→ 버튼 blur`, '#0f0');
+                    input.disabled = wasDisabled;
 
-                    // 4단계: readOnly 복구 (약간의 딜레이 후)
+                    // 방법 2: 페이지 상단으로 스크롤 (일부 브라우저에서 키보드 닫힘)
+                    const scrollPos = window.scrollY;
+                    window.scrollTo(0, 0);
+                    log(`→ 방법2: 스크롤 트릭`, '#0f0');
+
                     setTimeout(() => {
-                        if (lastFocusedInput) {
-                            lastFocusedInput.readOnly = wasReadOnly;
-                            log(`→ readOnly 복구`, '#0f0');
+                        window.scrollTo(0, scrollPos);
+
+                        // 방법 3: 페이지 내 실제 버튼으로 포커스 이동
+                        const realBtn = document.querySelector('button:not([disabled])');
+                        if (realBtn) {
+                            realBtn.focus();
+                            realBtn.blur();
+                            log(`→ 방법3: 실제 버튼 포커스`, '#0f0');
                         }
-                    }, 300);
+
+                        // 방법 4: body 클릭 시뮬레이션
+                        document.body.click();
+                        log(`→ 방법4: body 클릭`, '#0f0');
+
+                    }, 50);
                 }, 50);
             }
 
