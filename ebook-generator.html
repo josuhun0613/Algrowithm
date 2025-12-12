@@ -779,14 +779,22 @@
             spinner.classList.remove('hidden');
 
             try {
-                // Gemini Vision API 호출
-                const imagePromises = workbookImages.map(img => img.dataUrl.split(',')[1]);
-                const imageParts = imagePromises.map(base64 => ({
-                    inlineData: {
-                        data: base64,
-                        mimeType: 'image/jpeg'
-                    }
-                }));
+                // 이미지 mimeType 자동 감지
+                const imageParts = workbookImages.map(img => {
+                    const dataUrl = img.dataUrl;
+                    const mimeMatch = dataUrl.match(/data:([^;]+);base64,/);
+                    const mimeType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+                    const base64Data = dataUrl.split(',')[1];
+                    return {
+                        inlineData: {
+                            data: base64Data,
+                            mimeType: mimeType
+                        }
+                    };
+                });
+
+                console.log('이미지 개수:', imageParts.length);
+                console.log('첫 번째 이미지 mimeType:', imageParts[0]?.inlineData?.mimeType);
 
                 const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCy8WNQZ7hSH5m-sNPp5T5z3Gkz9xU7cFM', {
                     method: 'POST',
@@ -796,15 +804,18 @@
                             parts: [
                                 ...imageParts,
                                 {
-                                    text: `이 워크지 이미지들을 분석하여 E-book 작성을 위한 핵심 주제와 소재를 추출해주세요.
+                                    text: `이 워크지/워크북 이미지들을 분석해주세요. 손글씨나 인쇄된 텍스트가 있다면 읽어주세요.
+
+이미지가 어둡거나 흐릿해도 최대한 내용을 파악해주세요.
 
 다음 형식으로 응답해주세요:
-1. **핵심 주제**: (한 문장으로 요약)
-2. **세부 소재들**: (쉼표로 구분된 키워드)
+1. **핵심 주제**: (워크지 내용을 바탕으로 한 문장 요약)
+2. **세부 소재들**: (발견된 키워드들, 쉼표로 구분)
 3. **추천 타겟 독자**: (어떤 독자에게 적합할지)
 4. **추천 글쓰기 스타일**: (어떤 톤/스타일이 적합할지)
 
-워크지에서 발견된 개인적인 이야기, 경험, 감정, 가치관 등을 반영하여 E-book의 핵심 주제를 도출해주세요.`
+워크지에서 발견된 개인적인 이야기, 경험, 감정, 가치관 등을 반영하여 E-book의 핵심 주제를 도출해주세요.
+만약 내용을 읽기 어렵다면, 보이는 것을 최대한 설명해주세요.`
                                 }
                             ]
                         }]
@@ -812,6 +823,12 @@
                 });
 
                 const data = await response.json();
+                console.log('API 응답:', data);
+
+                // API 에러 체크
+                if (data.error) {
+                    throw new Error(data.error.message || 'API 오류가 발생했습니다.');
+                }
 
                 if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
                     const analysisResult = data.candidates[0].content.parts[0].text;
@@ -831,12 +848,15 @@
 
                     // 직접 입력 모드로 전환하여 결과 확인
                     setTopicInputMode('manual');
+                } else if (data.candidates && data.candidates[0]?.finishReason === 'SAFETY') {
+                    throw new Error('이미지가 안전 정책에 의해 차단되었습니다. 다른 이미지를 시도해주세요.');
                 } else {
-                    throw new Error('분석 결과를 가져오지 못했습니다.');
+                    console.error('예상치 못한 응답:', JSON.stringify(data, null, 2));
+                    throw new Error('분석 결과를 가져오지 못했습니다. 콘솔을 확인해주세요.');
                 }
             } catch (error) {
                 console.error('워크지 분석 오류:', error);
-                alert('워크지 분석 중 오류가 발생했습니다: ' + error.message);
+                alert('워크지 분석 중 오류가 발생했습니다:\n' + error.message + '\n\n브라우저 콘솔(F12)에서 자세한 내용을 확인할 수 있습니다.');
             } finally {
                 btn.disabled = false;
                 btnText.textContent = 'AI로 주제 추출하기';
