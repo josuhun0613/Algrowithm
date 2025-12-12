@@ -968,19 +968,23 @@
                     history.pushState({ keyboard: true }, '');
                     log(`→ pushState로 뒤로가기 방지`, '#0f0');
 
-                    // 키보드가 아직 열려있으면 blur 처리
-                    if (keyboardVisible) {
-                        setTimeout(() => {
-                            const activeEl = document.activeElement;
-                            log(`→ activeElement: ${activeEl?.tagName}#${activeEl?.id || '?'}`, '#fff');
-                            if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT')) {
-                                activeEl.blur();
-                                log(`→ blur() 호출 완료`, '#0f0');
-                            }
-                        }, 10);
-                    } else {
-                        log(`→ 이미 닫힘, blur 스킵`, '#ff0');
-                    }
+                    // 항상 blur 시도 (재포커스 방지)
+                    setTimeout(() => {
+                        const activeEl = document.activeElement;
+                        log(`→ activeElement: ${activeEl?.tagName}#${activeEl?.id || '?'}`, '#fff');
+                        if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT')) {
+                            activeEl.blur();
+                            log(`→ blur() 호출`, '#0f0');
+                        }
+                        // 추가: body나 다른 곳으로 포커스 이동하여 재포커스 방지
+                        const dummy = document.createElement('input');
+                        dummy.style.cssText = 'position:fixed;top:-100px;opacity:0;';
+                        document.body.appendChild(dummy);
+                        dummy.focus();
+                        dummy.blur();
+                        document.body.removeChild(dummy);
+                        log(`→ 더미 포커스로 재포커스 방지`, '#0f0');
+                    }, 50);
                 } else {
                     log(`→ 뒤로가기 허용`, '#ff0');
                 }
