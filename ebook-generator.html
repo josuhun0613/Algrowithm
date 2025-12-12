@@ -606,7 +606,8 @@
             selectedTitle: ''
         };
 
-        // 모바일 키보드 뒤로가기 방지 (입력 중 뒤로가기 방지)
+        // 모바일 키보드 뒤로가기 처리
+        // 첫 번째 뒤로가기: 키보드만 닫기, 두 번째 뒤로가기: 페이지 이동
         let isInputFocused = false;
 
         // 입력 필드에 포커스될 때 히스토리 추가
@@ -619,14 +620,17 @@
             }
         });
 
-        // 입력 필드에서 포커스 해제될 때
+        // 입력 필드에서 포커스 해제될 때 (키보드 닫힘)
         document.addEventListener('focusout', (e) => {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-                // 다른 입력 필드로 이동하는 경우가 아니면 상태 리셋
                 setTimeout(() => {
                     const activeEl = document.activeElement;
                     if (activeEl.tagName !== 'INPUT' && activeEl.tagName !== 'TEXTAREA' && activeEl.tagName !== 'SELECT') {
                         isInputFocused = false;
+                        // 키보드가 닫히면 히스토리에서 제거 (뒤로가기 한 번으로 페이지 이동 가능하게)
+                        if (history.state && history.state.inputFocused) {
+                            history.back();
+                        }
                     }
                 }, 100);
             }
@@ -634,11 +638,12 @@
 
         // 뒤로가기 이벤트 처리
         window.addEventListener('popstate', (e) => {
-            if (e.state && e.state.inputFocused) {
-                // 입력 중 뒤로가기면 다시 히스토리 추가하고 키보드만 닫기
-                history.pushState({ inputFocused: true }, '');
+            // 입력 중에 뒤로가기 누르면 키보드만 닫기
+            if (isInputFocused) {
                 document.activeElement.blur();
+                // isInputFocused는 focusout에서 처리됨
             }
+            // 입력 중이 아니면 기본 동작 (페이지 이동)
         });
 
         // Genre selection
