@@ -131,24 +131,15 @@
     </script>
 
     <style>
-        html.lenis, html.lenis body {
-            height: auto;
+        /* Magazine-style scroll snap */
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
         }
 
-        .lenis.lenis-smooth {
-            scroll-behavior: auto !important;
-        }
-
-        .lenis.lenis-smooth [data-lenis-prevent] {
-            overscroll-behavior: contain;
-        }
-
-        .lenis.lenis-stopped {
-            overflow: hidden;
-        }
-
-        .lenis.lenis-smooth iframe {
-            pointer-events: none;
+        section {
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
         }
 
         body {
@@ -609,23 +600,23 @@
                 </div>
                 <!-- Small images -->
                 <div class="overflow-hidden rounded-2xl aspect-square">
-                    <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=400&fit=crop" alt="워크샵 활동 2" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    <img src="./assets/표지1.jpg" alt="워크샵 활동 2" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                 </div>
                 <div class="overflow-hidden rounded-2xl aspect-square">
-                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=400&fit=crop" alt="워크샵 활동 3" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    <img src="./assets/표지2.jpg" alt="워크샵 활동 3" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                 </div>
                 <div class="overflow-hidden rounded-2xl aspect-square">
-                    <img src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400&h=400&fit=crop" alt="워크샵 활동 4" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    <img src="./assets/표지3.jpg" alt="워크샵 활동 4" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                 </div>
                 <div class="overflow-hidden rounded-2xl aspect-square">
-                    <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&h=400&fit=crop" alt="워크샵 활동 5" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    <img src="./assets/표지4.jpg" alt="워크샵 활동 5" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                 </div>
                 <!-- Bottom row -->
                 <div class="overflow-hidden rounded-2xl aspect-[2/1] col-span-2">
-                    <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&h=400&fit=crop" alt="워크샵 활동 6" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    <img src="./assets/표지5.jpg" alt="워크샵 활동 6" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                 </div>
                 <div class="overflow-hidden rounded-2xl aspect-[2/1] col-span-2">
-                    <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&h=400&fit=crop" alt="워크샵 활동 7" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    <img src="./assets/표지6.jpg" alt="워크샵 활동 7" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                 </div>
             </div>
         </div>
@@ -1082,29 +1073,11 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script>
-        // Initialize Lenis Smooth Scroll
-        const lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            orientation: 'vertical',
-            gestureOrientation: 'vertical',
-            smoothWheel: true,
-            wheelMultiplier: 1,
-            touchMultiplier: 2,
-        });
+        // Lenis 비활성화 - CSS scroll-snap 사용
+        // 매거진 B 스타일의 섹션 스냅은 CSS가 더 자연스럽게 처리함
 
-        function raf(time) {
-            lenis.raf(time);
-            requestAnimationFrame(raf);
-        }
-        requestAnimationFrame(raf);
-
-        // Connect Lenis to GSAP ScrollTrigger
-        lenis.on('scroll', ScrollTrigger.update);
-        gsap.ticker.add((time) => {
-            lenis.raf(time * 1000);
-        });
-        gsap.ticker.lagSmoothing(0);
+        // GSAP ScrollTrigger만 사용
+        gsap.registerPlugin(ScrollTrigger);
 
         // Initialize Swiper
         const heroSwiper = new Swiper('.hero-swiper', {
@@ -1129,142 +1102,6 @@
                 }
             }
         });
-
-        // GSAP ScrollTrigger Animations
-        gsap.registerPlugin(ScrollTrigger);
-
-        // 섹션 스크롤 전환 효과 (책 넘기기)
-        const sections = document.querySelectorAll('section');
-        let isScrolling = false;
-        let currentSectionIndex = 0;
-
-        // 각 섹션의 위치 계산
-        function getSectionPositions() {
-            return Array.from(sections).map(section => ({
-                element: section,
-                top: section.offsetTop,
-                bottom: section.offsetTop + section.offsetHeight,
-                height: section.offsetHeight
-            }));
-        }
-
-        // 현재 섹션 인덱스 찾기
-        function getCurrentSection() {
-            const scrollY = window.scrollY;
-            const positions = getSectionPositions();
-
-            for (let i = 0; i < positions.length; i++) {
-                if (scrollY >= positions[i].top - 100 && scrollY < positions[i].bottom - 100) {
-                    return i;
-                }
-            }
-            return currentSectionIndex;
-        }
-
-        // 섹션으로 스크롤
-        function scrollToSection(index) {
-            if (index < 0 || index >= sections.length || isScrolling) return;
-
-            isScrolling = true;
-            currentSectionIndex = index;
-
-            lenis.scrollTo(sections[index], {
-                duration: 1.2,
-                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-                onComplete: () => {
-                    setTimeout(() => {
-                        isScrolling = false;
-                    }, 100);
-                }
-            });
-        }
-
-        // 휠 이벤트로 섹션 전환
-        let wheelTimeout = null;
-        let accumulatedDelta = 0;
-        const SCROLL_THRESHOLD = 50; // 스크롤 감도
-
-        window.addEventListener('wheel', (e) => {
-            // 모달이 열려있으면 무시
-            if (document.querySelector('.modal-overlay.active')) return;
-
-            const positions = getSectionPositions();
-            const scrollY = window.scrollY;
-            const viewportHeight = window.innerHeight;
-
-            // 현재 섹션 찾기
-            currentSectionIndex = getCurrentSection();
-            const currentSection = positions[currentSectionIndex];
-
-            if (!currentSection) return;
-
-            // 섹션 경계에서만 스냅 동작
-            const atSectionTop = Math.abs(scrollY - currentSection.top) < 50;
-            const atSectionBottom = Math.abs((scrollY + viewportHeight) - currentSection.bottom) < 50;
-
-            // 아래로 스크롤 (섹션 하단에서)
-            if (e.deltaY > 0 && atSectionBottom && currentSectionIndex < sections.length - 1) {
-                e.preventDefault();
-                accumulatedDelta += e.deltaY;
-
-                if (accumulatedDelta > SCROLL_THRESHOLD) {
-                    scrollToSection(currentSectionIndex + 1);
-                    accumulatedDelta = 0;
-                }
-            }
-            // 위로 스크롤 (섹션 상단에서)
-            else if (e.deltaY < 0 && atSectionTop && currentSectionIndex > 0) {
-                e.preventDefault();
-                accumulatedDelta += Math.abs(e.deltaY);
-
-                if (accumulatedDelta > SCROLL_THRESHOLD) {
-                    scrollToSection(currentSectionIndex - 1);
-                    accumulatedDelta = 0;
-                }
-            }
-
-            // 타임아웃으로 누적값 리셋
-            clearTimeout(wheelTimeout);
-            wheelTimeout = setTimeout(() => {
-                accumulatedDelta = 0;
-            }, 150);
-        }, { passive: false });
-
-        // 터치 이벤트 (모바일)
-        let touchStartY = 0;
-        let touchEndY = 0;
-
-        document.addEventListener('touchstart', (e) => {
-            touchStartY = e.touches[0].clientY;
-        }, { passive: true });
-
-        document.addEventListener('touchend', (e) => {
-            if (document.querySelector('.modal-overlay.active')) return;
-
-            touchEndY = e.changedTouches[0].clientY;
-            const deltaY = touchStartY - touchEndY;
-
-            const positions = getSectionPositions();
-            const scrollY = window.scrollY;
-            const viewportHeight = window.innerHeight;
-
-            currentSectionIndex = getCurrentSection();
-            const currentSection = positions[currentSectionIndex];
-
-            if (!currentSection) return;
-
-            const atSectionTop = Math.abs(scrollY - currentSection.top) < 100;
-            const atSectionBottom = Math.abs((scrollY + viewportHeight) - currentSection.bottom) < 100;
-
-            // 아래로 스와이프
-            if (deltaY > 80 && atSectionBottom && currentSectionIndex < sections.length - 1) {
-                scrollToSection(currentSectionIndex + 1);
-            }
-            // 위로 스와이프
-            else if (deltaY < -80 && atSectionTop && currentSectionIndex > 0) {
-                scrollToSection(currentSectionIndex - 1);
-            }
-        }, { passive: true });
 
         // Grid card animations
         gsap.utils.toArray('.grid-card').forEach((card, i) => {
