@@ -973,17 +973,26 @@
                         const activeEl = document.activeElement;
                         log(`→ activeElement: ${activeEl?.tagName}#${activeEl?.id || '?'}`, '#fff');
                         if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT')) {
+                            // readonly 속성 임시 추가하여 재포커스 시 키보드 안뜨게
+                            const wasReadonly = activeEl.readOnly;
+                            activeEl.readOnly = true;
                             activeEl.blur();
-                            log(`→ blur() 호출`, '#0f0');
+                            log(`→ blur() + readonly`, '#0f0');
+
+                            // 포커스를 버튼으로 이동 (키보드 안뜸)
+                            const btn = document.querySelector('button');
+                            if (btn) {
+                                btn.focus();
+                                btn.blur();
+                                log(`→ 버튼으로 포커스 이동`, '#0f0');
+                            }
+
+                            // readonly 복구 (약간의 딜레이 후)
+                            setTimeout(() => {
+                                activeEl.readOnly = wasReadonly;
+                                log(`→ readonly 복구`, '#0f0');
+                            }, 150);
                         }
-                        // 추가: body나 다른 곳으로 포커스 이동하여 재포커스 방지
-                        const dummy = document.createElement('input');
-                        dummy.style.cssText = 'position:fixed;top:-100px;opacity:0;';
-                        document.body.appendChild(dummy);
-                        dummy.focus();
-                        dummy.blur();
-                        document.body.removeChild(dummy);
-                        log(`→ 더미 포커스로 재포커스 방지`, '#0f0');
                     }, 50);
                 } else {
                     log(`→ 뒤로가기 허용`, '#ff0');
