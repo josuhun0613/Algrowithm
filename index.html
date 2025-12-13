@@ -649,31 +649,8 @@
     <!-- Hero Section - Full Screen Image Slider -->
     <section id="hero" class="relative">
         <div class="swiper hero-swiper">
-            <div class="swiper-wrapper">
-                <div class="swiper-slide">
-                    <img src="./assets/표지1.jpg" alt="Cover 1">
-                    <div class="slide-overlay"></div>
-                </div>
-                <div class="swiper-slide">
-                    <img src="./assets/표지5.jpg" alt="Cover 2">
-                    <div class="slide-overlay"></div>
-                </div>
-                <div class="swiper-slide">
-                    <img src="./assets/표지3.jpg" alt="Cover 3">
-                    <div class="slide-overlay"></div>
-                </div>
-                <div class="swiper-slide">
-                    <img src="./assets/표지4.jpg" alt="Cover 4">
-                    <div class="slide-overlay"></div>
-                </div>
-                <div class="swiper-slide">
-                    <img src="./assets/표지6.jpg" alt="Cover 5">
-                    <div class="slide-overlay"></div>
-                </div>
-                <div class="swiper-slide">
-                    <img src="./assets/표지_사진_2.jpg" alt="Cover 6">
-                    <div class="slide-overlay"></div>
-                </div>
+            <div class="swiper-wrapper" id="heroSwiperWrapper">
+                <!-- Firebase에서 동적으로 로드됨 -->
             </div>
             <!-- Pagination Dots -->
             <div class="swiper-pagination"></div>
@@ -1450,33 +1427,144 @@
             }, { passive: true });
         })();
 
-        // Initialize Swiper
-        const heroSwiper = new Swiper('.hero-swiper', {
-            effect: 'fade',
-            fadeEffect: { crossFade: true },
-            speed: 1500,
-            autoplay: {
-                delay: 4000,
-                disableOnInteraction: false,
-            },
-            loop: true,
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            on: {
-                slideChange: function () {
-                    const currentSlide = document.getElementById('currentSlide');
-                    if (currentSlide) {
-                        currentSlide.textContent = this.realIndex + 1;
-                    }
+        // Hero Swiper 인스턴스 (동적 로드 후 초기화)
+        let heroSwiper = null;
+
+        // Firebase에서 Hero 슬라이더 이미지 로드
+        async function loadHeroSlides() {
+            const wrapper = document.getElementById('heroSwiperWrapper');
+            const totalSlidesEl = document.getElementById('totalSlides');
+
+            // 기본 이미지 (Firebase가 비어있을 때 사용)
+            const defaultSlides = [
+                './assets/표지1.jpg',
+                './assets/표지5.jpg',
+                './assets/표지3.jpg',
+                './assets/표지4.jpg',
+                './assets/표지6.jpg',
+                './assets/표지_사진_2.jpg'
+            ];
+
+            try {
+                const snapshot = await db.collection('photoReviews').get();
+                let coverPhotos = [];
+
+                if (!snapshot.empty) {
+                    // isCover=true인 사진만 필터링
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        if (data.isCover === true) {
+                            coverPhotos.push({
+                                imageUrl: data.imageUrl,
+                                coverOrder: data.coverOrder || 999
+                            });
+                        }
+                    });
+
+                    // coverOrder 순으로 정렬
+                    coverPhotos.sort((a, b) => (a.coverOrder || 999) - (b.coverOrder || 999));
+                    console.log('Hero 슬라이더 순서:', coverPhotos.map((p, i) => ({ order: i + 1, coverOrder: p.coverOrder })));
                 }
+
+                // 표지 사진이 없으면 기본 이미지 사용
+                let slides = coverPhotos.length > 0
+                    ? coverPhotos.map(p => p.imageUrl)
+                    : defaultSlides;
+
+                // 슬라이드 HTML 생성
+                let html = '';
+                slides.forEach((src, index) => {
+                    html += `
+                        <div class="swiper-slide">
+                            <img src="${src}" alt="Cover ${index + 1}">
+                            <div class="slide-overlay"></div>
+                        </div>
+                    `;
+                });
+                wrapper.innerHTML = html;
+
+                // 총 슬라이드 수 업데이트
+                if (totalSlidesEl) {
+                    totalSlidesEl.textContent = slides.length;
+                }
+
+                // Swiper 초기화
+                heroSwiper = new Swiper('.hero-swiper', {
+                    effect: 'fade',
+                    fadeEffect: { crossFade: true },
+                    speed: 1500,
+                    autoplay: {
+                        delay: 4000,
+                        disableOnInteraction: false,
+                    },
+                    loop: true,
+                    pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true,
+                    },
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev',
+                    },
+                    on: {
+                        slideChange: function () {
+                            const currentSlide = document.getElementById('currentSlide');
+                            if (currentSlide) {
+                                currentSlide.textContent = this.realIndex + 1;
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error('Hero 슬라이더 로드 실패:', error);
+                // 에러 시 기본 이미지로 초기화
+                let html = '';
+                defaultSlides.forEach((src, index) => {
+                    html += `
+                        <div class="swiper-slide">
+                            <img src="${src}" alt="Cover ${index + 1}">
+                            <div class="slide-overlay"></div>
+                        </div>
+                    `;
+                });
+                wrapper.innerHTML = html;
+
+                if (totalSlidesEl) {
+                    totalSlidesEl.textContent = defaultSlides.length;
+                }
+
+                heroSwiper = new Swiper('.hero-swiper', {
+                    effect: 'fade',
+                    fadeEffect: { crossFade: true },
+                    speed: 1500,
+                    autoplay: {
+                        delay: 4000,
+                        disableOnInteraction: false,
+                    },
+                    loop: true,
+                    pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true,
+                    },
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev',
+                    },
+                    on: {
+                        slideChange: function () {
+                            const currentSlide = document.getElementById('currentSlide');
+                            if (currentSlide) {
+                                currentSlide.textContent = this.realIndex + 1;
+                            }
+                        }
+                    }
+                });
             }
-        });
+        }
+
+        // Hero 슬라이더 로드 시작
+        loadHeroSlides();
 
         // Grid card animations
         gsap.utils.toArray('.grid-card').forEach((card, i) => {
@@ -1699,13 +1787,16 @@
                                 imageUrl: data.imageUrl,
                                 text: data.text || '',
                                 author: data.author || '',
-                                order: data.order || 999
+                                coverOrder: data.coverOrder || 999
                             });
                         }
                     });
 
-                    // order 순으로 정렬
-                    photos.sort((a, b) => a.order - b.order);
+                    // coverOrder 순으로 정렬 (오름차순: 작은 숫자가 먼저)
+                    photos.sort((a, b) => (a.coverOrder || 999) - (b.coverOrder || 999));
+
+                    // 디버깅: 정렬된 순서 확인
+                    console.log('표지 사진 순서:', photos.map(p => ({ text: p.text, coverOrder: p.coverOrder })));
 
                     // 표지로 설정된 사진이 없으면 기본 사진 사용
                     if (photos.length === 0) {
