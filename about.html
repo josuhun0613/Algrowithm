@@ -11,9 +11,10 @@
             theme: {
                 extend: {
                     colors: {
-                        'champagne-gold': '#D4AF37',
+                        'soft-gold': '#d4af37',
                         'deep-navy': '#001F3F',
                         'rich-black': '#0a0a0a',
+                        'text-dark': '#1a1a1a',
                     },
                     fontFamily: {
                         sans: ['Pretendard', 'sans-serif'],
@@ -28,321 +29,1131 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
     <style>
+        html {
+            overflow-x: hidden;
+            /* CSS scroll-snap 비활성화 - JavaScript로 제어 */
+        }
+
         body {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            font-family: 'Pretendard', sans-serif;
+            background-color: #ffffff;
+            color: #1a1a1a;
+            overflow-x: hidden;
         }
 
-        .hexagon-pattern {
-            background-image:
-                linear-gradient(30deg, transparent 48%, rgba(212, 175, 55, 0.03) 50%, transparent 52%),
-                linear-gradient(90deg, transparent 48%, rgba(212, 175, 55, 0.03) 50%, transparent 52%),
-                linear-gradient(150deg, transparent 48%, rgba(212, 175, 55, 0.03) 50%, transparent 52%);
-            background-size: 60px 60px;
+        /* Section */
+        section {
+            min-height: 100vh;
+            height: 100vh;
+            position: relative;
         }
 
-        .profile-image {
-            width: 400px;
-            height: 420px;
-            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
-            border-radius: 8px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        /* CEO/Instructor sections - fixed height */
+        #ceo, #instructor {
+            min-height: 100vh;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+            padding-bottom: 80px;
+            overflow: hidden;
         }
 
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-20px);
-            }
+        /* Hero Section - Company Intro */
+        .hero-gradient {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
         }
 
-        .floating {
-            animation: float 6s ease-in-out infinite;
+        /* Shimmer Effect (lightweight) */
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
         }
 
+        .glow-text {
+            background: linear-gradient(
+                90deg,
+                #d4af37 0%,
+                #f4d03f 25%,
+                #fffacd 50%,
+                #f4d03f 75%,
+                #d4af37 100%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s linear infinite;
+            filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.4));
+        }
+
+        /* Gradient Text (no animation) */
         .gradient-text {
-            background: linear-gradient(135deg, #D4AF37 0%, #001F3F 100%);
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 50%, #d4af37 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .info-card {
-            transition: all 0.3s ease;
+        /* Floating Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        .floating { animation: float 6s ease-in-out infinite; }
+
+        /* Profile Image Style */
+        .profile-img {
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
-        .info-card:hover {
+        /* Showcase Swiper */
+        .showcase-swiper {
+            width: 100%;
+            height: 100%;
+        }
+
+        .showcase-swiper .swiper-slide {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Neon Glow Effect */
+        .neon-box {
+            position: relative;
+            background: rgba(20, 20, 40, 0.9);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 16px;
+            box-shadow:
+                0 0 20px rgba(0, 255, 255, 0.1),
+                inset 0 0 60px rgba(0, 255, 255, 0.05);
+        }
+
+        .neon-box::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #00ffff);
+            border-radius: 18px;
+            z-index: -1;
+            opacity: 0.5;
+            filter: blur(10px);
+        }
+
+        /* Pagination Dots */
+        .showcase-swiper .swiper-pagination {
+            bottom: 30px !important;
+        }
+        .showcase-swiper .swiper-pagination-bullet {
+            width: 12px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.3);
+            opacity: 1;
+        }
+        .showcase-swiper .swiper-pagination-bullet-active {
+            background: #d4af37;
+        }
+
+        /* Navigation Arrows */
+        .showcase-swiper .swiper-button-prev,
+        .showcase-swiper .swiper-button-next {
+            color: white;
+            background: rgba(0, 0, 0, 0.3);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+        .showcase-swiper .swiper-button-prev::after,
+        .showcase-swiper .swiper-button-next::after {
+            font-size: 18px;
+        }
+
+        /* Career Item */
+        .career-item {
+            transition: all 0.3s ease;
+        }
+        .career-item:hover {
+            transform: translateX(5px);
+        }
+
+        /* Slide Content Animation */
+        .slide-content {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        .swiper-slide-active .slide-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Silver Gradient Background */
+        .silver-gradient {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 50%, #f0f0f0 100%);
+        }
+
+        /* Review Card */
+        .review-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            transition: transform 0.3s ease;
+        }
+        .review-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.15);
+        }
+
+        /* Kakao Chat Style */
+        .kakao-bubble {
+            background: #FEE500;
+            color: #3C1E1E;
+            border-radius: 16px 16px 16px 4px;
+            padding: 12px 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            max-width: 280px;
+        }
+
+        /* Image Popup Modal */
+        .image-popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .image-popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .image-popup-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        .image-popup-overlay.active .image-popup-content {
+            transform: scale(1);
+        }
+        .image-popup-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        .image-popup-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .image-popup-close:hover {
+            transform: scale(1.2);
+        }
+        .image-popup-title {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Clickable card style */
+        .neon-box.clickable-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .neon-box.clickable-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
         }
     </style>
 </head>
 
-<body class="font-sans text-rich-black">
-    <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
-        <div class="w-full px-[60px] py-5 flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-3">
-                <img src="./assets/logo.svg" alt="Logo" class="w-10 h-10">
-                <span class="text-2xl font-serif font-bold tracking-tight">Algrowithm</span>
-            </a>
-            <div class="flex gap-12 items-center text-lg font-medium text-gray-700">
-                <a href="about.html" class="text-soft-gold">About</a>
-                <a href="workbook_1.html" class="hover:text-soft-gold transition-colors">실습</a>
-                <a href="schedule.html" class="hover:text-soft-gold transition-colors">일정</a>
-            </div>
+<body class="antialiased">
+
+    <!-- Header (공통 컴포넌트) -->
+    <div id="header-placeholder"></div>
+    <script src="./js/header.js"></script>
+    <script>initHeader({ showStartButton: true });</script>
+
+    <!-- Section 1: Company Introduction -->
+    <section id="intro" class="hero-gradient flex items-center justify-center relative overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute inset-0">
+            <div class="absolute top-32 left-10 w-24 h-24 border border-soft-gold/20 rotate-45 floating"></div>
+            <div class="absolute bottom-32 right-20 w-20 h-20 border border-soft-gold/30 rotate-45 floating" style="animation-delay: 2s;"></div>
+            <div class="absolute top-1/4 right-1/4 w-16 h-16 border border-white/10 rotate-45 floating" style="animation-delay: 4s;"></div>
         </div>
-    </nav>
 
-    <!-- Landing Hero Section -->
-    <section class="min-h-screen flex items-center justify-center pt-20 hexagon-pattern relative overflow-hidden">
-        <!-- Floating Diamond Elements -->
-        <div class="absolute top-20 left-10 w-32 h-32 border-2 border-champagne-gold/20 rotate-45 floating"
-            style="animation-delay: 0s;"></div>
-        <div class="absolute bottom-20 right-20 w-24 h-24 border-2 border-champagne-gold/30 rotate-45 floating"
-            style="animation-delay: 2s;"></div>
-        <div class="absolute top-1/3 right-10 w-20 h-20 border-2 border-champagne-gold/25 rotate-45 floating"
-            style="animation-delay: 4s;"></div>
-        <div class="absolute bottom-1/3 left-20 w-16 h-16 border-2 border-champagne-gold/20 rotate-45 floating"
-            style="animation-delay: 3s;"></div>
-
-        <div class="max-w-6xl mx-auto px-6 text-center">
-            <!-- Tagline with Border -->
-            <div class="inline-block border-2 border-champagne-gold px-6 py-3 rounded-full mb-8">
-                <p class="text-champagne-gold font-bold text-lg tracking-wide">2030 AI로 취업·이직 PROJECT</p>
-            </div>
-
-            <!-- Sparkling Diamond Image - LARGER SIZE -->
-            <div class="flex justify-center mb-6">
-                <img src="assets/sparkling_diamond-removebg-preview.png" alt="Diamond" class="w-24 h-24 floating"
-                    style="filter: drop-shadow(0 8px 20px rgba(212, 175, 55, 0.4));">
-            </div>
-
-            <!-- Main Message -->
-            <h1 class="text-7xl font-serif font-bold leading-tight mb-8">
-                AI 시대,<br />
-                <span class="gradient-text">대체 불가능한</span><br />
-                나만의 가치를 발견하라
+        <div class="max-w-4xl mx-auto px-6 text-center text-white relative z-10 py-24">
+            <!-- Main Headline -->
+            <h1 class="text-5xl md:text-6xl lg:text-7xl font-serif font-bold mb-6" style="line-height: 1.5;">
+                AI 시대,<br>
+                <span class="glow-text">나만의 성장 알고리즘</span>을<br>
+                만들다
             </h1>
 
-            <p class="text-2xl text-gray-600 leading-relaxed">
-                당신 안에 숨겨진 보석을 찾아내고, 진정한 육각형 인재로 거듭나는 여정
+            <!-- Subtext -->
+            <p class="text-lg md:text-xl text-gray-300 leading-relaxed mx-auto mb-12">
+                모두가 AI를 배우는 시대, 기술이 평준화될수록 결국 차이를 만드는 것은 <span class="text-soft-gold font-semibold">'고유한 나'</span>입니다.
             </p>
+
+            <!-- Vision Points -->
+            <div class="grid grid-cols-3 gap-6 md:gap-10 mt-12">
+                <div class="text-center">
+                    <div class="w-14 h-14 md:w-16 md:h-16 border-2 border-soft-gold/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-gem text-soft-gold text-xl md:text-2xl"></i>
+                    </div>
+                    <h3 class="text-base md:text-lg font-bold mb-2">나를 발견하다</h3>
+                    <p class="text-gray-400 text-sm md:text-base">숨겨진 가치와 강점을<br>발굴합니다</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-14 h-14 md:w-16 md:h-16 border-2 border-soft-gold/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-magic text-soft-gold text-xl md:text-2xl"></i>
+                    </div>
+                    <h3 class="text-base md:text-lg font-bold mb-2">AI로 표현하다</h3>
+                    <p class="text-gray-400 text-sm md:text-base">나만의 이야기를<br>콘텐츠로 창작합니다</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-14 h-14 md:w-16 md:h-16 border-2 border-soft-gold/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-rocket text-soft-gold text-xl md:text-2xl"></i>
+                    </div>
+                    <h3 class="text-base md:text-lg font-bold mb-2">세상에 선보이다</h3>
+                    <p class="text-gray-400 text-sm md:text-base">대체불가능한 브랜드로<br>성장합니다</p>
+                </div>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/50 animate-bounce">
+                <i class="fas fa-chevron-down text-xl"></i>
+            </div>
         </div>
     </section>
 
-    <!-- Profile Card Section -->
-    <section class="py-32 bg-white">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-2 gap-16 items-center">
-                <!-- Left: Profile Image -->
-                <div class="relative">
-                    <div class="profile-image floating overflow-hidden">
-                        <img src="assets/표지_사진_2.jpg" alt="조수훈 호스트" class="w-full h-full object-cover">
-                    </div>
-                    <!-- Background Decoration -->
-                    <div class="absolute -top-10 -right-10 w-96 h-96 bg-champagne-gold/5 rounded-full blur-3xl -z-10">
-                    </div>
-                    <div class="absolute -bottom-10 -left-10 w-80 h-80 bg-deep-navy/5 rounded-full blur-3xl -z-10">
-                    </div>
+    <!-- Section 2: 조수훈 대표 (검은색 배경) -->
+    <section id="ceo" class="bg-rich-black">
+        <div class="max-w-6xl mx-auto px-6 md:px-12 w-full">
+            <div class="grid md:grid-cols-2 gap-10 items-center">
+                <!-- Left: Photo -->
+                <div class="flex justify-center">
+                    <img src="./assets/조수훈_프로필.png" alt="조수훈 대표"
+                        class="profile-img w-72 md:w-80 h-auto object-cover">
                 </div>
 
-                <!-- Right: Profile Info -->
-                <div class="space-y-6">
+                <!-- Right: Info -->
+                <div class="space-y-4 text-white">
+                    <!-- Title -->
                     <div>
-                        <span
-                            class="text-xs font-bold tracking-widest text-champagne-gold uppercase border border-champagne-gold px-4 py-2 rounded-full inline-block mb-4">
-                            Algrowithm Founder & Host
-                        </span>
-
-                        <p class="text-lg text-gray-600 mb-3">
-                            2030 AI 커리어 브랜딩 소셜링
-                        </p>
-
-                        <h2 class="text-3xl font-serif font-bold mb-6">
-                            조수훈
-                        </h2>
-
-                        <div class="w-20 h-1 bg-champagne-gold mb-8"></div>
+                        <p class="text-soft-gold font-bold tracking-widest text-xs mb-2">ALGROWITHM FOUNDER & CEO</p>
+                        <h2 class="text-4xl md:text-5xl font-serif font-bold mb-2">조수훈</h2>
+                        <p class="text-lg md:text-xl text-gray-400">대표 / AI 커리어 브랜딩 전문가</p>
                     </div>
 
+                    <div class="w-16 h-1 bg-soft-gold"></div>
+
                     <!-- Career Highlights -->
-                    <div class="space-y-3">
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-award text-champagne-gold mt-1"></i>
-                            <p class="text-gray-700">Algrowithm 커리어 브랜딩 협회 대표</p>
+                    <div class="space-y-1">
+                        <p class="text-base md:text-lg font-semibold text-white">現) AI Studio (AI 교육 플랫폼 회사) 대표</p>
+                        <p class="text-gray-400 text-sm md:text-base">前) Mind Design Lab 팀장</p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="career-item flex items-start gap-2">
+                            <i class="fas fa-check text-soft-gold mt-1 flex-shrink-0 text-sm"></i>
+                            <p class="text-gray-300 text-sm md:text-base">대기업 및 중소기업 AI 강의 다수 이력 (50회 이상)</p>
                         </div>
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-brain text-champagne-gold mt-1"></i>
-                            <p class="text-gray-700">AI 커리어 브랜딩 전문가</p>
+                        <div class="career-item flex items-start gap-2">
+                            <i class="fas fa-check text-soft-gold mt-1 flex-shrink-0 text-sm"></i>
+                            <p class="text-gray-300 text-sm md:text-base">AI 프로젝트 (S은행 재산 추계) Project Leader</p>
                         </div>
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-users text-champagne-gold mt-1"></i>
-                            <p class="text-gray-700">2030 세대 커리어 멘토링 200+ 세션</p>
+                        <div class="career-item flex items-start gap-2">
+                            <i class="fas fa-check text-soft-gold mt-1 flex-shrink-0 text-sm"></i>
+                            <p class="text-gray-300 text-sm md:text-base">서울시 협업 AI 컨설팅 챗봇 서비스 제작</p>
                         </div>
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-chalkboard-teacher text-champagne-gold mt-1"></i>
-                            <p class="text-gray-700">개인 브랜딩 워크숍 기획 및 운영</p>
+                        <div class="career-item flex items-start gap-2">
+                            <i class="fas fa-check text-soft-gold mt-1 flex-shrink-0 text-sm"></i>
+                            <p class="text-gray-300 text-sm md:text-base">중소기업 기술 개발 지원팀</p>
+                        </div>
+                        <div class="career-item flex items-start gap-2">
+                            <i class="fas fa-check text-soft-gold mt-1 flex-shrink-0 text-sm"></i>
+                            <p class="text-gray-300 text-sm md:text-base">도담센터 컨설턴트 팀장</p>
                         </div>
                     </div>
 
                     <!-- Contact Info -->
-                    <div class="grid grid-cols-3 gap-6 pt-6 border-t border-gray-200">
+                    <div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
                         <div>
                             <p class="text-xs text-gray-500 mb-1">Phone</p>
-                            <p class="text-gray-800 font-medium">010-9342-5807</p>
+                            <p class="text-gray-300 text-sm md:text-base">010-9342-5807</p>
                         </div>
                         <div>
                             <p class="text-xs text-gray-500 mb-1">Email</p>
-                            <p class="text-gray-800 font-medium">contact@thevalu.kr</p>
+                            <p class="text-gray-300 text-sm md:text-base">algrowithm@kakao.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: 최슬지 강사 (화이트/은색 배경) -->
+    <section id="instructor" class="silver-gradient">
+        <div class="max-w-6xl mx-auto px-6 md:px-12 w-full">
+            <div class="grid md:grid-cols-2 gap-10 items-center">
+                <!-- Left: Info -->
+                <div class="space-y-4 order-2 md:order-1">
+                    <!-- Title -->
+                    <div>
+                        <p class="text-soft-gold font-bold tracking-widest text-xs mb-2">STRENGTH FINDING PROJECT</p>
+                        <h2 class="text-4xl md:text-5xl font-serif font-bold mb-2 text-rich-black">최슬지</h2>
+                        <p class="text-lg md:text-xl text-gray-500">강점코칭 컨설턴트</p>
+                    </div>
+
+                    <div class="w-16 h-1 bg-soft-gold"></div>
+
+                    <!-- Career Highlights -->
+                    <div class="space-y-1">
+                        <p class="text-base md:text-lg font-semibold text-rich-black">現) 에듀온 강점코칭 컨설턴트</p>
+                        <p class="text-gray-500 text-sm md:text-base">Life Mapping Laboratory</p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="career-item flex items-start gap-2">
+                            <i class="fas fa-check text-soft-gold mt-1 flex-shrink-0 text-sm"></i>
+                            <p class="text-gray-700 text-sm md:text-base">前) 중소기업, 학교 강연 다수</p>
+                        </div>
+                        <div class="career-item flex items-start gap-2">
+                            <i class="fas fa-check text-soft-gold mt-1 flex-shrink-0 text-sm"></i>
+                            <p class="text-gray-700 text-sm md:text-base">前) 도담센터 직업 컨설턴트</p>
+                        </div>
+                        <div class="career-item flex items-start gap-2">
+                            <i class="fas fa-check text-soft-gold mt-1 flex-shrink-0 text-sm"></i>
+                            <p class="text-gray-700 text-sm md:text-base">前) 채움 이미지컨설팅 강사</p>
+                        </div>
+                        <div class="career-item flex items-start gap-2">
+                            <i class="fas fa-check text-soft-gold mt-1 flex-shrink-0 text-sm"></i>
+                            <p class="text-gray-700 text-sm md:text-base">前) 테니지먼트 브랜딩 강사</p>
+                        </div>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-300">
+                        <div>
+                            <p class="text-xs text-gray-500 mb-1">Phone</p>
+                            <p class="text-gray-700 text-sm md:text-base">010-9939-7981</p>
                         </div>
                         <div>
-                            <p class="text-xs text-gray-500 mb-1">Instagram</p>
-                            <p class="text-gray-800 font-medium">@the.valu</p>
+                            <p class="text-xs text-gray-500 mb-1">Email</p>
+                            <p class="text-gray-700 text-sm md:text-base">seulji@algrowithm.org</p>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Philosophy Section -->
-    <section id="philosophy" class="py-32 bg-gradient-to-br from-gray-50 to-white">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-20">
-                <span class="text-xs font-bold tracking-widest text-champagne-gold uppercase">Philosophy</span>
-                <h2 class="text-5xl font-serif font-bold mt-4 mb-6">우리가 믿는 것</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    AI는 도구일 뿐, 진짜 답은 당신 안에 있습니다
-                </p>
-            </div>
-
-            <div class="grid grid-cols-3 gap-8">
-                <div class="info-card bg-white border border-gray-200 rounded-2xl p-8 text-center">
-                    <div
-                        class="w-16 h-16 bg-champagne-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-lightbulb text-champagne-gold text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4">Find You, Then AI</h3>
-                    <p class="text-gray-600 leading-relaxed text-sm">
-                        AI 도구를 활용하기 전에, 먼저 당신 자신을 발견하세요. 진정한 나를 알 때 AI는 더 강력한 무기가 됩니다.
-                    </p>
-                </div>
-
-                <div class="info-card bg-white border border-gray-200 rounded-2xl p-8 text-center">
-                    <div class="w-16 h-16 bg-deep-navy/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-puzzle-piece text-deep-navy text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4">가장 개인적인 것이<br />가장 창의적인 것</h3>
-                    <p class="text-gray-600 leading-relaxed text-sm">
-                        당신만의 경험, 당신만의 시선, 당신만의 이야기. 그것이 바로 대체 불가능한 가치입니다.
-                    </p>
-                </div>
-
-                <div class="info-card bg-white border border-gray-200 rounded-2xl p-8 text-center">
-                    <div
-                        class="w-16 h-16 bg-champagne-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-rocket text-champagne-gold text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4">육각형 인재로의<br />진화</h3>
-                    <p class="text-gray-600 leading-relaxed text-sm">
-                        한 가지 강점이 아닌, 다면적인 가치를 발견하고 균형 잡힌 성장을 추구합니다.
-                    </p>
+                <!-- Right: Photo -->
+                <div class="flex justify-center order-1 md:order-2">
+                    <img src="./assets/최슬지_프로필.png" alt="최슬지 강사"
+                        class="profile-img w-72 md:w-80 h-auto object-cover">
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Program Section -->
-    <section id="program" class="py-32 bg-white">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-20">
-                <span class="text-xs font-bold tracking-widest text-champagne-gold uppercase">Program</span>
-                <h2 class="text-5xl font-serif font-bold mt-4 mb-6">3단계 여정</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    체계적인 프로세스로 당신만의 커리어 브랜드를 완성합니다
-                </p>
-            </div>
+    <!-- Section 4: Showcase Slider (16:9) -->
+    <section id="showcase" class="bg-gradient-to-br from-[#0f0f23] via-[#1a1a3e] to-[#2d1f4e] flex items-center justify-center relative overflow-hidden">
+        <div class="w-full h-full">
+            <div class="swiper showcase-swiper h-screen">
+                <div class="swiper-wrapper">
 
-            <div class="grid grid-cols-3 gap-8">
-                <!-- Session 1 -->
-                <div class="info-card bg-white border border-gray-200 rounded-2xl p-8 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-champagne-gold/5 rounded-full -mr-16 -mt-16"></div>
-                    <div class="relative z-10">
-                        <div class="text-5xl font-serif font-bold text-champagne-gold/30 mb-4">01</div>
-                        <h3 class="text-2xl font-bold mb-4">Why me?</h3>
-                        <p class="text-gray-600 mb-4 leading-relaxed">
-                            도대체 '나'는 누구인가?
-                        </p>
-                        <p class="text-sm text-gray-500 leading-relaxed">
-                            나만의 결정적 순간을 발굴하고 핵심 키워드를 추출합니다.
-                        </p>
+                    <!-- Slide 1: 나만의 컨텐츠 제작하기 -->
+                    <div class="swiper-slide">
+                        <div class="w-full h-full flex items-center justify-center px-8">
+                            <div class="max-w-6xl w-full">
+                                <div class="slide-content neon-box p-12 md:p-20 text-center">
+                                    <h2 class="text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white mb-8">
+                                        Al<span class="text-cyan-400">grow</span>ithm
+                                    </h2>
+                                    <p class="text-3xl md:text-5xl text-white font-bold">
+                                        나의 아이덴티티를 AI로 표현하다
+                                    </p>
+                                    <div class="mt-10 flex justify-center gap-4 flex-wrap">
+                                        <span class="px-6 py-3 bg-cyan-500/20 text-cyan-300 rounded-full text-lg md:text-xl">이미지</span>
+                                        <span class="px-6 py-3 bg-purple-500/20 text-purple-300 rounded-full text-lg md:text-xl">웹사이트</span>
+                                        <span class="px-6 py-3 bg-pink-500/20 text-pink-300 rounded-full text-lg md:text-xl">전자책</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Slide 2: 전자책 제작 과정 -->
+                    <div class="swiper-slide">
+                        <div class="w-full h-full flex items-center justify-center px-8 pt-20 pb-16">
+                            <div class="max-w-7xl w-full">
+                                <div class="slide-content">
+                                    <h2 class="text-4xl md:text-5xl font-bold text-white text-center mb-3">
+                                        <span class="text-pink-400">전자책</span> 제작 과정
+                                    </h2>
+                                    <p class="text-gray-400 text-center text-xl md:text-2xl mb-8">나의 이야기를 담은 E-book을 완성합니다</p>
+                                    <div class="grid grid-cols-4 gap-5">
+                                        <div class="neon-box p-5">
+                                            <div class="text-3xl md:text-4xl font-serif font-bold text-cyan-400/50 mb-2 text-center">01</div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-1 text-center">강연 & 워크숍</h3>
+                                            <p class="text-gray-400 text-base md:text-lg mb-3 text-center">나를 발견하는 시간</p>
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden">
+                                                <img src="./assets/전자책_제작과정_강의모습.jpg" alt="강연 사진" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                        </div>
+                                        <div class="neon-box p-5">
+                                            <div class="text-3xl md:text-4xl font-serif font-bold text-purple-400/50 mb-2 text-center">02</div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-1 text-center">워크지 작성</h3>
+                                            <p class="text-gray-400 text-base md:text-lg mb-3 text-center">나의 이야기를 정리</p>
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden">
+                                                <img src="./assets/전자책 워크지.png" alt="전자책 워크지" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                        </div>
+                                        <div class="neon-box p-5">
+                                            <div class="text-3xl md:text-4xl font-serif font-bold text-pink-400/50 mb-2 text-center">03</div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-1 text-center">AI 프롬프트화</h3>
+                                            <p class="text-gray-400 text-base md:text-lg mb-3 text-center">워크지 → 프롬프트</p>
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden">
+                                                <img src="./assets/전자책_프롬프트.png" alt="전자책 프롬프트" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                        </div>
+                                        <div class="neon-box p-5">
+                                            <div class="text-3xl md:text-4xl font-serif font-bold text-soft-gold/50 mb-2 text-center">04</div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-1 text-center">전자책 완성</h3>
+                                            <p class="text-gray-400 text-base md:text-lg mb-3 text-center">E-book PDF 제작</p>
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden">
+                                                <img src="./assets/전자책_제작과정.jpg" alt="전자책 완성" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 3: AI 캐릭터 제작 과정 -->
+                    <div class="swiper-slide">
+                        <div class="w-full h-full flex items-center justify-center px-8 pt-20 pb-16">
+                            <div class="max-w-7xl w-full">
+                                <div class="slide-content">
+                                    <h2 class="text-4xl md:text-5xl font-bold text-white text-center mb-3">
+                                        <span class="text-cyan-400">AI 캐릭터</span> 제작 과정
+                                    </h2>
+                                    <p class="text-gray-400 text-center text-xl md:text-2xl mb-8">나만의 브랜딩 이미지를 만듭니다</p>
+                                    <div class="grid grid-cols-4 gap-5">
+                                        <div class="neon-box p-5">
+                                            <div class="text-3xl md:text-4xl font-serif font-bold text-cyan-400/50 mb-2 text-center">01</div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-1 text-center">강연 & 워크숍</h3>
+                                            <p class="text-gray-400 text-base md:text-lg mb-3 text-center">아이덴티티 발굴</p>
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden">
+                                                <img src="./assets/캐릭터_제작과정_강의모습.jpg" alt="캐릭터 강의" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                        </div>
+                                        <div class="neon-box p-5">
+                                            <div class="text-3xl md:text-4xl font-serif font-bold text-purple-400/50 mb-2 text-center">02</div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-1 text-center">워크지 작성</h3>
+                                            <p class="text-gray-400 text-base md:text-lg mb-3 text-center">나를 표현하는 키워드</p>
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden">
+                                                <img src="./assets/캐릭터 워크지.png" alt="캐릭터 워크지" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                        </div>
+                                        <div class="neon-box p-5">
+                                            <div class="text-3xl md:text-4xl font-serif font-bold text-pink-400/50 mb-2 text-center">03</div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-1 text-center">AI 프롬프트화</h3>
+                                            <p class="text-gray-400 text-base md:text-lg mb-3 text-center">워크지 → 프롬프트</p>
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden">
+                                                <img src="./assets/캐릭터_프롬프트.png" alt="캐릭터 프롬프트" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                        </div>
+                                        <div class="neon-box p-5">
+                                            <div class="text-3xl md:text-4xl font-serif font-bold text-soft-gold/50 mb-2 text-center">04</div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-1 text-center">캐릭터 완성</h3>
+                                            <p class="text-gray-400 text-base md:text-lg mb-3 text-center">나만의 AI 캐릭터</p>
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden">
+                                                <img src="./assets/표지2.jpg" alt="캐릭터 완성" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 4: 웹사이트 제작 과정 -->
+                    <div class="swiper-slide">
+                        <div class="w-full h-full flex items-center justify-center px-8 pt-20 pb-16">
+                            <div class="max-w-7xl w-full">
+                                <div class="slide-content">
+                                    <h2 class="text-4xl md:text-5xl font-bold text-white text-center mb-3">
+                                        <span class="text-purple-400">웹사이트</span> 제작 과정
+                                    </h2>
+                                    <p class="text-gray-400 text-center text-xl md:text-2xl mb-8">나만의 브랜딩 웹사이트를 만듭니다</p>
+                                    <div class="grid grid-cols-4 gap-5">
+                                        <div class="neon-box p-5">
+                                            <div class="text-3xl md:text-4xl font-serif font-bold text-cyan-400/50 mb-2 text-center">01</div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-1 text-center">강연 & 워크숍</h3>
+                                            <p class="text-gray-400 text-base md:text-lg mb-3 text-center">컨셉 기획하기</p>
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden">
+                                                <img src="./assets/웹사이트_제작과정_강의모습.jpg" alt="웹사이트 강의" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                        </div>
+                                        <div class="neon-box p-5">
+                                            <div class="text-3xl md:text-4xl font-serif font-bold text-purple-400/50 mb-2 text-center">02</div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-1 text-center">워크지 작성</h3>
+                                            <p class="text-gray-400 text-base md:text-lg mb-3 text-center">나를 표현하는 웹 구조</p>
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden">
+                                                <img src="./assets/웹사이트 워크지.png" alt="웹사이트 워크지" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                        </div>
+                                        <div class="neon-box p-5">
+                                            <div class="text-3xl md:text-4xl font-serif font-bold text-pink-400/50 mb-2 text-center">03</div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-1 text-center">AI 프롬프트화</h3>
+                                            <p class="text-gray-400 text-base md:text-lg mb-3 text-center">워크지 → 프롬프트</p>
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden">
+                                                <img src="./assets/웹사이트_프롬프트개발.png" alt="프롬프트 개발" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                        </div>
+                                        <div class="neon-box p-5">
+                                            <div class="text-3xl md:text-4xl font-serif font-bold text-soft-gold/50 mb-2 text-center">04</div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-1 text-center">웹사이트 완성</h3>
+                                            <p class="text-gray-400 text-base md:text-lg mb-3 text-center">나만의 도메인으로 공개</p>
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden">
+                                                <img src="./assets/웹사이트표지.png" alt="웹사이트 예시" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 5: 우리 소셜링을 소개합니다 -->
+                    <div class="swiper-slide">
+                        <div class="w-full h-full flex items-center justify-center px-8 pt-20 pb-16">
+                            <div class="max-w-7xl w-full">
+                                <div class="slide-content">
+                                    <h2 class="text-4xl md:text-5xl font-bold text-white text-center mb-10">
+                                        우리 <span class="text-soft-gold">소셜링</span>을 소개합니다
+                                    </h2>
+                                    <div class="grid grid-cols-4 gap-5">
+                                        <!-- 소속 카드 -->
+                                        <div class="neon-box p-5">
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden mb-4">
+                                                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=225&fit=crop" alt="소속" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-2 text-center">소속</h3>
+                                            <p class="text-gray-400 text-base md:text-lg text-center">Algrowithm<br>AI 기반 컨설팅 회사</p>
+                                        </div>
+                                        <!-- 활동 카드 -->
+                                        <div class="neon-box p-5">
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden mb-4">
+                                                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=225&fit=crop" alt="활동" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-2 text-center">활동</h3>
+                                            <p class="text-gray-400 text-base md:text-lg text-center">AI로 나만의 컨텐츠 제작<br>(이미지, 웹사이트, 전자책)</p>
+                                        </div>
+                                        <!-- 컨셉 카드 -->
+                                        <div class="neon-box p-5">
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden mb-4">
+                                                <img src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=400&h=225&fit=crop" alt="컨셉" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-2 text-center">컨셉</h3>
+                                            <p class="text-gray-400 text-base md:text-lg text-center">나의 아이덴티티를 찾고<br>AI로 창작하며 표현</p>
+                                        </div>
+                                        <!-- 심화 프로그램 카드 -->
+                                        <div class="neon-box p-5">
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden mb-4">
+                                                <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&h=225&fit=crop" alt="심화 프로그램" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-2 text-center">심화 프로그램</h3>
+                                            <p class="text-gray-400 text-base md:text-lg text-center">1:1 아이덴티티<br>심화 컨설팅 연결</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 6: 이런 분을 환영합니다 -->
+                    <div class="swiper-slide">
+                        <div class="w-full h-full flex items-center justify-center px-8 pt-20 pb-16">
+                            <div class="max-w-7xl w-full">
+                                <div class="slide-content">
+                                    <h2 class="text-4xl md:text-5xl font-bold text-white text-center mb-10">
+                                        <span class="text-soft-gold">이런 분</span>을 환영합니다
+                                    </h2>
+                                    <div class="grid grid-cols-4 gap-5">
+                                        <div class="neon-box p-5">
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden mb-4">
+                                                <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=225&fit=crop" alt="AI 입문자" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-2 text-center">AI 입문자</h3>
+                                            <p class="text-gray-400 text-base md:text-lg text-center">AI에 관심이 있는 분</p>
+                                        </div>
+                                        <div class="neon-box p-5">
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden mb-4">
+                                                <img src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=225&fit=crop" alt="창작 러버" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-2 text-center">창작 러버</h3>
+                                            <p class="text-gray-400 text-base md:text-lg text-center">새로운 것을 창작하는데<br>흥미가 있는 분</p>
+                                        </div>
+                                        <div class="neon-box p-5">
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden mb-4">
+                                                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=225&fit=crop&crop=face" alt="자기표현" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-2 text-center">자기표현</h3>
+                                            <p class="text-gray-400 text-base md:text-lg text-center">나를 표현하고 싶은 분</p>
+                                        </div>
+                                        <div class="neon-box p-5">
+                                            <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden mb-4">
+                                                <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&h=225&fit=crop" alt="커리어 전환" class="w-full h-full object-cover opacity-80">
+                                            </div>
+                                            <h3 class="text-xl md:text-2xl font-bold text-white mb-2 text-center">커리어 전환</h3>
+                                            <p class="text-gray-400 text-base md:text-lg text-center">취업/이직/창업에<br>관심있는 분</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 7: 모임 후기 -->
+                    <div class="swiper-slide">
+                        <div class="w-full h-full flex items-center justify-center px-8 pt-20 pb-16">
+                            <div class="max-w-7xl w-full">
+                                <div class="slide-content">
+                                    <h2 class="text-4xl md:text-5xl font-bold text-white text-center mb-3">
+                                        <span class="text-soft-gold">모임 후기</span>
+                                    </h2>
+                                    <p class="text-gray-400 text-center text-xl md:text-2xl mb-8">참석자분들의 생생한 후기</p>
+
+                                    <div class="grid grid-cols-3 gap-5">
+                                        <!-- 후기 카드 1 -->
+                                        <div class="review-card p-5">
+                                            <div class="flex items-center gap-3 mb-3">
+                                                <div class="w-12 h-12 bg-cyan-500/30 rounded-full flex items-center justify-center flex-shrink-0">
+                                                    <i class="fas fa-user text-xl text-cyan-400"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="text-white font-semibold text-lg">참석자 A</p>
+                                                    <p class="text-gray-500 text-sm">2024.12 참석</p>
+                                                </div>
+                                            </div>
+                                            <div class="kakao-bubble text-base">
+                                                넵! 지금입금드리겠습니다 유익했어요 감사합니다 >_<
+                                            </div>
+                                        </div>
+
+                                        <!-- 후기 카드 2 -->
+                                        <div class="review-card p-5">
+                                            <div class="flex items-center gap-3 mb-3">
+                                                <div class="w-12 h-12 bg-purple-500/30 rounded-full flex items-center justify-center flex-shrink-0">
+                                                    <i class="fas fa-user text-xl text-purple-400"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="text-white font-semibold text-lg">참석자 B</p>
+                                                    <p class="text-gray-500 text-sm">2024.11 참석</p>
+                                                </div>
+                                            </div>
+                                            <div class="kakao-bubble text-base">
+                                                너무 신기하다. 이걸(AI) 몰랐던 지난 세월이 뭐였지 싶고 도태되지 않으려면 배우고 싶다
+                                            </div>
+                                        </div>
+
+                                        <!-- 후기 카드 3 -->
+                                        <div class="review-card p-5">
+                                            <div class="flex items-center gap-3 mb-3">
+                                                <div class="w-12 h-12 bg-pink-500/30 rounded-full flex items-center justify-center flex-shrink-0">
+                                                    <i class="fas fa-user text-xl text-pink-400"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="text-white font-semibold text-lg">참석자 C</p>
+                                                    <p class="text-gray-500 text-sm">2024.12 참석</p>
+                                                </div>
+                                            </div>
+                                            <div class="kakao-bubble text-base">
+                                                가볍게 입력해서 제대로 나오지 못한 것이 아쉬움. 진지하게 고민해서 만들어보고 싶음
+                                            </div>
+                                        </div>
+
+                                        <!-- 후기 카드 4 -->
+                                        <div class="review-card p-5">
+                                            <div class="flex items-center gap-3 mb-3">
+                                                <div class="w-12 h-12 bg-soft-gold/30 rounded-full flex items-center justify-center flex-shrink-0">
+                                                    <i class="fas fa-user text-xl text-soft-gold"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="text-white font-semibold text-lg">참석자 D</p>
+                                                    <p class="text-gray-500 text-sm">카톡 후기</p>
+                                                </div>
+                                            </div>
+                                            <div class="kakao-bubble text-base">
+                                                오늘 친구와 저의 후기 중 하나가 엄청 배고파진걸 끝나고나서야 알게됐다고 할정도로 정말 집중해서 들었던거 같아요
+                                            </div>
+                                        </div>
+
+                                        <!-- 후기 카드 5 -->
+                                        <div class="review-card p-5">
+                                            <div class="flex items-center gap-3 mb-3">
+                                                <div class="w-12 h-12 bg-cyan-500/30 rounded-full flex items-center justify-center flex-shrink-0">
+                                                    <i class="fas fa-user text-xl text-cyan-400"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="text-white font-semibold text-lg">참석자 E</p>
+                                                    <p class="text-gray-500 text-sm">2024.11 참석</p>
+                                                </div>
+                                            </div>
+                                            <div class="kakao-bubble text-base">
+                                                소속확인 메리트가 너무 최고입니다 친구가 다음 회차도 참석 바로 하겠다네요
+                                            </div>
+                                        </div>
+
+                                        <!-- 후기 카드 6 -->
+                                        <div class="review-card p-5">
+                                            <div class="flex items-center gap-3 mb-3">
+                                                <div class="w-12 h-12 bg-purple-500/30 rounded-full flex items-center justify-center flex-shrink-0">
+                                                    <i class="fas fa-user text-xl text-purple-400"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="text-white font-semibold text-lg">참석자 F</p>
+                                                    <p class="text-gray-500 text-sm">카톡 후기</p>
+                                                </div>
+                                            </div>
+                                            <div class="kakao-bubble text-base">
+                                                너무 늦게 왔는데도 챙겨주셔서 감사해요!
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
-                <!-- Session 2 -->
-                <div class="info-card bg-white border border-gray-200 rounded-2xl p-8 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-deep-navy/5 rounded-full -mr-16 -mt-16"></div>
-                    <div class="relative z-10">
-                        <div class="text-5xl font-serif font-bold text-deep-navy/30 mb-4">02</div>
-                        <h3 class="text-2xl font-bold mb-4">What can I do?</h3>
-                        <p class="text-gray-600 mb-4 leading-relaxed">
-                            나는 무엇을 할 수 있는가?
-                        </p>
-                        <p class="text-sm text-gray-500 leading-relaxed">
-                            발견한 강점을 실제 역량으로 연결하고 구체화합니다.
-                        </p>
-                    </div>
-                </div>
+                <!-- Pagination -->
+                <div class="swiper-pagination"></div>
 
-                <!-- Session 3 -->
-                <div class="info-card bg-white border border-gray-200 rounded-2xl p-8 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-champagne-gold/5 rounded-full -mr-16 -mt-16"></div>
-                    <div class="relative z-10">
-                        <div class="text-5xl font-serif font-bold text-champagne-gold/30 mb-4">03</div>
-                        <h3 class="text-2xl font-bold mb-4">How to brand?</h3>
-                        <p class="text-gray-600 mb-4 leading-relaxed">
-                            어떻게 브랜딩할 것인가?
-                        </p>
-                        <p class="text-sm text-gray-500 leading-relaxed">
-                            나만의 스토리를 완성하고 세상에 선보입니다.
-                        </p>
-                    </div>
-                </div>
+                <!-- Navigation -->
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
             </div>
         </div>
     </section>
+
+    <!-- Image Popup Modal -->
+    <div class="image-popup-overlay" id="imagePopup">
+        <span class="image-popup-close" id="popupClose">&times;</span>
+        <div class="image-popup-content">
+            <img src="" alt="" id="popupImage">
+        </div>
+        <div class="image-popup-title" id="popupTitle"></div>
+    </div>
 
     <!-- Footer -->
-    <footer class="bg-rich-black text-white py-12">
+    <footer class="bg-rich-black py-16 text-white">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h3 class="text-2xl font-serif font-bold mb-2">Algrowithm</h3>
-                    <p class="text-gray-400 text-sm">2030 AI Career Branding Socialring</p>
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                <div class="text-center md:text-left">
+                    <div class="flex items-center gap-3 justify-center md:justify-start mb-4">
+                        <img src="./assets/logo.svg" alt="Logo" class="w-10 h-10 invert">
+                        <span class="text-2xl font-serif font-bold">Algrowithm</span>
+                    </div>
+                    <p class="text-gray-400">내 성장 알고리즘을 만들다</p>
                 </div>
                 <div class="flex gap-6">
-                    <a href="#" class="text-gray-400 hover:text-champagne-gold transition-colors">
+                    <a href="#" class="text-gray-400 hover:text-soft-gold transition-colors">
                         <i class="fab fa-instagram text-2xl"></i>
                     </a>
-                    <a href="#" class="text-gray-400 hover:text-champagne-gold transition-colors">
-                        <i class="fab fa-linkedin text-2xl"></i>
-                    </a>
-                    <a href="#" class="text-gray-400 hover:text-champagne-gold transition-colors">
+                    <a href="#" class="text-gray-400 hover:text-soft-gold transition-colors">
                         <i class="fas fa-envelope text-2xl"></i>
                     </a>
                 </div>
             </div>
-            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
-                <p>© 2025 Algrowithm. All rights reserved.</p>
+            <div class="border-t border-gray-800 mt-10 pt-8 text-center text-gray-500 text-sm">
+                <p>&copy; 2025 Algrowithm. All rights reserved.</p>
             </div>
         </div>
     </footer>
+
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <script>
+        // Register GSAP ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Swiper를 전역으로 선언 (스크롤 핸들러에서 참조하기 위해)
+        let showcaseSwiper = null;
+
+        // Improved Section Snap Scroll
+        (function initSectionSnap() {
+            const sections = document.querySelectorAll('section');
+            let isScrolling = false;
+            const SCROLL_DURATION = 800;
+            const SCROLL_COOLDOWN = 100;
+            let lastScrollTime = 0;
+
+            function smoothScrollTo(target, duration) {
+                const start = window.scrollY;
+                const distance = target - start;
+                const startTime = performance.now();
+
+                isScrolling = true;
+
+                function animation(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const ease = progress < 0.5
+                        ? 4 * progress * progress * progress
+                        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+                    window.scrollTo(0, start + distance * ease);
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animation);
+                    } else {
+                        setTimeout(() => {
+                            isScrolling = false;
+                        }, SCROLL_COOLDOWN);
+                    }
+                }
+                requestAnimationFrame(animation);
+            }
+
+            function getSectionAtPosition(scrollY) {
+                for (let i = sections.length - 1; i >= 0; i--) {
+                    const sectionTop = sections[i].offsetTop;
+                    if (scrollY >= sectionTop - 50) {
+                        return i;
+                    }
+                }
+                return 0;
+            }
+
+            let wheelTimeout;
+            let accumulatedDelta = 0;
+
+            window.addEventListener('wheel', (e) => {
+                const now = Date.now();
+
+                if (isScrolling || (now - lastScrollTime) < SCROLL_COOLDOWN) {
+                    e.preventDefault();
+                    return;
+                }
+
+                const scrollY = window.scrollY;
+                const currentIdx = getSectionAtPosition(scrollY);
+                const currentSect = sections[currentIdx];
+
+                // showcase 섹션에서는 위로 스크롤 시 이전 섹션으로 이동
+                if (currentSect && currentSect.id === 'showcase') {
+                    e.preventDefault();
+                    // 위로 스크롤 -> 이전 섹션(instructor)으로
+                    if (e.deltaY < -30) {
+                        clearTimeout(wheelTimeout);
+                        accumulatedDelta += e.deltaY;
+                        wheelTimeout = setTimeout(() => {
+                            if (Math.abs(accumulatedDelta) < 20) {
+                                accumulatedDelta = 0;
+                                return;
+                            }
+                            lastScrollTime = Date.now();
+                            let targetIdx = currentIdx - 1;
+                            if (targetIdx >= 0) {
+                                smoothScrollTo(sections[targetIdx].offsetTop, SCROLL_DURATION);
+                            }
+                            accumulatedDelta = 0;
+                        }, 30);
+                    }
+                    // 아래로 스크롤은 Swiper 내부 슬라이드 전환에 맡김 (스크롤 차단)
+                    return;
+                }
+
+                e.preventDefault();
+                clearTimeout(wheelTimeout);
+                accumulatedDelta += e.deltaY;
+
+                wheelTimeout = setTimeout(() => {
+                    if (Math.abs(accumulatedDelta) < 20) {
+                        accumulatedDelta = 0;
+                        return;
+                    }
+
+                    const direction = accumulatedDelta > 0 ? 1 : -1;
+                    let targetIdx = currentIdx + direction;
+                    targetIdx = Math.max(0, Math.min(sections.length - 1, targetIdx));
+
+                    if (targetIdx !== currentIdx) {
+                        lastScrollTime = Date.now();
+                        smoothScrollTo(sections[targetIdx].offsetTop, SCROLL_DURATION);
+                    }
+                    accumulatedDelta = 0;
+                }, 30);
+            }, { passive: false });
+
+            // Touch events for mobile
+            let touchStartY = 0;
+            document.addEventListener('touchstart', (e) => {
+                touchStartY = e.touches[0].clientY;
+            }, { passive: true });
+
+            document.addEventListener('touchend', (e) => {
+                if (isScrolling) return;
+
+                const scrollY = window.scrollY;
+                const currentIdx = getSectionAtPosition(scrollY);
+                const currentSect = sections[currentIdx];
+
+                if (currentSect && currentSect.id === 'showcase') return;
+
+                const touchEndY = e.changedTouches[0].clientY;
+                const deltaY = touchStartY - touchEndY;
+
+                if (Math.abs(deltaY) > 50) {
+                    const direction = deltaY > 0 ? 1 : -1;
+                    let targetIdx = currentIdx + direction;
+                    targetIdx = Math.max(0, Math.min(sections.length - 1, targetIdx));
+
+                    if (targetIdx !== currentIdx) {
+                        smoothScrollTo(sections[targetIdx].offsetTop, SCROLL_DURATION);
+                    }
+                }
+            }, { passive: true });
+        })();
+
+        // Initialize Showcase Swiper with autoplay
+        showcaseSwiper = new Swiper('.showcase-swiper', {
+            effect: 'fade',
+            fadeEffect: { crossFade: true },
+            speed: 800,
+            loop: true,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            keyboard: {
+                enabled: true,
+            },
+        });
+
+        // Manual pause on mouse enter for showcase section
+        const showcaseSection = document.getElementById('showcase');
+        showcaseSection.addEventListener('mouseenter', () => {
+            showcaseSwiper.autoplay.stop();
+        });
+        showcaseSection.addEventListener('mouseleave', () => {
+            showcaseSwiper.autoplay.start();
+        });
+
+        // GSAP Animations - 프로필 섹션(ceo, instructor)은 제외하여 페이드아웃 문제 방지
+        gsap.utils.toArray('section').forEach((section, i) => {
+            // showcase와 프로필 섹션(ceo, instructor)은 애니메이션 제외
+            if (section.id !== 'showcase' && section.id !== 'ceo' && section.id !== 'instructor') {
+                gsap.from(section.querySelectorAll('h1, h2, h3, p, .career-item'), {
+                    y: 50,
+                    opacity: 0,
+                    duration: 0.8,
+                    stagger: 0.1,
+                    ease: 'power3.out',
+                    scrollTrigger: {
+                        trigger: section,
+                        start: 'top 80%',
+                        toggleActions: 'play none none none', // reverse 제거로 페이드아웃 방지
+                    }
+                });
+            }
+        });
+
+        // Image Popup functionality for showcase cards
+        (function initImagePopup() {
+            const popup = document.getElementById('imagePopup');
+            const popupImage = document.getElementById('popupImage');
+            const popupTitle = document.getElementById('popupTitle');
+            const popupClose = document.getElementById('popupClose');
+
+            // Find all neon-box cards with images in showcase section
+            const showcaseSection = document.getElementById('showcase');
+            const cards = showcaseSection.querySelectorAll('.neon-box');
+
+            cards.forEach(card => {
+                const img = card.querySelector('img');
+                const title = card.querySelector('h3');
+
+                if (img) {
+                    // Add clickable class
+                    card.classList.add('clickable-card');
+
+                    card.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        popupImage.src = img.src;
+                        popupImage.alt = img.alt;
+                        popupTitle.textContent = title ? title.textContent : '';
+                        popup.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    });
+                }
+            });
+
+            // Close popup on overlay click
+            popup.addEventListener('click', () => {
+                popup.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+
+            // Close popup on X button click
+            popupClose.addEventListener('click', (e) => {
+                e.stopPropagation();
+                popup.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+
+            // Close popup on ESC key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && popup.classList.contains('active')) {
+                    popup.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        })();
+    </script>
 </body>
 
 </html>
