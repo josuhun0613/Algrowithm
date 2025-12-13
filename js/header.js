@@ -62,7 +62,6 @@ function getHeaderHTML(options = {}) {
                     </div>
 
                     <a href="schedule.html" class="hover:text-soft-gold transition-colors">일정</a>
-                    <a href="홍보포스터.html" class="hover:text-soft-gold transition-colors">홍보포스터</a>
                 </div>
 
                 ${startButton}

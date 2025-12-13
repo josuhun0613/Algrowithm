@@ -17,6 +17,9 @@
                         'warm-cream': '#faf8f5',
                         'deep-purple': '#4a3c6d',
                         'soft-teal': '#5a9e9e',
+                        'deep-navy': '#1e3a5f',
+                        'navy-blue': '#2c5282',
+                        'light-navy': '#4a7396',
                     },
                     fontFamily: {
                         sans: ['Pretendard', 'sans-serif'],
@@ -202,7 +205,7 @@
                         <i class="fa-solid fa-chevron-down text-[10px] ml-1"></i>
                     </button>
                     <div class="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-                        <div class="bg-white rounded-xl shadow-xl border border-gray-100 py-2 min-w-[200px]">
+                        <div class="bg-white rounded-xl shadow-xl border border-gray-100 py-2 min-w-[240px]">
                             <a href="workbook_1.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-soft-gold/10 hover:text-soft-gold transition-colors">
                                 <span class="text-soft-gold font-bold mr-2">01</span> 나는 누구인가
                             </a>
@@ -218,6 +221,12 @@
                             <div class="border-t border-gray-100 my-2"></div>
                             <a href="prompt-studio.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-soft-gold/10 hover:text-soft-gold transition-colors">
                                 <i class="fa-solid fa-wand-magic-sparkles text-soft-gold mr-2"></i> 웹사이트 생성 프롬프트
+                            </a>
+                            <a href="ebook-generator.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-soft-gold/10 hover:text-soft-gold transition-colors">
+                                <i class="fa-solid fa-pen-fancy text-soft-gold mr-2"></i> E-book 프롬프트
+                            </a>
+                            <a href="ebook-pdf-generator.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-soft-gold/10 hover:text-soft-gold transition-colors">
+                                <i class="fa-solid fa-file-pdf text-soft-gold mr-2"></i> E-book PDF 생성
                             </a>
                         </div>
                     </div>
@@ -240,10 +249,10 @@
         <!-- 왼쪽: 섹션 3 - 가치관, 기여 탐색 -->
         <div class="w-1/2 h-full flex flex-col p-5 relative" style="background: linear-gradient(180deg, #faf8f5 0%, #fff 100%);">
             <!-- 헤더 -->
-            <div class="border-b-2 border-soft-gold/30 pb-2 mb-4">
+            <div class="border-b-2 border-deep-navy/30 pb-2 mb-4">
                 <div class="flex items-center gap-2 mb-1">
-                    <span class="bg-soft-gold text-white text-[9px] font-bold px-2 py-0.5 rounded">4회차 워크지</span>
-                    <span class="text-soft-gold font-bold tracking-widest text-[9px] uppercase">Section 3</span>
+                    <span class="bg-deep-navy text-white text-[9px] font-bold px-2 py-0.5 rounded">4회차 워크지</span>
+                    <span class="text-deep-navy font-bold tracking-widest text-[9px] uppercase">Section 3</span>
                 </div>
                 <h1 class="text-base font-serif font-bold text-rich-black leading-tight">
                     가치관, 기여 탐색
@@ -254,7 +263,7 @@
             <div class="flex-1 flex flex-col gap-2">
                 <div class="question-card flex-1 flex flex-col">
                     <p class="question-title">
-                        <i class="fa-solid fa-trophy text-soft-gold mr-2 text-xs"></i>
+                        <i class="fa-solid fa-trophy text-deep-navy mr-2 text-xs"></i>
                         가장 뿌듯했던 순간은 언제인가요?
                     </p>
                     <textarea class="question-input flex-1 min-h-[32px]" placeholder="성취감을 느꼈던 구체적인 경험을 떠올려보세요..."></textarea>
@@ -262,7 +271,7 @@
 
                 <div class="question-card flex-1 flex flex-col">
                     <p class="question-title">
-                        <i class="fa-solid fa-gift text-soft-gold mr-2 text-xs"></i>
+                        <i class="fa-solid fa-gift text-deep-navy mr-2 text-xs"></i>
                         타인이 나를 통해 '무엇'을 얻길 원하나요?
                     </p>
                     <textarea class="question-input flex-1 min-h-[32px]" placeholder="나와의 만남을 통해 상대가 얻어가길 바라는 것은?"></textarea>
@@ -270,7 +279,7 @@
 
                 <div class="question-card flex-1 flex flex-col">
                     <p class="question-title">
-                        <i class="fa-solid fa-heart text-soft-gold mr-2 text-xs"></i>
+                        <i class="fa-solid fa-heart text-deep-navy mr-2 text-xs"></i>
                         돈을 받지 않아도 계속 할 수 있는 일은 무엇인가요?
                     </p>
                     <textarea class="question-input flex-1 min-h-[32px]" placeholder="보상 없이도 기꺼이 하게 되는 활동은?"></textarea>
@@ -278,7 +287,7 @@
 
                 <div class="question-card flex-1 flex flex-col">
                     <p class="question-title">
-                        <i class="fa-solid fa-globe text-soft-gold mr-2 text-xs"></i>
+                        <i class="fa-solid fa-globe text-deep-navy mr-2 text-xs"></i>
                         내가 만들고 싶은 문화, 해결하고 싶은 사회문제는?
                     </p>
                     <textarea class="question-input flex-1 min-h-[32px]" placeholder="세상에 남기고 싶은 변화나 해결하고 싶은 문제를 적어보세요..."></textarea>
@@ -286,9 +295,9 @@
             </div>
 
             <!-- 하단 인사이트 박스 -->
-            <div class="mt-2 bg-gradient-to-r from-soft-gold/10 to-transparent p-2 rounded-lg border-l-4 border-soft-gold">
+            <div class="mt-2 bg-gradient-to-r from-deep-navy/10 to-transparent p-2 rounded-lg border-l-4 border-deep-navy">
                 <p class="text-[10px] text-gray-600 italic">
-                    <i class="fa-solid fa-lightbulb text-soft-gold mr-1"></i>
+                    <i class="fa-solid fa-lightbulb text-deep-navy mr-1"></i>
                     "내가 세상에 기여할 수 있는 고유한 가치를 발견하세요."
                 </p>
             </div>
@@ -296,7 +305,7 @@
             <!-- 푸터 -->
             <footer class="mt-2 pt-2 border-t border-gray-200 flex justify-between items-center">
                 <div class="flex items-center gap-2">
-                    <span class="text-[8px] font-bold bg-soft-gold text-white px-1.5 py-0.5 rounded">Algrowithm</span>
+                    <span class="text-[8px] font-bold bg-deep-navy text-white px-1.5 py-0.5 rounded">Algrowithm</span>
                     <span class="text-[8px] text-gray-400">Copyright 2025</span>
                 </div>
                 <p class="text-[8px] text-gray-500 italic">내가 원하는 삶을 찾는 여정</p>
@@ -304,27 +313,27 @@
         </div>
 
         <!-- 오른쪽: 표지 -->
-        <div class="w-1/2 h-full flex flex-col items-center justify-center p-8 relative overflow-hidden" style="background: linear-gradient(135deg, #fefefe 0%, #f8f8f8 50%, rgba(212,175,55,0.08) 100%);">
+        <div class="w-1/2 h-full flex flex-col items-center justify-center p-8 relative overflow-hidden" style="background: linear-gradient(135deg, #fefefe 0%, #f8f8f8 50%, rgba(30,58,95,0.08) 100%);">
             <!-- 배경 패턴 -->
-            <div class="absolute inset-0 opacity-20" style="background-image: url('data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23d4af37\' fill-opacity=\'0.1\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'20\' cy=\'20\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E');"></div>
+            <div class="absolute inset-0 opacity-20" style="background-image: url('data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%231e3a5f\' fill-opacity=\'0.1\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'20\' cy=\'20\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E');"></div>
 
             <!-- 아이콘 -->
             <div class="mb-6">
-                <div class="w-32 h-32 rounded-full bg-gradient-to-br from-soft-gold/20 to-soft-gold/5 flex items-center justify-center">
-                    <i class="fa-solid fa-compass text-5xl text-soft-gold"></i>
+                <div class="w-32 h-32 rounded-full bg-gradient-to-br from-deep-navy/20 to-deep-navy/5 flex items-center justify-center">
+                    <i class="fa-solid fa-compass text-5xl text-deep-navy"></i>
                 </div>
             </div>
 
             <!-- 메인 타이틀 -->
             <div class="text-center relative z-10">
-                <p class="text-soft-gold font-bold tracking-[0.2em] text-[10px] uppercase mb-3">Self Discovery Journey</p>
+                <p class="text-deep-navy font-bold tracking-[0.2em] text-[10px] uppercase mb-3">Self Discovery Journey</p>
                 <h1 class="text-2xl font-serif font-bold text-rich-black mb-2 leading-tight">
                     내가 원하는 삶을<br>찾는 여정
                 </h1>
                 <h2 class="text-lg font-serif text-gray-500 mb-4">
                     워크북
                 </h2>
-                <div class="w-16 h-0.5 bg-soft-gold mx-auto mb-5"></div>
+                <div class="w-16 h-0.5 bg-deep-navy mx-auto mb-5"></div>
 
                 <!-- 명언 -->
                 <p class="text-xs text-gray-500 italic font-serif max-w-[180px] mx-auto leading-relaxed">
@@ -336,28 +345,28 @@
             <!-- 개인 정보 입력 -->
             <div class="mt-6 flex flex-col gap-2">
                 <div class="flex items-center gap-3">
-                    <p class="text-[9px] text-soft-gold font-bold tracking-wider uppercase w-12">Name</p>
+                    <p class="text-[9px] text-deep-navy font-bold tracking-wider uppercase w-12">Name</p>
                     <input type="text"
-                        class="bg-transparent border-b-2 border-soft-gold/40 w-32 text-sm font-serif font-bold text-center text-rich-black focus:border-soft-gold focus:outline-none py-1"
+                        class="bg-transparent border-b-2 border-deep-navy/40 w-32 text-sm font-serif font-bold text-center text-rich-black focus:border-deep-navy focus:outline-none py-1"
                         placeholder="">
                 </div>
                 <div class="flex items-center gap-3">
-                    <p class="text-[9px] text-soft-gold font-bold tracking-wider uppercase w-12">Birth</p>
+                    <p class="text-[9px] text-deep-navy font-bold tracking-wider uppercase w-12">Birth</p>
                     <input type="text"
-                        class="bg-transparent border-b-2 border-soft-gold/40 w-32 text-sm font-serif font-bold text-center text-rich-black focus:border-soft-gold focus:outline-none py-1"
+                        class="bg-transparent border-b-2 border-deep-navy/40 w-32 text-sm font-serif font-bold text-center text-rich-black focus:border-deep-navy focus:outline-none py-1"
                         placeholder="">
                 </div>
                 <div class="flex items-center gap-3">
-                    <p class="text-[9px] text-soft-gold font-bold tracking-wider uppercase w-12">Phone</p>
+                    <p class="text-[9px] text-deep-navy font-bold tracking-wider uppercase w-12">Phone</p>
                     <input type="text"
-                        class="bg-transparent border-b-2 border-soft-gold/40 w-32 text-sm font-serif font-bold text-center text-rich-black focus:border-soft-gold focus:outline-none py-1"
+                        class="bg-transparent border-b-2 border-deep-navy/40 w-32 text-sm font-serif font-bold text-center text-rich-black focus:border-deep-navy focus:outline-none py-1"
                         placeholder="">
                 </div>
             </div>
 
             <!-- 로고 -->
             <div class="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2">
-                <span class="text-lg font-serif font-bold text-soft-gold tracking-wide">Algrowithm</span>
+                <span class="text-lg font-serif font-bold text-deep-navy tracking-wide">Algrowithm</span>
             </div>
         </div>
     </div>
