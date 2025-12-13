@@ -46,7 +46,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
         rel="stylesheet">
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK (Firestore만 사용 - 무료) -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
@@ -63,6 +63,7 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        // Storage 제거 - Firestore만 사용 (무료)
 
         // 전역 함수 선언 (HTML 파싱 전에 정의되어야 함)
         function openInquiryModal() {
@@ -80,6 +81,174 @@
         function closeInquirySuccessModal() {
             document.getElementById('inquirySuccessModal').classList.remove('active');
             document.body.style.overflow = '';
+        }
+
+        // 텍스트 후기 모달 함수
+        function openTextReviewModal() {
+            document.getElementById('textReviewModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeTextReviewModal() {
+            document.getElementById('textReviewModal').classList.remove('active');
+            document.body.style.overflow = '';
+            document.getElementById('textReviewForm').reset();
+        }
+
+        // 사진 후기 모달 함수
+        function openPhotoReviewModal() {
+            document.getElementById('photoReviewModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePhotoReviewModal() {
+            document.getElementById('photoReviewModal').classList.remove('active');
+            document.body.style.overflow = '';
+            document.getElementById('photoReviewForm').reset();
+            document.getElementById('photoPreview').innerHTML = '';
+        }
+
+        // 텍스트 후기 제출
+        async function submitTextReview(e) {
+            e.preventDefault();
+            const btn = document.getElementById('textReviewSubmitBtn');
+            const btnText = btn.querySelector('span');
+            const spinner = btn.querySelector('.spinner');
+
+            btn.disabled = true;
+            btnText.textContent = '등록 중...';
+            spinner.classList.remove('hidden');
+
+            try {
+                const name = document.getElementById('textReviewName').value;
+                const job = document.getElementById('textReviewJob').value;
+                const program = document.getElementById('textReviewProgram').value;
+                const content = document.getElementById('textReviewContent').value;
+
+                // 직업과 프로그램을 합쳐서 role 생성
+                const role = job ? `${job} | ${program}` : program;
+
+                await db.collection('textReviews').add({
+                    name: name,
+                    role: role,
+                    job: job,
+                    program: program,
+                    content: content,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                closeTextReviewModal();
+                alert('후기가 등록되었습니다. 감사합니다!');
+                loadTextReviews(); // 텍스트 후기 새로고침
+
+            } catch (error) {
+                console.error('텍스트 후기 등록 실패:', error);
+                alert('등록에 실패했습니다. 다시 시도해 주세요.');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = '후기 등록';
+                spinner.classList.add('hidden');
+            }
+        }
+
+        // 이미지 압축 함수 (최대 5MB 원본 → 800KB 이하로 압축)
+        function compressImage(file, maxWidth = 1200, quality = 0.7) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+
+                        // 최대 너비 제한
+                        if (width > maxWidth) {
+                            height = (height * maxWidth) / width;
+                            width = maxWidth;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // JPEG로 압축 (quality: 0.7 = 70%)
+                        const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+                        resolve(compressedBase64);
+                    };
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // 사진 후기 제출 (Storage 없이 Firestore에 직접 저장)
+        async function submitPhotoReview(e) {
+            e.preventDefault();
+            const btn = document.getElementById('photoReviewSubmitBtn');
+            const btnText = btn.querySelector('span');
+            const spinner = btn.querySelector('.spinner');
+
+            btn.disabled = true;
+            btnText.textContent = '처리 중...';
+            spinner.classList.remove('hidden');
+
+            try {
+                const author = document.getElementById('photoReviewAuthor').value;
+                const text = document.getElementById('photoReviewText').value;
+                const fileInput = document.getElementById('photoReviewFile');
+                const file = fileInput.files[0];
+
+                if (!file) {
+                    throw new Error('이미지를 선택해주세요');
+                }
+
+                // 파일 크기 체크 (최대 10MB 원본 허용)
+                if (file.size > 10 * 1024 * 1024) {
+                    throw new Error('파일 크기는 10MB 이하여야 합니다.');
+                }
+
+                // 이미지 압축 (Base64로 변환)
+                btnText.textContent = '이미지 압축 중...';
+                const compressedBase64 = await compressImage(file, 1200, 0.7);
+
+                // Firestore에 저장 (Storage 없이!)
+                btnText.textContent = '저장 중...';
+                await db.collection('photoReviews').add({
+                    author: author,
+                    text: text,
+                    imageUrl: compressedBase64,  // Base64 데이터 직접 저장
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                closePhotoReviewModal();
+                alert('사진 후기가 등록되었습니다. 감사합니다!');
+                loadPhotoReviews(); // 사진 후기 새로고침
+
+            } catch (error) {
+                console.error('사진 후기 등록 실패:', error);
+                alert('등록에 실패했습니다: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = '후기 등록';
+                spinner.classList.add('hidden');
+            }
+        }
+
+        // 사진 미리보기
+        function previewPhoto(input) {
+            const preview = document.getElementById('photoPreview');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" class="w-full h-48 object-cover rounded-xl">`;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
         }
 
         // Submit Inquiry (Firebase 저장) - 전역 함수
@@ -131,15 +300,9 @@
     </script>
 
     <style>
-        /* Magazine-style scroll snap */
+        /* Magazine-style scroll snap - JS로 제어 */
         html {
-            scroll-snap-type: y mandatory;
-            scroll-behavior: smooth;
-        }
-
-        section {
-            scroll-snap-align: start;
-            scroll-snap-stop: always;
+            overflow-y: scroll;
         }
 
         body {
@@ -226,7 +389,7 @@
             color: white;
         }
 
-        /* Swiper pagination - Top position */
+        /* Swiper pagination dots - 오른쪽 상단 세로 배치 */
         .hero-swiper .swiper-pagination {
             top: 120px !important;
             bottom: auto !important;
@@ -235,17 +398,75 @@
             width: auto !important;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
         .hero-swiper .swiper-pagination-bullet {
             width: 10px;
             height: 10px;
-            background: white;
-            opacity: 0.4;
+            background: rgba(255, 255, 255, 0.4);
+            opacity: 1;
             margin: 0 !important;
+            transition: all 0.3s ease;
         }
         .hero-swiper .swiper-pagination-bullet-active {
-            opacity: 1;
+            background: #d4af37;
+            transform: scale(1.2);
+        }
+
+        /* Swiper navigation arrows - 고급스러운 미니멀 스타일 */
+        .hero-swiper .swiper-button-prev,
+        .hero-swiper .swiper-button-next {
+            width: 60px;
+            height: 60px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0;
+            color: white;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hero-swiper .swiper-button-prev:hover,
+        .hero-swiper .swiper-button-next:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+        .hero-swiper .swiper-button-prev::after,
+        .hero-swiper .swiper-button-next::after {
+            font-size: 16px;
+            font-weight: 300;
+            letter-spacing: -2px;
+        }
+        .hero-swiper .swiper-button-prev {
+            left: auto;
+            right: 100px;
+            top: auto;
+            bottom: 40px;
+        }
+        .hero-swiper .swiper-button-next {
+            right: 40px;
+            top: auto;
+            bottom: 40px;
+        }
+        @media (max-width: 768px) {
+            .hero-swiper .swiper-pagination {
+                top: 100px !important;
+                right: 20px !important;
+            }
+            .hero-swiper .swiper-button-prev,
+            .hero-swiper .swiper-button-next {
+                width: 44px;
+                height: 44px;
+                bottom: 100px;
+            }
+            .hero-swiper .swiper-button-prev {
+                right: 74px;
+            }
+            .hero-swiper .swiper-button-next {
+                right: 30px;
+            }
+            .hero-swiper .swiper-button-prev::after,
+            .hero-swiper .swiper-button-next::after {
+                font-size: 12px;
+            }
         }
 
         /* Slide Counter */
@@ -360,114 +581,64 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
 
-        /* Section Navigation */
-        .section-nav {
-            position: fixed;
-            right: 30px;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 100;
+        /* Photo Reviews marquee - 반대 방향 */
+        .photo-reviews-track {
             display: flex;
-            flex-direction: column;
-            gap: 12px;
+            gap: 16px;
+            animation: scroll-right 25s linear infinite;
         }
-
-        .section-nav-btn {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .photo-reviews-track:hover {
+            animation-play-state: paused;
+        }
+        @keyframes scroll-right {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0); }
+        }
+        .photo-review-card {
+            flex-shrink: 0;
+            width: 280px;
+            height: 200px;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            color: #1a1a1a;
         }
-
-        .section-nav-btn:hover {
-            background: #d4af37;
-            color: white;
-            border-color: #d4af37;
+        .photo-review-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .photo-review-card:hover img {
             transform: scale(1.1);
         }
-
-        .section-nav-btn:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
-        .section-nav-btn:disabled:hover {
-            background: rgba(255, 255, 255, 0.9);
-            color: #1a1a1a;
-            transform: scale(1);
-        }
-
-        .section-indicator {
-            width: 48px;
-            text-align: center;
-            font-size: 12px;
-            font-weight: 600;
-            color: #d4af37;
-            padding: 8px 0;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 24px;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Section dots */
-        .section-dots {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            padding: 12px 0;
-        }
-
-        .section-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(26, 26, 26, 0.2);
-            cursor: pointer;
+        .photo-review-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+            color: white;
+            opacity: 0;
+            transform: translateY(10px);
             transition: all 0.3s ease;
-            margin: 0 auto;
         }
-
-        .section-dot.active {
-            background: #d4af37;
-            transform: scale(1.3);
+        .photo-review-card:hover .photo-review-overlay {
+            opacity: 1;
+            transform: translateY(0);
         }
-
-        .section-dot:hover {
-            background: #d4af37;
-        }
-
-        /* Hide on mobile */
         @media (max-width: 768px) {
-            .section-nav {
-                display: none;
+            .photo-review-card {
+                width: 220px;
+                height: 160px;
             }
         }
+
     </style>
 </head>
 
 <body class="antialiased">
-
-    <!-- Section Navigation - Page by Page -->
-    <div class="section-nav" id="sectionNav">
-        <button class="section-nav-btn" id="prevSection" onclick="navigateSection(-1)">
-            <i class="fa-solid fa-chevron-up"></i>
-        </button>
-        <div class="section-indicator">
-            <div class="section-dots" id="sectionDots"></div>
-        </div>
-        <button class="section-nav-btn" id="nextSection" onclick="navigateSection(1)">
-            <i class="fa-solid fa-chevron-down"></i>
-        </button>
-    </div>
 
     <!-- Navigation - More transparent -->
     <!-- Header - 공통 컴포넌트로 로드 -->
@@ -504,7 +675,11 @@
                     <div class="slide-overlay"></div>
                 </div>
             </div>
+            <!-- Pagination Dots -->
             <div class="swiper-pagination"></div>
+            <!-- Navigation Arrows -->
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
         </div>
 
         <!-- Slide Counter -->
@@ -632,180 +807,25 @@
 
         <!-- Reviews Marquee -->
         <div class="relative">
-            <div class="reviews-track">
-                <!-- Review 1 -->
-                <div class="review-card">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-soft-gold to-yellow-300 flex items-center justify-center text-white font-bold text-xl">김</div>
-                        <div>
-                            <p class="font-bold text-lg">김지현</p>
-                            <p class="text-gray-400 text-sm">마케터 | 3기 수료</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 leading-relaxed">"막연했던 나의 강점이 구체적인 키워드로 정리되었어요. 면접에서 자신있게 나를 소개할 수 있게 되었습니다."</p>
-                    <div class="flex gap-1 mt-4 text-soft-gold">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                    </div>
-                </div>
+            <!-- 텍스트 후기 추가 버튼 -->
+            <button onclick="openTextReviewModal()" class="absolute -top-14 right-6 z-10 w-10 h-10 bg-soft-gold text-white rounded-full shadow-lg hover:bg-yellow-600 transition-all hover:scale-110" title="텍스트 후기 추가">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+            <div class="reviews-track" id="textReviewsTrack">
+                <!-- Firebase에서 동적으로 로드됨 -->
+            </div>
+        </div>
 
-                <!-- Review 2 -->
-                <div class="review-card">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-xl">이</div>
-                        <div>
-                            <p class="font-bold text-lg">이준호</p>
-                            <p class="text-gray-400 text-sm">개발자 | 2기 수료</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 leading-relaxed">"기술만 강조하던 포트폴리오에 '나만의 스토리'를 담을 수 있게 되었어요. 채용담당자들의 반응이 확실히 달라졌습니다."</p>
-                    <div class="flex gap-1 mt-4 text-soft-gold">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                    </div>
-                </div>
-
-                <!-- Review 3 -->
-                <div class="review-card">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold text-xl">박</div>
-                        <div>
-                            <p class="font-bold text-lg">박서연</p>
-                            <p class="text-gray-400 text-sm">디자이너 | 1기 수료</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 leading-relaxed">"워크북을 통해 나의 디자인 철학을 명확하게 정의할 수 있었어요. 클라이언트에게 왜 이런 디자인인지 설명하기가 훨씬 수월해졌습니다."</p>
-                    <div class="flex gap-1 mt-4 text-soft-gold">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                    </div>
-                </div>
-
-                <!-- Review 4 -->
-                <div class="review-card">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold text-xl">최</div>
-                        <div>
-                            <p class="font-bold text-lg">최민수</p>
-                            <p class="text-gray-400 text-sm">대학생 | 4기 수료</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 leading-relaxed">"취업 준비하면서 나 자신에 대해 깊이 고민해본 적이 없었는데, 이 프로그램이 정말 많은 도움이 되었어요."</p>
-                    <div class="flex gap-1 mt-4 text-soft-gold">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                    </div>
-                </div>
-
-                <!-- Review 5 -->
-                <div class="review-card">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white font-bold text-xl">정</div>
-                        <div>
-                            <p class="font-bold text-lg">정하은</p>
-                            <p class="text-gray-400 text-sm">기획자 | 3기 수료</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 leading-relaxed">"이직 준비 중에 참여했는데, 나의 커리어 방향성을 다시 정립할 수 있었어요. 지금은 원하던 회사에서 일하고 있습니다!"</p>
-                    <div class="flex gap-1 mt-4 text-soft-gold">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                    </div>
-                </div>
-
-                <!-- Review 6 -->
-                <div class="review-card">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-xl">윤</div>
-                        <div>
-                            <p class="font-bold text-lg">윤성재</p>
-                            <p class="text-gray-400 text-sm">프리랜서 | 2기 수료</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 leading-relaxed">"프리랜서로 일하면서 나를 브랜딩하는 게 정말 중요한데, Algrowithm이 그 기초를 탄탄하게 잡아줬어요."</p>
-                    <div class="flex gap-1 mt-4 text-soft-gold">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                    </div>
-                </div>
-
-                <!-- Duplicate for seamless loop -->
-                <div class="review-card">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-soft-gold to-yellow-300 flex items-center justify-center text-white font-bold text-xl">김</div>
-                        <div>
-                            <p class="font-bold text-lg">김지현</p>
-                            <p class="text-gray-400 text-sm">마케터 | 3기 수료</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 leading-relaxed">"막연했던 나의 강점이 구체적인 키워드로 정리되었어요. 면접에서 자신있게 나를 소개할 수 있게 되었습니다."</p>
-                    <div class="flex gap-1 mt-4 text-soft-gold">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                    </div>
-                </div>
-
-                <div class="review-card">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-xl">이</div>
-                        <div>
-                            <p class="font-bold text-lg">이준호</p>
-                            <p class="text-gray-400 text-sm">개발자 | 2기 수료</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 leading-relaxed">"기술만 강조하던 포트폴리오에 '나만의 스토리'를 담을 수 있게 되었어요. 채용담당자들의 반응이 확실히 달라졌습니다."</p>
-                    <div class="flex gap-1 mt-4 text-soft-gold">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                    </div>
-                </div>
-
-                <div class="review-card">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold text-xl">박</div>
-                        <div>
-                            <p class="font-bold text-lg">박서연</p>
-                            <p class="text-gray-400 text-sm">디자이너 | 1기 수료</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 leading-relaxed">"워크북을 통해 나의 디자인 철학을 명확하게 정의할 수 있었어요. 클라이언트에게 왜 이런 디자인인지 설명하기가 훨씬 수월해졌습니다."</p>
-                    <div class="flex gap-1 mt-4 text-soft-gold">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                    </div>
-                </div>
-
-                <div class="review-card">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold text-xl">최</div>
-                        <div>
-                            <p class="font-bold text-lg">최민수</p>
-                            <p class="text-gray-400 text-sm">대학생 | 4기 수료</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 leading-relaxed">"취업 준비하면서 나 자신에 대해 깊이 고민해본 적이 없었는데, 이 프로그램이 정말 많은 도움이 되었어요."</p>
-                    <div class="flex gap-1 mt-4 text-soft-gold">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                    </div>
-                </div>
-
-                <div class="review-card">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white font-bold text-xl">정</div>
-                        <div>
-                            <p class="font-bold text-lg">정하은</p>
-                            <p class="text-gray-400 text-sm">기획자 | 3기 수료</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 leading-relaxed">"이직 준비 중에 참여했는데, 나의 커리어 방향성을 다시 정립할 수 있었어요. 지금은 원하던 회사에서 일하고 있습니다!"</p>
-                    <div class="flex gap-1 mt-4 text-soft-gold">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                    </div>
-                </div>
-
-                <div class="review-card">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-xl">윤</div>
-                        <div>
-                            <p class="font-bold text-lg">윤성재</p>
-                            <p class="text-gray-400 text-sm">프리랜서 | 2기 수료</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 leading-relaxed">"프리랜서로 일하면서 나를 브랜딩하는 게 정말 중요한데, Algrowithm이 그 기초를 탄탄하게 잡아줬어요."</p>
-                    <div class="flex gap-1 mt-4 text-soft-gold">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                    </div>
+        <!-- Photo Reviews - Firebase에서 동적 로드 -->
+        <div class="mt-16 relative" id="photoReviewsSection">
+            <p class="text-center text-gray-400 mb-8 text-sm tracking-widest uppercase">Photo Reviews</p>
+            <!-- 사진 후기 추가 버튼 -->
+            <button onclick="openPhotoReviewModal()" class="absolute top-0 right-6 z-10 w-10 h-10 bg-soft-gold text-white rounded-full shadow-lg hover:bg-yellow-600 transition-all hover:scale-110" title="사진 후기 추가">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+            <div class="relative overflow-hidden">
+                <div class="photo-reviews-track" id="photoReviewsTrack">
+                    <!-- Firebase에서 동적으로 로드됨 -->
                 </div>
             </div>
         </div>
@@ -1026,6 +1046,131 @@
         </div>
     </div>
 
+    <!-- Text Review Modal -->
+    <div id="textReviewModal" class="modal-overlay" onclick="closeTextReviewModal()">
+        <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 480px;">
+            <div class="modal-close" onclick="closeTextReviewModal()">
+                <i class="fa-solid fa-times"></i>
+            </div>
+            <div class="p-8">
+                <div class="text-center mb-6">
+                    <div class="w-14 h-14 bg-soft-gold/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fa-solid fa-pen text-xl text-soft-gold"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">텍스트 후기 작성</h3>
+                    <p class="text-gray-500 text-sm mt-1">프로그램 참여 후기를 남겨주세요</p>
+                </div>
+
+                <form id="textReviewForm" onsubmit="submitTextReview(event)">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">이름 <span class="text-red-500">*</span></label>
+                            <input type="text" id="textReviewName" required
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none"
+                                placeholder="홍길동">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">직업</label>
+                            <input type="text" id="textReviewJob"
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none"
+                                placeholder="마케터, 개발자, 대학생 등">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">참여 프로그램 <span class="text-red-500">*</span></label>
+                            <select id="textReviewProgram" required
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none bg-white">
+                                <option value="">프로그램 선택</option>
+                                <option value="AI 체험단">AI 체험단</option>
+                                <option value="1:1 코칭">1:1 코칭</option>
+                                <option value="퍼스널 브랜딩">퍼스널 브랜딩</option>
+                                <option value="커리어 설계">커리어 설계</option>
+                                <option value="워크숍/세미나 참석">워크숍/세미나 참석</option>
+                                <option value="개인 성향 테스트 및 풀이">개인 성향 테스트 및 풀이</option>
+                                <option value="기타">기타</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">후기 내용 <span class="text-red-500">*</span></label>
+                            <textarea id="textReviewContent" rows="4" required
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none resize-none"
+                                placeholder="프로그램에 참여하신 소감을 자유롭게 작성해주세요."></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="textReviewSubmitBtn"
+                        class="w-full mt-6 py-4 bg-soft-gold text-white rounded-xl font-bold hover:bg-yellow-600 transition-colors flex items-center justify-center gap-2">
+                        <span>후기 등록</span>
+                        <div class="spinner hidden">
+                            <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        </div>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Photo Review Modal -->
+    <div id="photoReviewModal" class="modal-overlay" onclick="closePhotoReviewModal()">
+        <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 480px;">
+            <div class="modal-close" onclick="closePhotoReviewModal()">
+                <i class="fa-solid fa-times"></i>
+            </div>
+            <div class="p-8">
+                <div class="text-center mb-6">
+                    <div class="w-14 h-14 bg-soft-gold/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fa-solid fa-camera text-xl text-soft-gold"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">사진 후기 등록</h3>
+                    <p class="text-gray-500 text-sm mt-1">사진과 함께 후기를 남겨주세요</p>
+                </div>
+
+                <form id="photoReviewForm" onsubmit="submitPhotoReview(event)">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">사진 업로드 <span class="text-red-500">*</span></label>
+                            <input type="file" id="photoReviewFile" accept="image/*" required
+                                class="hidden" onchange="previewPhoto(this)">
+                            <label for="photoReviewFile"
+                                class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-soft-gold transition-colors bg-gray-50">
+                                <div id="photoPreview" class="w-full h-full flex items-center justify-center">
+                                    <div class="text-center">
+                                        <i class="fa-solid fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                        <p class="text-gray-500 text-sm">클릭하여 사진 선택</p>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">이름 <span class="text-red-500">*</span></label>
+                            <input type="text" id="photoReviewAuthor" required
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none"
+                                placeholder="홍길동">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">한줄 후기</label>
+                            <input type="text" id="photoReviewText"
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-soft-gold focus:outline-none"
+                                placeholder="정말 유익한 시간이었어요!">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="photoReviewSubmitBtn"
+                        class="w-full mt-6 py-4 bg-soft-gold text-white rounded-xl font-bold hover:bg-yellow-600 transition-colors flex items-center justify-center gap-2">
+                        <span>후기 등록</span>
+                        <div class="spinner hidden">
+                            <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        </div>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="bg-text-dark py-24 text-white">
         <div class="max-w-7xl mx-auto px-6">
@@ -1054,6 +1199,7 @@
                 <div>
                     <h4 class="font-bold mb-6 text-soft-gold text-lg tracking-wider">바로가기</h4>
                     <ul class="space-y-4 text-gray-400 text-lg">
+                        <li><a href="admin.html" class="hover:text-white transition-colors">관리자 페이지</a></li>
                         <li><a href="about.html" class="hover:text-white transition-colors">About</a></li>
                         <li><a href="schedule.html" class="hover:text-white transition-colors">일정</a></li>
                         <li><a href="prompt-studio.html" class="hover:text-white transition-colors">웹사이트 생성 프롬프트</a></li>
@@ -1073,11 +1219,236 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script>
-        // Lenis 비활성화 - CSS scroll-snap 사용
-        // 매거진 B 스타일의 섹션 스냅은 CSS가 더 자연스럽게 처리함
-
-        // GSAP ScrollTrigger만 사용
+        // GSAP ScrollTrigger 사용
         gsap.registerPlugin(ScrollTrigger);
+
+        // 부드러운 섹션 스냅 (매거진 스타일)
+        (function initSectionSnap() {
+            const sections = document.querySelectorAll('section, footer');
+            let isScrolling = false;
+            let currentSection = 0;
+            const SCROLL_DURATION = 1000; // 스크롤 속도 (ms)
+
+            // 섹션 경계에서 대기 상태
+            let atBoundary = false;
+            let boundaryTimeout = null;
+
+            // 부드러운 스크롤 함수
+            function smoothScrollTo(target, duration) {
+                const start = window.scrollY;
+                const distance = target - start;
+                const startTime = performance.now();
+
+                function animation(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+
+                    // easeInOutCubic
+                    const ease = progress < 0.5
+                        ? 4 * progress * progress * progress
+                        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+                    window.scrollTo(0, start + distance * ease);
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animation);
+                    } else {
+                        isScrolling = false;
+                    }
+                }
+
+                requestAnimationFrame(animation);
+            }
+
+            // 현재 섹션 인덱스 찾기
+            function getCurrentSectionIndex() {
+                const scrollY = window.scrollY;
+                for (let i = sections.length - 1; i >= 0; i--) {
+                    if (scrollY >= sections[i].offsetTop - 50) {
+                        return i;
+                    }
+                }
+                return 0;
+            }
+
+            // 섹션 경계 체크 (긴 섹션 처리)
+            function isAtSectionBottom(section) {
+                const viewportHeight = window.innerHeight;
+                const sectionBottom = section.offsetTop + section.offsetHeight;
+                const scrollBottom = window.scrollY + viewportHeight;
+                return scrollBottom >= sectionBottom - 20;
+            }
+
+            function isAtSectionTop(section) {
+                return window.scrollY <= section.offsetTop + 20;
+            }
+
+            // 휠 이벤트
+            let wheelTimeout;
+            let accumulatedDelta = 0;
+
+            window.addEventListener('wheel', (e) => {
+                if (document.querySelector('.modal-overlay.active')) return;
+                if (isScrolling) {
+                    e.preventDefault();
+                    return;
+                }
+
+                const currentIdx = getCurrentSectionIndex();
+                const currentSect = sections[currentIdx];
+                const sectionHeight = currentSect.offsetHeight;
+                const viewportHeight = window.innerHeight;
+                const isLongSection = sectionHeight > viewportHeight + 100;
+
+                // 긴 섹션일 경우
+                if (isLongSection) {
+                    if (e.deltaY > 0) {
+                        // 아래로 스크롤
+                        if (!isAtSectionBottom(currentSect)) {
+                            // 아직 섹션 끝까지 안 봄 - 일반 스크롤
+                            atBoundary = false;
+                            return;
+                        }
+
+                        // 섹션 끝에 도달함
+                        e.preventDefault(); // 더 이상 스크롤 안 되게 막음
+
+                        if (!atBoundary) {
+                            // 처음 경계에 도달 - 멈춤
+                            atBoundary = true;
+                            clearTimeout(boundaryTimeout);
+                            boundaryTimeout = setTimeout(() => {
+                                atBoundary = false;
+                            }, 500); // 0.5초 후 리셋
+                            return;
+                        }
+
+                        // 이미 경계에서 대기 중 - 다음 섹션으로 스냅
+                        if (currentIdx < sections.length - 1) {
+                            atBoundary = false;
+                            isScrolling = true;
+                            currentSection = currentIdx + 1;
+                            smoothScrollTo(sections[currentSection].offsetTop, SCROLL_DURATION);
+                        }
+                    } else {
+                        // 위로 스크롤
+                        if (!isAtSectionTop(currentSect)) {
+                            // 아직 섹션 상단 아님 - 일반 스크롤
+                            atBoundary = false;
+                            return;
+                        }
+
+                        // 섹션 상단에 도달함
+                        e.preventDefault();
+
+                        if (!atBoundary) {
+                            // 처음 경계에 도달 - 멈춤
+                            atBoundary = true;
+                            clearTimeout(boundaryTimeout);
+                            boundaryTimeout = setTimeout(() => {
+                                atBoundary = false;
+                            }, 500);
+                            return;
+                        }
+
+                        // 이미 경계에서 대기 중 - 이전 섹션으로 스냅
+                        if (currentIdx > 0) {
+                            atBoundary = false;
+                            isScrolling = true;
+                            currentSection = currentIdx - 1;
+                            const prevSect = sections[currentSection];
+                            const prevHeight = prevSect.offsetHeight;
+                            if (prevHeight > viewportHeight + 100) {
+                                smoothScrollTo(prevSect.offsetTop + prevHeight - viewportHeight, SCROLL_DURATION);
+                            } else {
+                                smoothScrollTo(prevSect.offsetTop, SCROLL_DURATION);
+                            }
+                        }
+                    }
+                } else {
+                    // 짧은 섹션: 바로 스냅
+                    e.preventDefault();
+
+                    clearTimeout(wheelTimeout);
+                    accumulatedDelta += e.deltaY;
+
+                    wheelTimeout = setTimeout(() => {
+                        const direction = accumulatedDelta > 0 ? 1 : -1;
+                        let targetIdx = currentIdx + direction;
+                        targetIdx = Math.max(0, Math.min(sections.length - 1, targetIdx));
+
+                        if (targetIdx !== currentSection || Math.abs(window.scrollY - sections[targetIdx].offsetTop) > 50) {
+                            isScrolling = true;
+                            currentSection = targetIdx;
+                            smoothScrollTo(sections[targetIdx].offsetTop, SCROLL_DURATION);
+                        }
+                        accumulatedDelta = 0;
+                    }, 100);
+                }
+            }, { passive: false });
+
+            // 터치 이벤트 (모바일)
+            let touchStartY = 0;
+            let touchAtBoundary = false;
+
+            document.addEventListener('touchstart', (e) => {
+                touchStartY = e.touches[0].clientY;
+            }, { passive: true });
+
+            document.addEventListener('touchend', (e) => {
+                if (document.querySelector('.modal-overlay.active')) return;
+                if (isScrolling) return;
+
+                const touchEndY = e.changedTouches[0].clientY;
+                const deltaY = touchStartY - touchEndY;
+
+                if (Math.abs(deltaY) > 50) {
+                    const currentIdx = getCurrentSectionIndex();
+                    const currentSect = sections[currentIdx];
+                    const sectionHeight = currentSect.offsetHeight;
+                    const viewportHeight = window.innerHeight;
+                    const isLongSection = sectionHeight > viewportHeight + 100;
+
+                    if (isLongSection) {
+                        if (deltaY > 0 && isAtSectionBottom(currentSect)) {
+                            if (!touchAtBoundary) {
+                                touchAtBoundary = true;
+                                setTimeout(() => { touchAtBoundary = false; }, 500);
+                                return;
+                            }
+                            if (currentIdx < sections.length - 1) {
+                                touchAtBoundary = false;
+                                isScrolling = true;
+                                currentSection = currentIdx + 1;
+                                smoothScrollTo(sections[currentSection].offsetTop, SCROLL_DURATION);
+                            }
+                        } else if (deltaY < 0 && isAtSectionTop(currentSect)) {
+                            if (!touchAtBoundary) {
+                                touchAtBoundary = true;
+                                setTimeout(() => { touchAtBoundary = false; }, 500);
+                                return;
+                            }
+                            if (currentIdx > 0) {
+                                touchAtBoundary = false;
+                                isScrolling = true;
+                                currentSection = currentIdx - 1;
+                                smoothScrollTo(sections[currentSection].offsetTop, SCROLL_DURATION);
+                            }
+                        } else {
+                            touchAtBoundary = false;
+                        }
+                    } else {
+                        const direction = deltaY > 0 ? 1 : -1;
+                        let targetIdx = currentIdx + direction;
+                        targetIdx = Math.max(0, Math.min(sections.length - 1, targetIdx));
+
+                        isScrolling = true;
+                        currentSection = targetIdx;
+                        smoothScrollTo(sections[targetIdx].offsetTop, SCROLL_DURATION);
+                    }
+                }
+            }, { passive: true });
+        })();
 
         // Initialize Swiper
         const heroSwiper = new Swiper('.hero-swiper', {
@@ -1092,6 +1463,10 @@
             pagination: {
                 el: '.swiper-pagination',
                 clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
             },
             on: {
                 slideChange: function () {
@@ -1166,110 +1541,237 @@
             }
         });
 
-        // Section Navigation System
-        const sections = ['hero', 'philosophy', 'ai-tools', 'reviews', 'quote'];
-        let currentSectionIndex = 0;
-        let isScrolling = false;
+        // 색상 배열 (아바타용)
+        const avatarColors = [
+            'from-soft-gold to-yellow-300',
+            'from-blue-400 to-blue-600',
+            'from-purple-400 to-purple-600',
+            'from-green-400 to-green-600',
+            'from-red-400 to-red-600',
+            'from-orange-400 to-orange-600',
+            'from-pink-400 to-pink-600',
+            'from-teal-400 to-teal-600'
+        ];
 
-        // Initialize section dots
-        function initSectionDots() {
-            const dotsContainer = document.getElementById('sectionDots');
-            sections.forEach((section, index) => {
-                const dot = document.createElement('div');
-                dot.className = 'section-dot' + (index === 0 ? ' active' : '');
-                dot.onclick = () => goToSection(index);
-                dotsContainer.appendChild(dot);
-            });
-        }
+        // Firebase에서 텍스트 후기 로드
+        async function loadTextReviews() {
+            const track = document.getElementById('textReviewsTrack');
 
-        // Update active dot
-        function updateActiveDot(index) {
-            const dots = document.querySelectorAll('.section-dot');
-            dots.forEach((dot, i) => {
-                dot.classList.toggle('active', i === index);
-            });
-        }
+            // 기본 텍스트 후기 데이터
+            const defaultReviews = [
+                { name: '김지현', role: '마케터 | 3기 수료', content: '막연했던 나의 강점이 구체적인 키워드로 정리되었어요. 면접에서 자신있게 나를 소개할 수 있게 되었습니다.' },
+                { name: '이준호', role: '개발자 | 2기 수료', content: '기술만 강조하던 포트폴리오에 \'나만의 스토리\'를 담을 수 있게 되었어요. 채용담당자들의 반응이 확실히 달라졌습니다.' },
+                { name: '박서연', role: '디자이너 | 1기 수료', content: '워크북을 통해 나의 디자인 철학을 명확하게 정의할 수 있었어요. 클라이언트에게 왜 이런 디자인인지 설명하기가 훨씬 수월해졌습니다.' },
+                { name: '최민수', role: '대학생 | 4기 수료', content: '취업 준비하면서 나 자신에 대해 깊이 고민해본 적이 없었는데, 이 프로그램이 정말 많은 도움이 되었어요.' },
+                { name: '정하은', role: '기획자 | 3기 수료', content: '이직 준비 중에 참여했는데, 나의 커리어 방향성을 다시 정립할 수 있었어요. 지금은 원하던 회사에서 일하고 있습니다!' },
+                { name: '윤성재', role: '프리랜서 | 2기 수료', content: '프리랜서로 일하면서 나를 브랜딩하는 게 정말 중요한데, Algrowithm이 그 기초를 탄탄하게 잡아줬어요.' }
+            ];
 
-        // Update navigation buttons state
-        function updateNavButtons() {
-            const prevBtn = document.getElementById('prevSection');
-            const nextBtn = document.getElementById('nextSection');
-            prevBtn.disabled = currentSectionIndex === 0;
-            nextBtn.disabled = currentSectionIndex === sections.length - 1;
-        }
+            try {
+                const snapshot = await db.collection('textReviews')
+                    .orderBy('createdAt', 'desc')
+                    .get();
 
-        // Navigate to specific section
-        function goToSection(index) {
-            if (index < 0 || index >= sections.length || isScrolling) return;
+                let reviews = [];
 
-            isScrolling = true;
-            currentSectionIndex = index;
-
-            const targetSection = document.getElementById(sections[index]);
-            if (targetSection) {
-                lenis.scrollTo(targetSection, {
-                    duration: 1.2,
-                    easing: (t) => 1 - Math.pow(1 - t, 4),
-                    onComplete: () => {
-                        isScrolling = false;
-                    }
-                });
-            }
-
-            updateActiveDot(index);
-            updateNavButtons();
-        }
-
-        // Navigate by direction (-1 for up, 1 for down)
-        function navigateSection(direction) {
-            const newIndex = currentSectionIndex + direction;
-            goToSection(newIndex);
-        }
-
-        // Detect current section on scroll
-        function detectCurrentSection() {
-            const scrollY = window.scrollY;
-            const windowHeight = window.innerHeight;
-
-            for (let i = sections.length - 1; i >= 0; i--) {
-                const section = document.getElementById(sections[i]);
-                if (section) {
-                    const sectionTop = section.offsetTop - windowHeight / 3;
-                    if (scrollY >= sectionTop) {
-                        if (currentSectionIndex !== i) {
-                            currentSectionIndex = i;
-                            updateActiveDot(i);
-                            updateNavButtons();
-                        }
-                        break;
-                    }
+                if (snapshot.empty) {
+                    reviews = defaultReviews;
+                } else {
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        reviews.push({
+                            name: data.name || '',
+                            role: data.role || '',
+                            content: data.content || ''
+                        });
+                    });
                 }
+
+                // 카드 HTML 생성
+                function createReviewCard(review, index) {
+                    const colorClass = avatarColors[index % avatarColors.length];
+                    const initial = review.name ? review.name.charAt(0) : '?';
+                    return `
+                        <div class="review-card">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-14 h-14 rounded-full bg-gradient-to-br ${colorClass} flex items-center justify-center text-white font-bold text-xl">${initial}</div>
+                                <div>
+                                    <p class="font-bold text-lg">${review.name}</p>
+                                    <p class="text-gray-400 text-sm">${review.role}</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 leading-relaxed">"${review.content}"</p>
+                            <div class="flex gap-1 mt-4 text-soft-gold">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                let html = '';
+                // 첫 번째 세트
+                reviews.forEach((review, index) => {
+                    html += createReviewCard(review, index);
+                });
+                // 무한 루프용 복제
+                reviews.forEach((review, index) => {
+                    html += createReviewCard(review, index);
+                });
+
+                track.innerHTML = html;
+
+            } catch (error) {
+                console.error('텍스트 후기 로드 실패:', error);
+                // 에러 시 기본 데이터 표시
+                let html = '';
+                defaultReviews.forEach((review, index) => {
+                    const colorClass = avatarColors[index % avatarColors.length];
+                    const initial = review.name.charAt(0);
+                    html += `
+                        <div class="review-card">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-14 h-14 rounded-full bg-gradient-to-br ${colorClass} flex items-center justify-center text-white font-bold text-xl">${initial}</div>
+                                <div>
+                                    <p class="font-bold text-lg">${review.name}</p>
+                                    <p class="text-gray-400 text-sm">${review.role}</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 leading-relaxed">"${review.content}"</p>
+                            <div class="flex gap-1 mt-4 text-soft-gold">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                            </div>
+                        </div>
+                    `;
+                });
+                // 복제
+                defaultReviews.forEach((review, index) => {
+                    const colorClass = avatarColors[index % avatarColors.length];
+                    const initial = review.name.charAt(0);
+                    html += `
+                        <div class="review-card">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-14 h-14 rounded-full bg-gradient-to-br ${colorClass} flex items-center justify-center text-white font-bold text-xl">${initial}</div>
+                                <div>
+                                    <p class="font-bold text-lg">${review.name}</p>
+                                    <p class="text-gray-400 text-sm">${review.role}</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 leading-relaxed">"${review.content}"</p>
+                            <div class="flex gap-1 mt-4 text-soft-gold">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                            </div>
+                        </div>
+                    `;
+                });
+                track.innerHTML = html;
             }
         }
 
-        // Initialize on load
+        // Firebase에서 사진 후기 로드
+        async function loadPhotoReviews() {
+            const track = document.getElementById('photoReviewsTrack');
+            const section = document.getElementById('photoReviewsSection');
+
+            // 기본 사진 데이터 (Firebase가 비어있을 때 사용)
+            const defaultPhotos = [
+                { imageUrl: './assets/표지1.jpg', text: '나만의 이야기를 찾았어요', author: '참가자' },
+                { imageUrl: './assets/표지2.jpg', text: '새로운 시작이 되었어요', author: '참가자' },
+                { imageUrl: './assets/표지3.jpg', text: '정말 유익한 시간이었어요', author: '참가자' },
+                { imageUrl: './assets/표지4.jpg', text: '나를 발견하는 시간', author: '참가자' },
+                { imageUrl: './assets/표지5.jpg', text: '성장하는 느낌이 좋았어요', author: '참가자' },
+                { imageUrl: './assets/표지6.jpg', text: '추천하고 싶은 프로그램', author: '참가자' }
+            ];
+
+            try {
+                const snapshot = await db.collection('photoReviews')
+                    .orderBy('createdAt', 'desc')
+                    .get();
+
+                let photos = [];
+
+                if (snapshot.empty) {
+                    // Firebase 데이터가 없으면 기본 사진 사용
+                    photos = defaultPhotos;
+                } else {
+                    // Firebase 데이터 사용
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        photos.push({
+                            imageUrl: data.imageUrl,
+                            text: data.text || '',
+                            author: data.author || ''
+                        });
+                    });
+                }
+
+                section.style.display = 'block';
+                let html = '';
+
+                // 첫 번째 세트
+                photos.forEach(photo => {
+                    html += `
+                        <div class="photo-review-card">
+                            <img src="${photo.imageUrl}" alt="후기 사진">
+                            <div class="photo-review-overlay">
+                                <p class="text-sm">"${photo.text}"</p>
+                                <span class="text-xs opacity-70 mt-2 block">${photo.author}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                // 무한 루프를 위한 복제
+                photos.forEach(photo => {
+                    html += `
+                        <div class="photo-review-card">
+                            <img src="${photo.imageUrl}" alt="후기 사진">
+                            <div class="photo-review-overlay">
+                                <p class="text-sm">"${photo.text}"</p>
+                                <span class="text-xs opacity-70 mt-2 block">${photo.author}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                track.innerHTML = html;
+
+            } catch (error) {
+                console.error('사진 후기 로드 실패:', error);
+                // 에러 발생 시에도 기본 사진 표시
+                let html = '';
+                defaultPhotos.forEach(photo => {
+                    html += `
+                        <div class="photo-review-card">
+                            <img src="${photo.imageUrl}" alt="후기 사진">
+                            <div class="photo-review-overlay">
+                                <p class="text-sm">"${photo.text}"</p>
+                                <span class="text-xs opacity-70 mt-2 block">${photo.author}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                // 복제본
+                defaultPhotos.forEach(photo => {
+                    html += `
+                        <div class="photo-review-card">
+                            <img src="${photo.imageUrl}" alt="후기 사진">
+                            <div class="photo-review-overlay">
+                                <p class="text-sm">"${photo.text}"</p>
+                                <span class="text-xs opacity-70 mt-2 block">${photo.author}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                track.innerHTML = html;
+            }
+        }
+
+        // 페이지 로드 시 후기 불러오기
         document.addEventListener('DOMContentLoaded', () => {
-            initSectionDots();
-            updateNavButtons();
+            loadTextReviews();
+            loadPhotoReviews();
         });
 
-        // Listen for scroll to update current section
-        window.addEventListener('scroll', () => {
-            if (!isScrolling) {
-                detectCurrentSection();
-            }
-        });
-
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowDown' || e.key === 'PageDown') {
-                e.preventDefault();
-                navigateSection(1);
-            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
-                e.preventDefault();
-                navigateSection(-1);
-            }
-        });
     </script>
 </body>
 
