@@ -143,10 +143,6 @@
                         class="tab-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
                         <i class="fa-solid fa-comment mr-2"></i>텍스트 후기
                     </button>
-                    <button onclick="switchTab('coverImages')" id="tab-coverImages"
-                        class="tab-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
-                        <i class="fa-solid fa-book mr-2"></i>표지 사진
-                    </button>
                 </div>
             </div>
         </div>
@@ -175,14 +171,26 @@
                 </div>
             </div>
 
-            <!-- Photo Reviews Tab -->
+            <!-- Photo Reviews Tab (사진 후기 + 표지 사진 통합) -->
             <div id="panel-photoReviews" class="tab-panel hidden">
                 <!-- Upload Section -->
                 <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
                     <h2 class="text-lg font-bold mb-4">
                         <i class="fa-solid fa-plus-circle text-gold mr-2"></i>
-                        새 사진 후기 추가
+                        새 사진 추가
                     </h2>
+
+                    <!-- 유형 선택 -->
+                    <div class="flex gap-2 mb-4">
+                        <button onclick="setPhotoType('review')" id="photoTypeReview"
+                            class="flex-1 py-2 rounded-lg text-sm font-medium bg-gold text-white transition-colors">
+                            <i class="fa-solid fa-comment mr-1"></i>사진 후기
+                        </button>
+                        <button onclick="setPhotoType('cover')" id="photoTypeCover"
+                            class="flex-1 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
+                            <i class="fa-solid fa-book mr-1"></i>표지 사진
+                        </button>
+                    </div>
 
                     <div class="grid md:grid-cols-2 gap-6">
                         <!-- Image Upload -->
@@ -195,7 +203,7 @@
                                 <div id="uploadPlaceholder">
                                     <i class="fa-solid fa-cloud-arrow-up text-3xl text-gold mb-2"></i>
                                     <p class="text-gray-600 text-sm">사진 선택 또는 드래그</p>
-                                    <p class="text-gray-400 text-xs mt-1">JPG, PNG (최대 5MB)</p>
+                                    <p class="text-gray-400 text-xs mt-1">JPG, PNG (최대 10MB)</p>
                                 </div>
                                 <div id="imagePreviewContainer" class="hidden">
                                     <img id="imagePreview" class="max-h-36 rounded-lg">
@@ -206,19 +214,31 @@
 
                         <!-- Form -->
                         <div class="space-y-4">
-                            <div>
-                                <label class="block text-gray-700 text-sm font-medium mb-1">후기 내용</label>
-                                <textarea id="photoReviewText" rows="2"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gold text-sm"
-                                    placeholder="&quot;정말 좋은 프로그램이었어요!&quot;"></textarea>
+                            <!-- 사진 후기용 폼 -->
+                            <div id="reviewFormFields">
+                                <div>
+                                    <label class="block text-gray-700 text-sm font-medium mb-1">후기 내용</label>
+                                    <textarea id="photoReviewText" rows="2"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gold text-sm"
+                                        placeholder="&quot;정말 좋은 프로그램이었어요!&quot;"></textarea>
+                                </div>
+                                <div class="mt-3">
+                                    <label class="block text-gray-700 text-sm font-medium mb-1">작성자</label>
+                                    <input type="text" id="photoReviewAuthor"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gold text-sm"
+                                        placeholder="- 김OO, 직업">
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-gray-700 text-sm font-medium mb-1">작성자</label>
-                                <input type="text" id="photoReviewAuthor"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gold text-sm"
-                                    placeholder="- 김OO, 직업">
+                            <!-- 표지 사진용 폼 -->
+                            <div id="coverFormFields" class="hidden">
+                                <div>
+                                    <label class="block text-gray-700 text-sm font-medium mb-1">표지 제목 (선택)</label>
+                                    <input type="text" id="coverTitle"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gold text-sm"
+                                        placeholder="예: 워크북 표지 1">
+                                </div>
                             </div>
-                            <button onclick="uploadPhotoReview()" id="uploadBtn"
+                            <button onclick="uploadPhoto()" id="uploadBtn"
                                 class="w-full bg-gold text-white py-2.5 rounded-lg font-medium hover:bg-gold-dark transition-colors flex items-center justify-center gap-2">
                                 <span id="uploadBtnText">추가하기</span>
                                 <div id="uploadSpinner" class="loading-spinner hidden" style="width:18px;height:18px;border-width:2px;"></div>
@@ -227,98 +247,23 @@
                     </div>
                 </div>
 
-                <!-- Photo Reviews List -->
+                <!-- Photo List (사진 후기 + 표지 사진 통합) -->
                 <div class="bg-white rounded-2xl shadow-lg p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-lg font-bold">
                             <i class="fa-solid fa-list text-gold mr-2"></i>
-                            등록된 사진 후기
+                            등록된 사진
                         </h2>
                         <span id="photoReviewsCount" class="text-gray-500 text-sm">0개</span>
                     </div>
 
-                    <p class="text-gray-400 text-xs mb-4"><i class="fa-solid fa-info-circle mr-1"></i>화살표 버튼으로 순서를 변경할 수 있습니다</p>
+                    <p class="text-gray-400 text-xs mb-4"><i class="fa-solid fa-info-circle mr-1"></i>화살표 버튼으로 순서를 변경할 수 있습니다. 표지 사진은 <span class="text-blue-500">파란색 테두리</span>로 표시됩니다.</p>
                     <div id="photoReviewsList" class="grid sm:grid-cols-2 gap-4"></div>
                     <div id="photoReviewsEmpty" class="text-center py-12 text-gray-400 hidden">
                         <i class="fa-solid fa-image text-4xl mb-3"></i>
-                        <p>등록된 사진 후기가 없습니다</p>
+                        <p>등록된 사진이 없습니다</p>
                     </div>
                     <div id="photoReviewsLoading" class="text-center py-12">
-                        <div class="loading-spinner mx-auto mb-3"></div>
-                        <p class="text-gray-500">불러오는 중...</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Cover Images Tab -->
-            <div id="panel-coverImages" class="tab-panel hidden">
-                <!-- Upload Section -->
-                <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
-                    <h2 class="text-lg font-bold mb-4">
-                        <i class="fa-solid fa-plus-circle text-gold mr-2"></i>
-                        새 표지 사진 추가
-                    </h2>
-
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <!-- Image Upload -->
-                        <div>
-                            <div class="upload-area rounded-xl p-6 text-center cursor-pointer h-48 flex flex-col items-center justify-center"
-                                onclick="document.getElementById('coverImageInput').click()"
-                                ondragover="handleCoverDragOver(event)"
-                                ondragleave="handleCoverDragLeave(event)"
-                                ondrop="handleCoverDrop(event)">
-                                <div id="coverUploadPlaceholder">
-                                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-gold mb-2"></i>
-                                    <p class="text-gray-600 text-sm">표지 사진 선택 또는 드래그</p>
-                                    <p class="text-gray-400 text-xs mt-1">JPG, PNG (최대 10MB)</p>
-                                </div>
-                                <div id="coverPreviewContainer" class="hidden">
-                                    <img id="coverPreview" class="max-h-36 rounded-lg">
-                                </div>
-                            </div>
-                            <input type="file" id="coverImageInput" accept="image/*" class="hidden" onchange="handleCoverImageSelect(event)">
-                        </div>
-
-                        <!-- Form -->
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-gray-700 text-sm font-medium mb-1">표지 제목</label>
-                                <input type="text" id="coverTitle"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gold text-sm"
-                                    placeholder="예: 워크북 표지 1">
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 text-sm font-medium mb-1">순서 (낮을수록 먼저 표시)</label>
-                                <input type="number" id="coverOrder"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gold text-sm"
-                                    value="0" min="0">
-                            </div>
-                            <button onclick="uploadCoverImage()" id="coverUploadBtn"
-                                class="w-full bg-gold text-white py-2.5 rounded-lg font-medium hover:bg-gold-dark transition-colors flex items-center justify-center gap-2">
-                                <span id="coverUploadBtnText">추가하기</span>
-                                <div id="coverUploadSpinner" class="loading-spinner hidden" style="width:18px;height:18px;border-width:2px;"></div>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Cover Images List -->
-                <div class="bg-white rounded-2xl shadow-lg p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-bold">
-                            <i class="fa-solid fa-list text-gold mr-2"></i>
-                            등록된 표지 사진
-                        </h2>
-                        <span id="coverImagesCount" class="text-gray-500 text-sm">0개</span>
-                    </div>
-                    <p class="text-gray-400 text-xs mb-4"><i class="fa-solid fa-info-circle mr-1"></i>화살표 버튼으로 순서를 변경할 수 있습니다</p>
-
-                    <div id="coverImagesList" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-                    <div id="coverImagesEmpty" class="text-center py-12 text-gray-400 hidden">
-                        <i class="fa-solid fa-book text-4xl mb-3"></i>
-                        <p>등록된 표지 사진이 없습니다</p>
-                    </div>
-                    <div id="coverImagesLoading" class="text-center py-12">
                         <div class="loading-spinner mx-auto mb-3"></div>
                         <p class="text-gray-500">불러오는 중...</p>
                     </div>
@@ -539,7 +484,38 @@
             if (tab === 'inquiries') loadInquiries();
             else if (tab === 'photoReviews') loadPhotoReviews();
             else if (tab === 'textReviews') loadTextReviews();
-            else if (tab === 'coverImages') loadCoverImages();
+        }
+
+        // ============ 사진 유형 선택 ============
+        let currentPhotoType = 'review'; // 'review' 또는 'cover'
+
+        function setPhotoType(type) {
+            currentPhotoType = type;
+            const reviewBtn = document.getElementById('photoTypeReview');
+            const coverBtn = document.getElementById('photoTypeCover');
+            const reviewFields = document.getElementById('reviewFormFields');
+            const coverFields = document.getElementById('coverFormFields');
+
+            if (type === 'review') {
+                reviewBtn.className = 'flex-1 py-2 rounded-lg text-sm font-medium bg-gold text-white transition-colors';
+                coverBtn.className = 'flex-1 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors';
+                reviewFields.classList.remove('hidden');
+                coverFields.classList.add('hidden');
+            } else {
+                coverBtn.className = 'flex-1 py-2 rounded-lg text-sm font-medium bg-gold text-white transition-colors';
+                reviewBtn.className = 'flex-1 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors';
+                reviewFields.classList.add('hidden');
+                coverFields.classList.remove('hidden');
+            }
+        }
+
+        // 통합 업로드 함수
+        async function uploadPhoto() {
+            if (currentPhotoType === 'review') {
+                await uploadPhotoReview();
+            } else {
+                await uploadCoverImage();
+            }
         }
 
         // ============ 문의 내역 ============
@@ -789,56 +765,92 @@
             list.innerHTML = '';
 
             try {
-                // order 필드가 없을 수 있으므로 createdAt으로 먼저 시도
-                let snapshot;
-                try {
-                    snapshot = await db.collection('photoReviews')
-                        .orderBy('order', 'asc')
-                        .get();
-                } catch (e) {
-                    snapshot = await db.collection('photoReviews')
-                        .orderBy('createdAt', 'desc')
-                        .get();
-                }
+                // 사진 후기와 표지 사진 모두 가져오기
+                const [photoSnapshot, coverSnapshot] = await Promise.all([
+                    db.collection('photoReviews').get(),
+                    db.collection('coverImages').get()
+                ]);
 
                 loading.classList.add('hidden');
 
-                if (snapshot.empty) {
+                // 두 컬렉션을 합쳐서 정렬
+                const allDocs = [];
+                photoSnapshot.forEach(doc => allDocs.push({
+                    id: doc.id,
+                    type: 'review',
+                    ...doc.data()
+                }));
+                coverSnapshot.forEach(doc => allDocs.push({
+                    id: doc.id,
+                    type: 'cover',
+                    ...doc.data()
+                }));
+
+                if (allDocs.length === 0) {
                     empty.classList.remove('hidden');
                     count.textContent = '0개';
                     return;
                 }
 
-                count.textContent = `${snapshot.size}개`;
+                // order 기준 정렬
+                allDocs.sort((a, b) => (a.order || 999) - (b.order || 999));
 
-                snapshot.forEach(doc => {
-                    const data = doc.data();
+                count.textContent = `${allDocs.length}개`;
+
+                allDocs.forEach(data => {
                     const el = document.createElement('div');
-                    el.className = 'card-item bg-gray-50 rounded-xl p-3 flex gap-3';
-                    el.innerHTML = `
-                        <img src="${data.imageUrl}" alt="" class="w-20 h-20 object-cover rounded-lg flex-shrink-0">
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm text-gray-800 line-clamp-2">${data.text}</p>
-                            <p class="text-xs text-gray-500 mt-1">${data.author}</p>
-                        </div>
-                        <div class="flex flex-col gap-1 flex-shrink-0">
-                            <button onclick="movePhotoReview('${doc.id}', -1)" class="text-gray-400 hover:text-blue-500 p-1" title="위로">
-                                <i class="fa-solid fa-arrow-up text-xs"></i>
-                            </button>
-                            <button onclick="movePhotoReview('${doc.id}', 1)" class="text-gray-400 hover:text-blue-500 p-1" title="아래로">
-                                <i class="fa-solid fa-arrow-down text-xs"></i>
-                            </button>
-                            <button onclick="deletePhotoReview('${doc.id}')" class="text-red-400 hover:text-red-600 p-1" title="삭제">
-                                <i class="fa-solid fa-trash text-xs"></i>
-                            </button>
-                        </div>
-                    `;
+                    const isCover = data.type === 'cover';
+                    el.className = `card-item bg-gray-50 rounded-xl p-3 flex gap-3 ${isCover ? 'border-2 border-blue-400' : ''}`;
+
+                    if (isCover) {
+                        // 표지 사진 표시
+                        el.innerHTML = `
+                            <img src="${data.imageUrl}" alt="" class="w-20 h-20 object-cover rounded-lg flex-shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-600 text-xs rounded-full mb-1">표지 사진</span>
+                                <p class="text-sm text-gray-800">${data.title || '표지 사진'}</p>
+                            </div>
+                            <div class="flex flex-col gap-1 flex-shrink-0">
+                                <button onclick="moveCoverImage('${data.id}', -1)" class="text-gray-400 hover:text-blue-500 p-1" title="위로">
+                                    <i class="fa-solid fa-arrow-up text-xs"></i>
+                                </button>
+                                <button onclick="moveCoverImage('${data.id}', 1)" class="text-gray-400 hover:text-blue-500 p-1" title="아래로">
+                                    <i class="fa-solid fa-arrow-down text-xs"></i>
+                                </button>
+                                <button onclick="deleteCoverImage('${data.id}')" class="text-red-400 hover:text-red-600 p-1" title="삭제">
+                                    <i class="fa-solid fa-trash text-xs"></i>
+                                </button>
+                            </div>
+                        `;
+                    } else {
+                        // 사진 후기 표시
+                        el.innerHTML = `
+                            <img src="${data.imageUrl}" alt="" class="w-20 h-20 object-cover rounded-lg flex-shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <span class="inline-block px-2 py-0.5 bg-gold/10 text-gold text-xs rounded-full mb-1">사진 후기</span>
+                                <p class="text-sm text-gray-800 line-clamp-2">${data.text || ''}</p>
+                                <p class="text-xs text-gray-500 mt-1">${data.author || ''}</p>
+                            </div>
+                            <div class="flex flex-col gap-1 flex-shrink-0">
+                                <button onclick="movePhotoReview('${data.id}', -1)" class="text-gray-400 hover:text-blue-500 p-1" title="위로">
+                                    <i class="fa-solid fa-arrow-up text-xs"></i>
+                                </button>
+                                <button onclick="movePhotoReview('${data.id}', 1)" class="text-gray-400 hover:text-blue-500 p-1" title="아래로">
+                                    <i class="fa-solid fa-arrow-down text-xs"></i>
+                                </button>
+                                <button onclick="deletePhotoReview('${data.id}')" class="text-red-400 hover:text-red-600 p-1" title="삭제">
+                                    <i class="fa-solid fa-trash text-xs"></i>
+                                </button>
+                            </div>
+                        `;
+                    }
                     list.appendChild(el);
                 });
 
             } catch (error) {
                 console.error('Load photo reviews error:', error);
                 loading.classList.add('hidden');
+                list.innerHTML = '<p class="text-red-500 text-center py-4">불러오기 실패: ' + error.message + '</p>';
             }
         }
 
@@ -923,17 +935,8 @@
             list.innerHTML = '';
 
             try {
-                // order 필드가 없을 수 있으므로 createdAt으로 먼저 시도
-                let snapshot;
-                try {
-                    snapshot = await db.collection('textReviews')
-                        .orderBy('order', 'asc')
-                        .get();
-                } catch (e) {
-                    snapshot = await db.collection('textReviews')
-                        .orderBy('createdAt', 'desc')
-                        .get();
-                }
+                // orderBy 없이 모든 데이터 가져온 후 JavaScript에서 정렬
+                const snapshot = await db.collection('textReviews').get();
 
                 loading.classList.add('hidden');
 
@@ -943,10 +946,14 @@
                     return;
                 }
 
-                count.textContent = `${snapshot.size}개`;
+                // 문서들을 배열로 변환 후 order 기준 정렬
+                const docs = [];
+                snapshot.forEach(doc => docs.push({ id: doc.id, ...doc.data() }));
+                docs.sort((a, b) => (a.order || 999) - (b.order || 999));
 
-                snapshot.forEach(doc => {
-                    const data = doc.data();
+                count.textContent = `${docs.length}개`;
+
+                docs.forEach(data => {
                     const gradientClass = colorMap[data.color] || colorMap.gold;
                     const initial = data.name ? data.name.charAt(0) : '?';
 
@@ -965,16 +972,16 @@
                             ${data.program ? `<span class="inline-block mt-1 px-2 py-0.5 bg-gold/10 text-gold text-xs rounded-full">${data.program}</span>` : ''}
                         </div>
                         <div class="flex flex-col gap-1 flex-shrink-0">
-                            <button onclick="moveTextReview('${doc.id}', -1)" class="text-gray-400 hover:text-blue-500 p-1" title="위로">
+                            <button onclick="moveTextReview('${data.id}', -1)" class="text-gray-400 hover:text-blue-500 p-1" title="위로">
                                 <i class="fa-solid fa-arrow-up text-xs"></i>
                             </button>
-                            <button onclick="moveTextReview('${doc.id}', 1)" class="text-gray-400 hover:text-blue-500 p-1" title="아래로">
+                            <button onclick="moveTextReview('${data.id}', 1)" class="text-gray-400 hover:text-blue-500 p-1" title="아래로">
                                 <i class="fa-solid fa-arrow-down text-xs"></i>
                             </button>
-                            <button onclick="openEditTextReview('${doc.id}')" class="text-blue-400 hover:text-blue-600 p-1" title="수정">
+                            <button onclick="openEditTextReview('${data.id}')" class="text-blue-400 hover:text-blue-600 p-1" title="수정">
                                 <i class="fa-solid fa-pen text-xs"></i>
                             </button>
-                            <button onclick="deleteTextReview('${doc.id}')" class="text-red-400 hover:text-red-600 p-1" title="삭제">
+                            <button onclick="deleteTextReview('${data.id}')" class="text-red-400 hover:text-red-600 p-1" title="삭제">
                                 <i class="fa-solid fa-trash text-xs"></i>
                             </button>
                         </div>
@@ -985,6 +992,7 @@
             } catch (error) {
                 console.error('Load text reviews error:', error);
                 loading.classList.add('hidden');
+                list.innerHTML = '<p class="text-red-500 text-center py-4">불러오기 실패: ' + error.message + '</p>';
             }
         }
 
@@ -1072,80 +1080,39 @@
             }
         }
 
-        // ============ 표지 사진 관리 ============
-        let selectedCoverBase64 = null;
-
-        function handleCoverDragOver(e) {
-            e.preventDefault();
-            e.currentTarget.classList.add('dragover');
-        }
-
-        function handleCoverDragLeave(e) {
-            e.currentTarget.classList.remove('dragover');
-        }
-
-        function handleCoverDrop(e) {
-            e.preventDefault();
-            e.currentTarget.classList.remove('dragover');
-            const file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith('image/')) processCoverFile(file);
-        }
-
-        function handleCoverImageSelect(e) {
-            const file = e.target.files[0];
-            if (file) processCoverFile(file);
-        }
-
-        async function processCoverFile(file) {
-            if (file.size > 10 * 1024 * 1024) {
-                alert('파일 크기는 10MB 이하여야 합니다.');
-                return;
-            }
-
-            try {
-                selectedCoverBase64 = await compressImage(file, 1200, 0.8);
-                document.getElementById('coverPreview').src = selectedCoverBase64;
-                document.getElementById('coverUploadPlaceholder').classList.add('hidden');
-                document.getElementById('coverPreviewContainer').classList.remove('hidden');
-            } catch (error) {
-                console.error('이미지 처리 실패:', error);
-                alert('이미지 처리에 실패했습니다.');
-            }
-        }
-
+        // ============ 표지 사진 관리 (통합) ============
         async function uploadCoverImage() {
             const title = document.getElementById('coverTitle').value.trim();
-            const order = parseInt(document.getElementById('coverOrder').value) || 0;
 
-            if (!selectedCoverBase64) {
+            // 통합된 이미지 선택 사용
+            if (!selectedImageBase64) {
                 alert('표지 사진을 선택해주세요.');
                 return;
             }
 
-            const btn = document.getElementById('coverUploadBtn');
-            const btnText = document.getElementById('coverUploadBtnText');
-            const spinner = document.getElementById('coverUploadSpinner');
+            const btn = document.getElementById('uploadBtn');
+            const btnText = document.getElementById('uploadBtnText');
+            const spinner = document.getElementById('uploadSpinner');
             btn.disabled = true;
             btnText.textContent = '저장 중...';
             spinner.classList.remove('hidden');
 
             try {
                 await db.collection('coverImages').add({
-                    imageUrl: selectedCoverBase64,
+                    imageUrl: selectedImageBase64,
                     title: title || '표지 사진',
-                    order: order,
+                    order: 0,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
                 // Reset
-                selectedCoverBase64 = null;
-                document.getElementById('coverImageInput').value = '';
+                selectedImageBase64 = null;
+                document.getElementById('imageInput').value = '';
                 document.getElementById('coverTitle').value = '';
-                document.getElementById('coverOrder').value = '0';
-                document.getElementById('coverUploadPlaceholder').classList.remove('hidden');
-                document.getElementById('coverPreviewContainer').classList.add('hidden');
+                document.getElementById('uploadPlaceholder').classList.remove('hidden');
+                document.getElementById('imagePreviewContainer').classList.add('hidden');
 
-                loadCoverImages();
+                loadPhotoReviews();
                 alert('추가되었습니다!');
 
             } catch (error) {
@@ -1158,74 +1125,6 @@
             }
         }
 
-        async function loadCoverImages() {
-            const list = document.getElementById('coverImagesList');
-            const loading = document.getElementById('coverImagesLoading');
-            const empty = document.getElementById('coverImagesEmpty');
-            const count = document.getElementById('coverImagesCount');
-
-            loading.classList.remove('hidden');
-            empty.classList.add('hidden');
-            list.innerHTML = '';
-
-            try {
-                // order 필드가 없을 수 있으므로 createdAt으로 먼저 시도
-                let snapshot;
-                try {
-                    snapshot = await db.collection('coverImages')
-                        .orderBy('order', 'asc')
-                        .get();
-                } catch (e) {
-                    // order 인덱스가 없으면 createdAt으로 시도
-                    snapshot = await db.collection('coverImages')
-                        .orderBy('createdAt', 'desc')
-                        .get();
-                }
-
-                loading.classList.add('hidden');
-
-                if (snapshot.empty) {
-                    empty.classList.remove('hidden');
-                    count.textContent = '0개';
-                    return;
-                }
-
-                count.textContent = `${snapshot.size}개`;
-                const docs = [];
-                snapshot.forEach(doc => docs.push({ id: doc.id, ...doc.data() }));
-
-                docs.forEach((data, index) => {
-                    const el = document.createElement('div');
-                    el.className = 'card-item bg-gray-50 rounded-xl p-3 relative';
-                    el.innerHTML = `
-                        <img src="${data.imageUrl}" alt="${data.title}" class="w-full h-40 object-cover rounded-lg mb-2">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-gray-800">${data.title || '표지 사진'}</p>
-                                <p class="text-xs text-gray-400">순서: ${data.order || 0}</p>
-                            </div>
-                            <div class="flex gap-1">
-                                <button onclick="moveCoverImage('${data.id}', -1)" class="text-gray-400 hover:text-blue-500 p-1" title="위로">
-                                    <i class="fa-solid fa-arrow-up text-sm"></i>
-                                </button>
-                                <button onclick="moveCoverImage('${data.id}', 1)" class="text-gray-400 hover:text-blue-500 p-1" title="아래로">
-                                    <i class="fa-solid fa-arrow-down text-sm"></i>
-                                </button>
-                                <button onclick="deleteCoverImage('${data.id}')" class="text-red-400 hover:text-red-600 p-1" title="삭제">
-                                    <i class="fa-solid fa-trash text-sm"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    list.appendChild(el);
-                });
-
-            } catch (error) {
-                console.error('Load cover images error:', error);
-                loading.classList.add('hidden');
-            }
-        }
-
         async function moveCoverImage(docId, direction) {
             try {
                 const doc = await db.collection('coverImages').doc(docId).get();
@@ -1235,7 +1134,7 @@
                 const newOrder = currentOrder + direction;
 
                 await db.collection('coverImages').doc(docId).update({ order: newOrder });
-                loadCoverImages();
+                loadPhotoReviews();  // 통합 목록 새로고침
             } catch (error) {
                 console.error('Move error:', error);
             }
@@ -1245,7 +1144,7 @@
             if (!confirm('이 표지 사진을 삭제하시겠습니까?')) return;
             try {
                 await db.collection('coverImages').doc(docId).delete();
-                loadCoverImages();
+                loadPhotoReviews();  // 통합 목록 새로고침
             } catch (error) {
                 console.error('Delete error:', error);
                 alert('삭제 실패');
