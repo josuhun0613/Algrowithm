@@ -789,9 +789,17 @@
             list.innerHTML = '';
 
             try {
-                const snapshot = await db.collection('photoReviews')
-                    .orderBy('order', 'asc')
-                    .get();
+                // order 필드가 없을 수 있으므로 createdAt으로 먼저 시도
+                let snapshot;
+                try {
+                    snapshot = await db.collection('photoReviews')
+                        .orderBy('order', 'asc')
+                        .get();
+                } catch (e) {
+                    snapshot = await db.collection('photoReviews')
+                        .orderBy('createdAt', 'desc')
+                        .get();
+                }
 
                 loading.classList.add('hidden');
 
@@ -915,9 +923,17 @@
             list.innerHTML = '';
 
             try {
-                const snapshot = await db.collection('textReviews')
-                    .orderBy('order', 'asc')
-                    .get();
+                // order 필드가 없을 수 있으므로 createdAt으로 먼저 시도
+                let snapshot;
+                try {
+                    snapshot = await db.collection('textReviews')
+                        .orderBy('order', 'asc')
+                        .get();
+                } catch (e) {
+                    snapshot = await db.collection('textReviews')
+                        .orderBy('createdAt', 'desc')
+                        .get();
+                }
 
                 loading.classList.add('hidden');
 
@@ -1153,9 +1169,18 @@
             list.innerHTML = '';
 
             try {
-                const snapshot = await db.collection('coverImages')
-                    .orderBy('order', 'asc')
-                    .get();
+                // order 필드가 없을 수 있으므로 createdAt으로 먼저 시도
+                let snapshot;
+                try {
+                    snapshot = await db.collection('coverImages')
+                        .orderBy('order', 'asc')
+                        .get();
+                } catch (e) {
+                    // order 인덱스가 없으면 createdAt으로 시도
+                    snapshot = await db.collection('coverImages')
+                        .orderBy('createdAt', 'desc')
+                        .get();
+                }
 
                 loading.classList.add('hidden');
 
