@@ -765,11 +765,22 @@
             list.innerHTML = '';
 
             try {
-                // 사진 후기와 표지 사진 모두 가져오기
-                const [photoSnapshot, coverSnapshot] = await Promise.all([
-                    db.collection('photoReviews').get(),
-                    db.collection('coverImages').get()
-                ]);
+                // 사진 후기와 표지 사진 모두 가져오기 (권한 오류 개별 처리)
+                let photoSnapshot, coverSnapshot;
+
+                try {
+                    photoSnapshot = await db.collection('photoReviews').get();
+                } catch (e) {
+                    console.warn('photoReviews 로드 실패:', e.message);
+                    photoSnapshot = { forEach: () => {}, empty: true };
+                }
+
+                try {
+                    coverSnapshot = await db.collection('coverImages').get();
+                } catch (e) {
+                    console.warn('coverImages 로드 실패:', e.message);
+                    coverSnapshot = { forEach: () => {}, empty: true };
+                }
 
                 loading.classList.add('hidden');
 
