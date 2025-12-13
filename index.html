@@ -1667,7 +1667,7 @@
             }
         }
 
-        // Firebase에서 사진 후기 로드
+        // Firebase에서 사진 후기 로드 (isCover=true인 사진만 표시)
         async function loadPhotoReviews() {
             const track = document.getElementById('photoReviewsTrack');
             const section = document.getElementById('photoReviewsSection');
@@ -1683,25 +1683,34 @@
             ];
 
             try {
-                const snapshot = await db.collection('photoReviews')
-                    .orderBy('createdAt', 'desc')
-                    .get();
+                // orderBy 없이 가져온 후 JavaScript에서 필터링/정렬
+                const snapshot = await db.collection('photoReviews').get();
 
                 let photos = [];
 
                 if (snapshot.empty) {
-                    // Firebase 데이터가 없으면 기본 사진 사용
                     photos = defaultPhotos;
                 } else {
-                    // Firebase 데이터 사용
+                    // isCover=true인 사진만 필터링
                     snapshot.forEach(doc => {
                         const data = doc.data();
-                        photos.push({
-                            imageUrl: data.imageUrl,
-                            text: data.text || '',
-                            author: data.author || ''
-                        });
+                        if (data.isCover === true) {
+                            photos.push({
+                                imageUrl: data.imageUrl,
+                                text: data.text || '',
+                                author: data.author || '',
+                                order: data.order || 999
+                            });
+                        }
                     });
+
+                    // order 순으로 정렬
+                    photos.sort((a, b) => a.order - b.order);
+
+                    // 표지로 설정된 사진이 없으면 기본 사진 사용
+                    if (photos.length === 0) {
+                        photos = defaultPhotos;
+                    }
                 }
 
                 section.style.display = 'block';
