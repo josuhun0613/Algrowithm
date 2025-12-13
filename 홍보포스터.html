@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algrowithm 홍보포스터</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pure-white': '#ffffff',
+                        'off-white': '#f5f5f5',
+                        'text-dark': '#1a1a1a',
+                        'soft-gold': '#d4af37',
+                        'navy-dark': '#0a1628',
+                        'navy-mid': '#1a2a4a',
+                        'navy-light': '#2a3a5a',
+                    },
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <!-- 명조체 느낌 폰트 (KoPub 바탕체 대체) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 로그인 모달 */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 22, 40, 0.98);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-box {
+            background: linear-gradient(145deg, #1a2a4a 0%, #0a1628 100%);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 16px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: #d4af37;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .login-box input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            border: none;
+            border-radius: 10px;
+            color: #0a1628;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .login-error {
+            color: #ff6b6b;
+            font-size: 14px;
+            margin-top: 12px;
+            text-align: center;
+            display: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* A4 포스터 사이즈 (210mm x 297mm) */
+        .poster {
+            width: 210mm;
+            height: 297mm;
+            margin: 0 auto;
+            background: linear-gradient(180deg, #0a1628 0%, #1a2a4a 50%, #0a1628 100%);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            padding: 20px 24px;
+        }
+
+        /* 골드 글로우 효과 */
+        .glow-text {
+            color: #d4af37;
+        }
+
+        @supports (-webkit-background-clip: text) {
+            @media screen {
+                .glow-text {
+                    background: linear-gradient(135deg, #d4af37 0%, #f4d03f 50%, #d4af37 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                }
+            }
+        }
+
+        /* 명조체 스타일 */
+        .serif-quote {
+            font-family: 'Noto Serif KR', serif;
+            font-weight: 400;
+        }
+
+        /* 장식 요소 */
+        .deco-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.03) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+        }
+
+        .deco-line {
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+            height: 1px;
+        }
+
+        /* 프린트 스타일 - 여백 없이 */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0 !important;
+            }
+
+            html, body {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 210mm;
+                height: 297mm;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            body {
+                background: none !important;
+            }
+
+            .poster {
+                box-shadow: none;
+                margin: 0;
+                width: 210mm !important;
+                height: 297mm !important;
+            }
+
+            .print-btn,
+            .back-btn {
+                display: none !important;
+            }
+        }
+
+        /* 버튼 스타일 */
+        .print-btn,
+        .back-btn {
+            position: fixed;
+            z-index: 100;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .print-btn {
+            bottom: 30px;
+            right: 30px;
+            background: #d4af37;
+            color: #0a1628;
+        }
+
+        .print-btn:hover {
+            background: #e5c048;
+            transform: translateY(-2px);
+        }
+
+        .back-btn {
+            bottom: 30px;
+            left: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #0a1628;
+        }
+
+        .back-btn:hover {
+            background: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        /* AI 로고 카드 */
+        .ai-logo-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 8px 6px;
+            text-align: center;
+        }
+
+        .ai-logo-card img {
+            width: 32px;
+            height: 32px;
+            margin: 0 auto 4px;
+            border-radius: 8px;
+        }
+
+        /* 프로필 영역 */
+        .profile-area {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+        }
+
+        /* 성과 뱃지 */
+        .achievement-badge {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #0a1628;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 스크린용 배경 */
+        @media screen {
+            body {
+                background: #1a1a2e;
+                padding: 20px;
+                min-height: 100vh;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 로그인 모달 -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box">
+            <div class="text-center mb-6">
+                <div class="flex items-center justify-center gap-2 mb-3">
+                    <img src="./assets/logo.svg" alt="Logo" class="w-10 h-10 invert">
+                    <span class="text-2xl font-serif font-bold text-white">Algrowithm</span>
+                </div>
+                <p class="text-gray-400 text-sm">관리자 로그인이 필요합니다</p>
+            </div>
+            <form id="loginForm">
+                <input type="password" id="loginPw" placeholder="비밀번호" autocomplete="off" required>
+                <button type="submit" class="login-btn">
+                    <i class="fa-solid fa-lock mr-2"></i>로그인
+                </button>
+            </form>
+            <p class="login-error" id="loginError">비밀번호가 올바르지 않습니다.</p>
+        </div>
+    </div>
+
+    <!-- 메인 콘텐츠 (로그인 전 숨김) -->
+    <div id="mainContent" class="hidden">
+        <!-- 뒤로가기 버튼 -->
+        <a href="index.html" class="back-btn flex items-center gap-2">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>돌아가기</span>
+    </a>
+
+    <!-- 프린트 버튼 -->
+    <button onclick="window.print()" class="print-btn flex items-center gap-2">
+        <i class="fa-solid fa-print"></i>
+        <span>인쇄하기</span>
+    </button>
+
+    <!-- A4 포스터 -->
+    <div class="poster">
+        <!-- 장식 원형들 -->
+        <div class="deco-circle" style="width: 200px; height: 200px; top: -60px; right: -60px;"></div>
+        <div class="deco-circle" style="width: 150px; height: 150px; bottom: 100px; left: -50px;"></div>
+
+        <!-- 헤더 -->
+        <div class="text-center mb-4">
+            <div class="flex items-center justify-center gap-2 mb-2">
+                <img src="./assets/logo.svg" alt="Logo" class="w-10 h-10 invert">
+                <span class="text-2xl font-serif font-bold tracking-tight text-white">Algrowithm</span>
+            </div>
+            <p class="text-xs text-soft-gold tracking-widest">AI PERSONAL BRANDING WORKSHOP</p>
+        </div>
+
+        <!-- 메인 타이틀 (더 크게, 여유있게) -->
+        <div class="text-center mb-5">
+            <h1 class="text-4xl font-serif font-bold text-white mb-4 leading-tight">
+                AI 시대, <span class="glow-text">나만의 성장 알고리즘</span>을 만들다
+            </h1>
+            <!-- 명조체 서브 카피 -->
+            <p class="serif-quote text-2xl text-soft-gold italic">
+                "재미와 따기와 메리트, 삼박자를 잡은 획기적인 장"
+            </p>
+        </div>
+
+        <!-- 성과 뱃지 (더 크게) -->
+        <div class="flex justify-center gap-4 mb-4">
+            <div class="achievement-badge text-lg">
+                <i class="fa-solid fa-calendar-check text-xl"></i>
+                모임 1주만에
+            </div>
+            <div class="achievement-badge text-lg">
+                <i class="fa-solid fa-trophy text-xl"></i>
+                영따기 1명 육따기 5명 창출!
+            </div>
+        </div>
+
+        <!-- AI 도구들 -->
+        <div class="mb-4">
+            <h2 class="font-bold text-2xl mb-2 text-center text-white">
+                <i class="fa-solid fa-wand-magic-sparkles text-soft-gold mr-2"></i>
+                이런 AI 도구들을 활용합니다
+            </h2>
+            <div class="grid grid-cols-6 gap-2">
+                <div class="ai-logo-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" alt="ChatGPT">
+                    <p class="text-white text-sm font-medium">ChatGPT</p>
+                </div>
+                <div class="ai-logo-card">
+                    <img src="https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a690345.svg" alt="Gemini">
+                    <p class="text-white text-sm font-medium">Gemini</p>
+                </div>
+                <div class="ai-logo-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Midjourney_Emblem.png/480px-Midjourney_Emblem.png" alt="Midjourney">
+                    <p class="text-white text-sm font-medium">Midjourney</p>
+                </div>
+                <div class="ai-logo-card">
+                    <img src="./assets/VEO3.png" alt="Veo3">
+                    <p class="text-white text-sm font-medium">Veo3</p>
+                </div>
+                <div class="ai-logo-card">
+                    <img src="./assets/나노바나나로고.png" alt="Nanobanana">
+                    <p class="text-white text-sm font-medium">Nanobanana</p>
+                </div>
+                <div class="ai-logo-card">
+                    <img src="https://lovable.dev/icon.svg" alt="Lovable">
+                    <p class="text-white text-sm font-medium">Lovable</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 만들 수 있는 것들 -->
+        <div class="bg-white/5 rounded-xl p-4 mb-4 border border-soft-gold/20">
+            <h2 class="font-bold text-2xl mb-3 text-center text-white">
+                <i class="fa-solid fa-rocket text-soft-gold mr-2"></i>
+                AI로 직접 만드는 나만의 콘텐츠
+            </h2>
+            <div class="flex justify-center gap-8">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                        <i class="fa-solid fa-user-astronaut text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-white font-bold text-lg">AI 캐릭터</p>
+                        <p class="text-sm text-gray-300">나만의 브랜딩 이미지</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                        <i class="fa-solid fa-globe text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-white font-bold text-lg">웹사이트</p>
+                        <p class="text-sm text-gray-300">개인 포트폴리오 사이트</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                        <i class="fa-solid fa-book text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-white font-bold text-lg">E-book</p>
+                        <p class="text-sm text-gray-300">나의 이야기 전자책</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 모임 사진 (작게 2개) -->
+        <div class="grid grid-cols-2 gap-3 mb-3">
+            <div class="rounded-lg overflow-hidden border border-soft-gold/30 aspect-video">
+                <img src="./assets/전자책_제작과정_강의모습.jpg" alt="모임 사진 1" class="w-full h-full object-cover">
+            </div>
+            <div class="rounded-lg overflow-hidden border border-soft-gold/30 aspect-video">
+                <img src="./assets/캐릭터_제작과정_강의모습.jpg" alt="모임 사진 2" class="w-full h-full object-cover">
+            </div>
+        </div>
+
+        <!-- 이런 섭외자를 추천 -->
+        <div class="mb-3">
+            <h2 class="font-bold text-2xl mb-2 text-center text-white">
+                <i class="fa-solid fa-heart text-soft-gold mr-2"></i>
+                이런 섭외자를 추천합니다
+            </h2>
+            <div class="grid grid-cols-2 gap-2">
+                <div class="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
+                    <i class="fa-solid fa-check text-soft-gold text-lg"></i>
+                    <span class="text-gray-200 text-lg">나에 대해 관심이 많은 분</span>
+                </div>
+                <div class="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
+                    <i class="fa-solid fa-check text-soft-gold text-lg"></i>
+                    <span class="text-gray-200 text-lg">호기심 多, 도파민 터지는 장이 필요하신 분</span>
+                </div>
+                <div class="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
+                    <i class="fa-solid fa-check text-soft-gold text-lg"></i>
+                    <span class="text-gray-200 text-lg">AI 활용법을 배우고 싶은 분</span>
+                </div>
+                <div class="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2.5 border border-white/10">
+                    <i class="fa-solid fa-check text-soft-gold text-lg"></i>
+                    <span class="text-gray-200 text-lg">바로 교사연결을 위한 따기가 필요한 분</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 진행자 소개 -->
+        <div class="profile-area p-3 mb-3">
+            <div class="flex items-center gap-4">
+                <!-- 왼쪽 세로 텍스트 (두 줄) -->
+                <div class="flex-shrink-0 border-r-2 border-soft-gold pr-4 text-center">
+                    <p class="text-sm text-soft-gold font-bold tracking-wider leading-tight">TEAM<br>ALGROWITHM</p>
+                </div>
+                <!-- 프로필 카드들 -->
+                <div class="flex-1 grid grid-cols-2 gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-soft-gold flex-shrink-0">
+                            <img src="./assets/조수훈_프로필.png" alt="조수훈" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl text-white">조수훈</h3>
+                            <p class="text-base text-gray-300">대표 / AI 퍼스널브랜딩</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-soft-gold flex-shrink-0">
+                            <img src="./assets/최슬지_프로필.png" alt="최슬지" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl text-white">최슬지</h3>
+                            <p class="text-base text-gray-300">강점코칭 컨설턴트</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 하단 구분선 + 정보 -->
+        <div class="deco-line w-full mb-3"></div>
+
+        <div class="flex items-center justify-center gap-8">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-calendar text-soft-gold"></i>
+                <span class="text-white text-base font-medium">다음주 금 · 토</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-clock text-soft-gold"></i>
+                <span class="text-white text-base font-medium">19:30 - 21:00</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-phone text-soft-gold"></i>
+                <span class="text-white text-base font-medium">010-9342-5807</span>
+            </div>
+        </div>
+    </div>
+    </div> <!-- mainContent 닫기 -->
+
+    <script>
+        // 비밀번호: 오늘 날짜 기반 (YYMMDD 형식)
+        const today = new Date();
+        const ADMIN_PW = String(today.getFullYear()).slice(2) +
+            String(today.getMonth() + 1).padStart(2, '0') +
+            String(today.getDate()).padStart(2, '0');
+
+        // DOM 요소
+        const loginOverlay = document.getElementById('loginOverlay');
+        const mainContent = document.getElementById('mainContent');
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+        const loginPwInput = document.getElementById('loginPw');
+
+        // 페이지 로드 시 비밀번호 입력창에 포커스
+        document.addEventListener('DOMContentLoaded', () => {
+            loginPwInput.focus();
+        });
+
+        // 로그인 폼 제출
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const pw = loginPwInput.value;
+
+            if (pw === ADMIN_PW) {
+                // 로그인 성공
+                loginOverlay.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+                loginError.style.display = 'none';
+            } else {
+                // 로그인 실패
+                loginError.style.display = 'block';
+                loginPwInput.value = '';
+                loginPwInput.focus();
+            }
+        });
+    </script>
+</body>
+
+</html>
