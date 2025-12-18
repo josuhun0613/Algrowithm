@@ -458,27 +458,10 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50 px-6 py-3" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <a href="index.html"
-                class="text-lg font-serif font-bold text-rich-black hover:text-soft-gold transition-colors">
-                <i class="fa-solid fa-arrow-left mr-2"></i> Algrowithm
-            </a>
-            <div class="flex gap-3 flex-wrap">
-                <a href="workbook_1.html"
-                    class="px-3 py-1.5 bg-white text-gray-400 hover:text-rich-black rounded-full text-xs font-bold transition-colors">Session 1</a>
-                <a href="workbook_2.html"
-                    class="px-3 py-1.5 bg-white text-gray-400 hover:text-rich-black rounded-full text-xs font-bold transition-colors">Session 2</a>
-                <a href="workbook_3.html"
-                    class="px-3 py-1.5 bg-white text-gray-400 hover:text-rich-black rounded-full text-xs font-bold transition-colors">Session 3</a>
-                <a href="ebook-generator.html"
-                    class="px-3 py-1.5 bg-soft-gold/10 text-soft-gold hover:bg-soft-gold hover:text-white rounded-full text-xs font-bold transition-colors border border-soft-gold">
-                    <i class="fa-solid fa-wand-magic-sparkles mr-1"></i>프롬프트 생성</a>
-            </div>
-            <div class="w-20"></div>
-        </div>
-    </nav>
-    <div class="h-14"></div>
+    <div id="header-placeholder"></div>
+    <script src="js/header.js"></script>
+    <script>initHeader({ showStartButton: false });</script>
+    <div class="h-16"></div>
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
