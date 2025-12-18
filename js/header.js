@@ -61,6 +61,9 @@ function getHeaderHTML(options = {}) {
                             <a href="image-studio.html" class="dropdown-item">
                                 <i class="fa-solid fa-image text-soft-gold mr-2"></i> AI 이미지 생성
                             </a>
+                            <a href="website-studio.html" class="dropdown-item">
+                                <i class="fa-solid fa-code text-soft-gold mr-2"></i> 웹사이트 스튜디오
+                            </a>
                         </div>
                     </div>
 

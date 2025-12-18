@@ -353,6 +353,11 @@
                             <i class="fa-solid fa-download"></i>
                             다운로드
                         </button>
+                        <button onclick="copyImage()"
+                            class="flex-1 py-3 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-copy"></i>
+                            복사
+                        </button>
                         <button onclick="regenerateImage()"
                             class="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-medium hover:border-soft-gold hover:text-soft-gold transition-all flex items-center justify-center gap-2">
                             <i class="fa-solid fa-rotate"></i>
@@ -402,13 +407,12 @@
         let generatedImageUrl = null;
         let verifiedAccessCode = null;  // 인증된 접근 코드
 
-        // 접근 코드 관리
+        // 접근 코드 관리 (세션 전용 - 새로고침 시 재인증 필요)
         function getAccessCode() {
-            return localStorage.getItem('image_access_code') || '';
+            return verifiedAccessCode || '';
         }
 
         function saveAccessCode(code) {
-            localStorage.setItem('image_access_code', code);
             verifiedAccessCode = code;
         }
 
@@ -487,14 +491,10 @@
             document.getElementById('apiKeyModal').classList.add('hidden');
         }
 
-        // 페이지 로드 시 저장된 접근 코드 복원
+        // 페이지 로드 시 초기화 (새로고침 시 재인증 필요)
         document.addEventListener('DOMContentLoaded', () => {
-            const savedCode = getAccessCode();
-            if (savedCode) {
-                document.getElementById('accessCodeInput').value = savedCode;
-                verifiedAccessCode = savedCode;
-                updateAccessStatus(true);
-            }
+            // 접근 코드는 세션 전용이므로 복원하지 않음
+            updateAccessStatus(false);
         });
 
         // Image Modal
@@ -634,6 +634,24 @@
                 showToast('이미지가 다운로드되었습니다');
             } catch (error) {
                 showToast('다운로드에 실패했습니다', 'error');
+            }
+        }
+
+        // Copy Image to Clipboard
+        async function copyImage() {
+            if (!generatedImageUrl) return;
+
+            try {
+                const response = await fetch(generatedImageUrl);
+                const blob = await response.blob();
+
+                // PNG 형식으로 복사
+                const item = new ClipboardItem({ 'image/png': blob });
+                await navigator.clipboard.write([item]);
+                showToast('이미지가 클립보드에 복사되었습니다');
+            } catch (error) {
+                console.error('Copy error:', error);
+                showToast('이미지 복사에 실패했습니다. 브라우저가 지원하지 않을 수 있습니다.', 'error');
             }
         }
 
