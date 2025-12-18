@@ -319,12 +319,19 @@
                         </div>
                     </div>
 
-                    <!-- Copy Button - Inside Card -->
-                    <button id="copyBtn" onclick="copyPrompt()" disabled
-                        class="copy-btn w-full mt-4 py-4 bg-soft-gold text-white rounded-xl font-bold text-lg transition-all hover:bg-yellow-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                        <i class="fa-regular fa-copy"></i>
-                        <span id="copyBtnText">프롬프트 복사하기</span>
-                    </button>
+                    <!-- Action Buttons -->
+                    <div class="flex gap-3 mt-4">
+                        <button id="copyBtn" onclick="copyPrompt()" disabled
+                            class="copy-btn flex-1 py-4 bg-soft-gold text-white rounded-xl font-bold transition-all hover:bg-yellow-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                            <i class="fa-regular fa-copy"></i>
+                            <span id="copyBtnText">복사하기</span>
+                        </button>
+                        <button id="goToStudioBtn" onclick="goToWebsiteStudio()" disabled
+                            class="flex-1 py-4 bg-rich-black text-white rounded-xl font-bold transition-all hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>웹사이트 만들기</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- How to Use -->
@@ -955,6 +962,7 @@ ${style.designGuide}
             document.getElementById('promptOutput').classList.remove('hidden');
             document.getElementById('promptText').textContent = prompt;
             document.getElementById('copyBtn').disabled = false;
+            document.getElementById('goToStudioBtn').disabled = false;
         }
 
         function copyPrompt() {
@@ -976,6 +984,13 @@ ${style.designGuide}
                     btn.classList.add('bg-soft-gold');
                 }, 2000);
             });
+        }
+
+        function goToWebsiteStudio() {
+            const promptText = document.getElementById('promptText').textContent;
+            // 프롬프트를 URL 파라미터로 인코딩해서 전달
+            const encodedPrompt = encodeURIComponent(promptText);
+            window.location.href = `website-studio.html?prompt=${encodedPrompt}`;
         }
     </script>
 </body>
