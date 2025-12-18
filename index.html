@@ -282,6 +282,13 @@
                     status: 'pending'
                 });
 
+                // Telegram 알림 전송 (백그라운드에서 실행, 실패해도 무시)
+                fetch('/api/notify-telegram', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, phone, email, program, message })
+                }).catch(err => console.log('Telegram 알림 전송 실패 (무시됨):', err));
+
                 // 성공 시 모달 전환
                 closeInquiryModal();
                 document.getElementById('inquirySuccessModal').classList.add('active');
