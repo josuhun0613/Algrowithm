@@ -58,6 +58,9 @@ function getHeaderHTML(options = {}) {
                             <a href="ebook-pdf-generator.html" class="dropdown-item">
                                 <i class="fa-solid fa-file-pdf text-soft-gold mr-2"></i> E-book PDF 생성
                             </a>
+                            <a href="image-studio.html" class="dropdown-item">
+                                <i class="fa-solid fa-image text-soft-gold mr-2"></i> AI 이미지 생성
+                            </a>
                         </div>
                     </div>
 
