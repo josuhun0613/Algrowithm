@@ -100,6 +100,34 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Style Card Selection */
+        .style-card input:checked + div {
+            border-color: #d4af37;
+            background-color: rgba(212, 175, 55, 0.05);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        .style-card input:checked + div::after {
+            content: '✓';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+            background: #d4af37;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .style-card > div {
+            position: relative;
+        }
     </style>
 </head>
 
@@ -129,10 +157,81 @@
         <div class="grid md:grid-cols-2 gap-8">
             <!-- Left: Upload Section -->
             <div class="flex flex-col gap-6">
-                <!-- Main Card -->
-                <div class="bg-white rounded-2xl p-6 shadow-sm flex-1 flex flex-col">
+                <!-- Style Selection Card -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm">
                     <h2 class="text-lg font-bold text-rich-black mb-4 flex items-center gap-2">
                         <span class="w-7 h-7 bg-rich-black text-white rounded-full flex items-center justify-center text-sm">1</span>
+                        디자인 스타일 선택
+                    </h2>
+                    <p class="text-gray-500 text-sm mb-4">원하는 웹사이트 스타일을 선택하세요</p>
+
+                    <div class="grid grid-cols-2 gap-3" id="styleSelector">
+                        <!-- Style A: Minimal Agency -->
+                        <label class="style-card cursor-pointer">
+                            <input type="radio" name="designStyle" value="minimal" class="hidden" checked>
+                            <div class="border-2 border-gray-200 rounded-xl p-4 transition-all hover:border-soft-gold selected:border-soft-gold selected:bg-soft-gold/5">
+                                <div class="w-full h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+                                    <div class="w-full px-3">
+                                        <div class="h-1.5 bg-gray-800 rounded w-1/3 mb-2"></div>
+                                        <div class="h-1 bg-gray-400 rounded w-2/3 mb-1"></div>
+                                        <div class="h-1 bg-gray-300 rounded w-1/2"></div>
+                                    </div>
+                                </div>
+                                <p class="font-bold text-sm text-rich-black">미니멀 에이전시</p>
+                                <p class="text-xs text-gray-500">Apple, Stripe 스타일</p>
+                            </div>
+                        </label>
+
+                        <!-- Style B: Creative Portfolio -->
+                        <label class="style-card cursor-pointer">
+                            <input type="radio" name="designStyle" value="creative" class="hidden">
+                            <div class="border-2 border-gray-200 rounded-xl p-4 transition-all hover:border-soft-gold">
+                                <div class="w-full h-20 bg-gradient-to-br from-purple-900 to-pink-600 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+                                    <span class="text-white font-black text-2xl tracking-tighter">Aa</span>
+                                </div>
+                                <p class="font-bold text-sm text-rich-black">크리에이티브 포트폴리오</p>
+                                <p class="text-xs text-gray-500">대담한 타이포, Awwwards 스타일</p>
+                            </div>
+                        </label>
+
+                        <!-- Style C: Consulting/Business -->
+                        <label class="style-card cursor-pointer">
+                            <input type="radio" name="designStyle" value="business" class="hidden">
+                            <div class="border-2 border-gray-200 rounded-xl p-4 transition-all hover:border-soft-gold">
+                                <div class="w-full h-20 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+                                    <div class="grid grid-cols-3 gap-1 p-2">
+                                        <div class="h-6 bg-blue-500/30 rounded"></div>
+                                        <div class="h-6 bg-blue-500/50 rounded"></div>
+                                        <div class="h-6 bg-blue-500/70 rounded"></div>
+                                    </div>
+                                </div>
+                                <p class="font-bold text-sm text-rich-black">컨설팅 / 비즈니스</p>
+                                <p class="text-xs text-gray-500">신뢰감, 전문성 강조</p>
+                            </div>
+                        </label>
+
+                        <!-- Style D: Storytelling Brand -->
+                        <label class="style-card cursor-pointer">
+                            <input type="radio" name="designStyle" value="storytelling" class="hidden">
+                            <div class="border-2 border-gray-200 rounded-xl p-4 transition-all hover:border-soft-gold">
+                                <div class="w-full h-20 bg-gradient-to-br from-amber-50 to-orange-100 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+                                    <div class="text-center px-2">
+                                        <div class="h-1 bg-amber-800/60 rounded w-16 mx-auto mb-1.5"></div>
+                                        <div class="h-0.5 bg-amber-800/40 rounded w-12 mx-auto mb-0.5"></div>
+                                        <div class="h-0.5 bg-amber-800/40 rounded w-14 mx-auto"></div>
+                                    </div>
+                                </div>
+                                <p class="font-bold text-sm text-rich-black">스토리텔링 브랜드</p>
+                                <p class="text-xs text-gray-500">매거진, 에디토리얼 스타일</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Upload Card -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm flex-1 flex flex-col">
+                    <h2 class="text-lg font-bold text-rich-black mb-4 flex items-center gap-2">
+                        <span class="w-7 h-7 bg-rich-black text-white rounded-full flex items-center justify-center text-sm">2</span>
                         워크지 사진 업로드
                     </h2>
 
@@ -195,7 +294,7 @@
                 <!-- Main Card -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm flex-1 flex flex-col">
                     <h2 class="text-lg font-bold text-rich-black mb-4 flex items-center gap-2">
-                        <span class="w-7 h-7 bg-soft-gold text-white rounded-full flex items-center justify-center text-sm">2</span>
+                        <span class="w-7 h-7 bg-soft-gold text-white rounded-full flex items-center justify-center text-sm">3</span>
                         생성된 프롬프트
                     </h2>
 
@@ -296,6 +395,160 @@
             return savedKey;
         }
 
+        // 스타일 프리셋 정의
+        const stylePresets = {
+            minimal: {
+                name: '미니멀 에이전시',
+                reference: 'Apple, Stripe, Linear',
+                designGuide: `## 디자인 스타일: 미니멀 에이전시 (Apple/Stripe 스타일)
+
+**레이아웃 원칙:**
+- 극도로 절제된 여백 활용 (섹션 간 최소 120px 간격)
+- 한 화면에 하나의 메시지만 전달
+- 좌우 대칭 또는 의도적인 비대칭 구도
+- 그리드 시스템: 12컬럼 그리드 엄격 준수
+
+**컬러 시스템:**
+- 배경: 순백색(#FFFFFF) 또는 오프화이트(#FAFAFA)
+- 텍스트: 거의 검정(#1D1D1F)
+- 포인트: 단 하나의 브랜드 컬러만 사용 (CTA 버튼에만)
+- 그레이스케일 활용: #86868B, #F5F5F7
+
+**타이포그래피:**
+- 헤드라인: SF Pro Display 또는 Inter, 48-72px, font-weight 600
+- 본문: 18-20px, line-height 1.6, 최대 너비 680px
+- 자간: -0.02em (타이트하게)
+
+**인터랙션:**
+- 호버: 미세한 opacity 변화 (0.7)
+- 버튼: 부드러운 scale(1.02) 트랜지션
+- 스크롤: 요소가 아래에서 위로 자연스럽게 fade-in
+
+**금지 사항:**
+- 그라데이션 배경 사용 금지
+- 그림자 과다 사용 금지 (사용시 매우 연하게: 0 2px 8px rgba(0,0,0,0.04))
+- 장식적 요소, 아이콘 남용 금지
+- 둥근 모서리 과도하게 사용 금지 (최대 12px)`
+            },
+            creative: {
+                name: '크리에이티브 포트폴리오',
+                reference: 'Awwwards 수상작, 대담한 타이포그래피',
+                designGuide: `## 디자인 스타일: 크리에이티브 포트폴리오 (Awwwards 스타일)
+
+**레이아웃 원칙:**
+- 파격적인 비대칭 레이아웃
+- 텍스트와 이미지의 오버랩 적극 활용
+- 화면을 가득 채우는 풀스크린 섹션
+- 의도적인 그리드 이탈로 시각적 긴장감 연출
+
+**컬러 시스템:**
+- 대비가 강한 컬러 조합 (다크 배경 + 비비드 포인트)
+- 배경: 딥 블랙(#0A0A0A) 또는 진한 네이비(#0D1117)
+- 포인트: 네온 계열 (Electric Blue #00D4FF, Magenta #FF00E5, Lime #CCFF00)
+- 그라데이션 적극 활용 (보라-핑크, 블루-그린 등)
+
+**타이포그래피:**
+- 헤드라인: 초대형 80-150px, font-weight 900 (Black)
+- 대문자 활용, letter-spacing: 0.1em
+- 믹스매치: Serif + Sans-serif 조합
+- 텍스트가 화면 밖으로 잘리는 연출 가능
+
+**인터랙션:**
+- 마우스 커서 커스텀 (원형 follower)
+- 호버시 텍스트 색상 반전 또는 글리치 효과
+- 패럴랙스 스크롤 적극 활용
+- 부드러운 페이지 트랜지션 (GSAP 스타일)
+
+**필수 요소:**
+- 인터랙티브 히어로 섹션 (마우스 움직임 반응)
+- 대담한 타이포 애니메이션
+- 작업물 쇼케이스는 호버시 비디오/움직이는 이미지`
+            },
+            business: {
+                name: '컨설팅 / 비즈니스',
+                reference: 'McKinsey, Notion, Linear 랜딩페이지',
+                designGuide: `## 디자인 스타일: 컨설팅/비즈니스 (McKinsey/Notion 스타일)
+
+**레이아웃 원칙:**
+- 정돈된 그리드 시스템 (명확한 섹션 구분)
+- 정보의 계층 구조 명확하게 표현
+- 카드 기반 UI로 정보 그룹핑
+- 넓은 콘텐츠 영역 (max-width: 1200px)
+
+**컬러 시스템:**
+- 배경: 화이트(#FFFFFF) + 연한 그레이 섹션(#F7F7F8)
+- 주요 텍스트: 다크 그레이(#37352F)
+- 포인트: 신뢰감 있는 블루 계열 (#2563EB) 또는 그린 (#059669)
+- 보조: 연한 블루/그린 배경 (#EFF6FF, #ECFDF5)
+
+**타이포그래피:**
+- 헤드라인: Inter 또는 Pretendard, 36-48px, font-weight 700
+- 본문: 16px, line-height 1.7, 가독성 최우선
+- 서브헤딩: 작은 대문자 + 포인트 컬러
+
+**UI 컴포넌트:**
+- 피처 카드: 아이콘 + 제목 + 설명 (3열 그리드)
+- 통계/숫자 강조 섹션 (큰 숫자 + 레이블)
+- 로고 배너 (신뢰도 표시)
+- FAQ 아코디언
+
+**인터랙션:**
+- 깔끔한 호버 상태 (배경색 변화, 미세한 lift)
+- 버튼: 명확한 hover/active 상태
+- 스크롤: 부드럽지만 과하지 않은 fade-in
+
+**필수 요소:**
+- 명확한 가치 제안 (Value Proposition)
+- 3가지 핵심 특징/강점 섹션
+- 사회적 증거 (후기, 로고, 숫자)`
+            },
+            storytelling: {
+                name: '스토리텔링 브랜드',
+                reference: '브랜드 매거진, 에디토리얼 스타일',
+                designGuide: `## 디자인 스타일: 스토리텔링 브랜드 (에디토리얼/매거진 스타일)
+
+**레이아웃 원칙:**
+- 매거진 같은 에디토리얼 레이아웃
+- 풀 블리드 이미지와 텍스트의 조화
+- 세로 스크롤로 이야기가 전개되는 구조
+- 여백을 통한 호흡감 (섹션 간 100px+)
+
+**컬러 시스템:**
+- 따뜻한 뉴트럴 톤 베이스 (Warm White #FAF9F6, Cream #FDF6E3)
+- 텍스트: 따뜻한 블랙 (#2D2A26)
+- 포인트: 머스타드(#D4A853), 테라코타(#C4704F), 세이지그린(#87A878)
+- 자연스러운 톤온톤 배색
+
+**타이포그래피:**
+- 헤드라인: Serif 폰트 (Playfair Display, Noto Serif KR), 42-64px
+- 본문: 17-18px, line-height 1.8 (읽기 편한 간격)
+- 인용구: Italic 스타일, 더 큰 사이즈
+- 챕터/섹션 번호: 작은 Serif + 우아한 숫자
+
+**비주얼 요소:**
+- 고품질 사진 (따뜻한 톤 보정)
+- 손글씨 느낌의 악센트 요소
+- 미니멀한 라인 일러스트
+- 자연 텍스처 (종이, 패브릭 느낌)
+
+**인터랙션:**
+- 부드럽고 우아한 트랜지션 (0.6s ease)
+- 스크롤에 따른 이미지 패럴랙스 (은은하게)
+- 호버: 미세한 확대 또는 opacity 변화
+
+**필수 요소:**
+- 스토리가 담긴 히어로 (이미지 + 감성적 헤드라인)
+- 개인 철학/가치관 섹션
+- 경험을 시간순으로 풀어내는 타임라인/스토리 섹션`
+            }
+        };
+
+        // 선택된 스타일 가져오기
+        function getSelectedStyle() {
+            const selected = document.querySelector('input[name="designStyle"]:checked');
+            return selected ? selected.value : 'minimal';
+        }
+
         // Gemini API 직접 호출 (로컬용) - 다중 이미지 지원
         async function callGeminiDirectly(imagesBase64) {
             let apiKey = getLocalApiKey();
@@ -314,6 +567,10 @@
                     data: img.replace(/^data:image\/\w+;base64,/, '')
                 }
             }));
+
+            // 선택된 스타일 가져오기
+            const styleKey = getSelectedStyle();
+            const style = stylePresets[styleKey];
 
             const imageCountText = imagesBase64.length > 1
                 ? `이 ${imagesBase64.length}장의 이미지는 "나만의 커리어 브랜딩 워크북 (3회차)"의 앞/뒤면입니다.`
@@ -335,64 +592,60 @@
 
 1. **추출된 키워드** (5-7개): 워크지에서 발견한 핵심 키워드들
 
-그리고 이 정보를 바탕으로 **Lovable에서 웹사이트를 만들 수 있는 프롬프트**를 아래 형식으로 작성해주세요:
+---
+
+# 사용자가 선택한 디자인 스타일: ${style.name}
+**레퍼런스:** ${style.reference}
+
+${style.designGuide}
 
 ---
+
+위 디자인 스타일 가이드를 **반드시 준수**하여, 워크지 내용을 바탕으로 **Lovable에서 바로 구현 가능한 전문적인 웹사이트 프롬프트**를 작성해주세요.
+
 **웹사이트 생성 프롬프트:**
 
 # Role
-당신은 **센스 있는 웹사이트 디자이너이자 만들기 도우미**입니다.
-사용자가 입력한 아래 정보를 바탕으로, **러버블(Lovable)이 즉시 코드로 구현할 수 있는 구체적이고 전문적인 웹사이트 기획안**을 작성해 주세요.
+당신은 **${style.reference} 스타일의 전문 웹 디자이너**입니다.
+위에 제시된 디자인 가이드라인을 철저히 따르면서, 워크지 내용을 반영한 **고퀄리티 개인 브랜딩 웹사이트**를 만들어주세요.
 
 ---
 
-# [입력된 사용자 정보]
+# [워크지 기반 콘텐츠]
 
 ## 1. 웹사이트 정체성
 - **웹사이트 이름:** [표지의 이름]
 - **한 줄 소개:** [STEP 5의 "삶의 목적" 한 줄]
 - **주요 타겟:** [STEP 3 롤모델 동경 이유에서 유추한 타겟]
-- **핵심 무드(Feeling):** 방문자가 이 사이트에서 "[STEP 1 핵심 가치 3개]" 느낌을 받아야 합니다.
+- **핵심 무드(Feeling):** "[STEP 1 핵심 가치 3개]"를 느낄 수 있어야 함
 
-## 2. 디자인 시스템
-- **메인 컬러:** [STEP 1 핵심 가치 키워드 느낌에 맞는 색상 추천]
-- **포인트 컬러:** [보조 색상 추천]
-- **배경 스타일:** [가치 키워드 분위기에 맞는 배경 스타일]
-- **폰트/글자 느낌:** [가치 키워드 분위기에 맞는 폰트 추천]
-- **전반적인 분위기:** 위 컬러와 스타일을 조합하여 "[톤앤매너]" 느낌으로 디자인해 주세요.
-
-## 3. 핵심 콘텐츠 내용
-- **메인 카피(Hero Title):** "[STEP 5 삶의 목적을 임팩트 있는 헤드라인으로]"
-- **서브 카피:** "[STEP 5 목표 3가지를 요약한 문장]"
-- **주요 특징/강점 3가지:** [STEP 5의 목표 1, 2, 3을 강점 카드로 변환]
-- **자기소개:** [STEP 3 롤모델 동경 이유 + STEP 4 유산 편지 내용 조합]
-- **경험 스토리:** [STEP 2의 경험 3가지를 스토리텔링으로]
-- **마지막 행동 유도(CTA):** "[목표와 연결된 행동 유도 문구]"
-- **연락처 및 링크:** [표지의 전화번호 있으면 포함]
+## 2. 핵심 콘텐츠
+- **메인 카피(Hero):** [STEP 5 삶의 목적을 임팩트 있는 헤드라인으로]
+- **서브 카피:** [STEP 5 목표 3가지를 요약]
+- **3가지 강점/특징:** [STEP 5의 목표 1, 2, 3을 강점 카드로]
+- **자기소개:** [STEP 3 롤모델 + STEP 4 유산 편지 조합]
+- **경험 스토리:** [STEP 2의 경험 3가지]
+- **CTA:** [목표와 연결된 행동 유도]
+- **연락처:** [표지의 전화번호]
 
 ---
 
-# [요청 사항: 위 정보를 바탕으로 이렇게 작성해 주세요]
+# [출력 형식]
 
-## 1. 페이지 구조 (Structure)
-아래 섹션 순서대로 구체적인 **디자인 지시사항**과 **들어갈 텍스트**를 작성해 주세요.
+위 디자인 스타일 가이드의 **컬러, 타이포, 레이아웃, 인터랙션**을 구체적으로 명시하면서 아래 구조로 작성:
 
-**(1) 헤더 (Header)** - 로고와 메뉴 구성
-**(2) 히어로 섹션 (Hero Section)** - 메인 카피와 비주얼
-**(3) 특징/강점 섹션 (Features)** - 목표 3가지를 강점 카드로
-**(4) 소개 및 신뢰도 (About/Proof)** - 롤모델 동경 이유 + 유산 편지 기반 자기소개
-**(5) 경험 섹션 (Experience)** - 살아있음을 느낀 경험 3가지
-**(6) 행동 유도 및 푸터 (CTA & Footer)** - CTA 버튼과 연락처
+**(1) 헤더** - 스타일에 맞는 네비게이션
+**(2) 히어로 섹션** - 스타일 특성 반영한 메인 비주얼
+**(3) 특징/강점 섹션** - 스타일에 맞는 카드/그리드 디자인
+**(4) 소개 섹션** - 개인 스토리
+**(5) 경험 섹션** - 스타일에 맞는 표현 방식
+**(6) CTA & 푸터**
 
-## 2. 인터랙션 및 디테일
-- **반응형:** 모바일에서도 완벽하게 보이도록
-- **모션:** 부드러운 호버 효과와 스크롤 애니메이션
+각 섹션에 **구체적인 CSS 값** (색상 HEX, 폰트 크기, 간격 등)을 포함해주세요.
 
-## 3. 톤앤매너
-- 모든 문구는 STEP 1 핵심 가치 키워드의 분위기에 맞는 말투로 통일
 ---
 
-만약 손글씨가 잘 안 보이거나 비어있다면, 그 부분은 [미입력]으로 표시하고 합리적인 기본값으로 대체해주세요.`;
+만약 손글씨가 잘 안 보이거나 비어있다면, [미입력]으로 표시하고 합리적인 기본값으로 대체해주세요.`;
 
             // parts 배열 구성: 텍스트 프롬프트 + 모든 이미지
             const parts = [{ text: promptText }, ...imageParts];
@@ -495,6 +748,66 @@
         }
 
         // 다중 파일 처리
+        // 이미지 밝기 체크 함수
+        function checkImageBrightness(imageData) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // 성능을 위해 작은 크기로 리샘플링
+                    const sampleSize = 100;
+                    canvas.width = sampleSize;
+                    canvas.height = sampleSize;
+
+                    ctx.drawImage(img, 0, 0, sampleSize, sampleSize);
+                    const pixels = ctx.getImageData(0, 0, sampleSize, sampleSize).data;
+
+                    let totalBrightness = 0;
+                    const pixelCount = pixels.length / 4;
+
+                    for (let i = 0; i < pixels.length; i += 4) {
+                        // 밝기 계산 (가중 평균)
+                        const brightness = (pixels[i] * 0.299 + pixels[i + 1] * 0.587 + pixels[i + 2] * 0.114);
+                        totalBrightness += brightness;
+                    }
+
+                    const avgBrightness = totalBrightness / pixelCount;
+                    resolve(avgBrightness);
+                };
+                img.src = imageData;
+            });
+        }
+
+        // 이미지 밝기 보정 함수
+        function adjustImageBrightness(imageData, factor) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+
+                    ctx.drawImage(img, 0, 0);
+                    const imageDataObj = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const pixels = imageDataObj.data;
+
+                    for (let i = 0; i < pixels.length; i += 4) {
+                        pixels[i] = Math.min(255, pixels[i] * factor);     // R
+                        pixels[i + 1] = Math.min(255, pixels[i + 1] * factor); // G
+                        pixels[i + 2] = Math.min(255, pixels[i + 2] * factor); // B
+                    }
+
+                    ctx.putImageData(imageDataObj, 0, 0);
+                    resolve(canvas.toDataURL('image/jpeg', 0.9));
+                };
+                img.src = imageData;
+            });
+        }
+
         function handleFiles(files) {
             const validFiles = files.filter(file => {
                 if (!file.type.startsWith('image/')) {
@@ -517,8 +830,28 @@
 
             filesToAdd.forEach(file => {
                 const reader = new FileReader();
-                reader.onload = (e) => {
-                    uploadedImages.push(e.target.result);
+                reader.onload = async (e) => {
+                    let imageData = e.target.result;
+
+                    // 밝기 체크
+                    const brightness = await checkImageBrightness(imageData);
+                    console.log(`이미지 밝기: ${brightness.toFixed(1)}`);
+
+                    // 밝기가 너무 낮으면 (70 이하) 자동 보정
+                    if (brightness < 70) {
+                        const factor = Math.min(2.0, 100 / brightness); // 최대 2배까지 보정
+                        imageData = await adjustImageBrightness(imageData, factor);
+                        console.log(`밝기 보정 적용: ${factor.toFixed(2)}배`);
+
+                        // 사용자에게 알림
+                        const toast = document.createElement('div');
+                        toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 text-sm';
+                        toast.innerHTML = '<i class="fa-solid fa-sun mr-2"></i>어두운 이미지가 감지되어 자동 밝기 보정을 적용했습니다';
+                        document.body.appendChild(toast);
+                        setTimeout(() => toast.remove(), 3000);
+                    }
+
+                    uploadedImages.push(imageData);
                     updateImagePreview();
                 };
                 reader.readAsDataURL(file);
