@@ -230,23 +230,31 @@
 
                         <!-- Quick Prompts -->
                         <div>
-                            <p class="text-xs text-gray-500 mb-2">빠른 선택</p>
+                            <p class="text-xs text-gray-500 mb-2">빠른 선택 <span class="text-gray-400">(클릭하면 프롬프트에 추가됩니다)</span></p>
                             <div class="flex flex-wrap gap-2">
-                                <button onclick="setQuickPrompt('professional headshot portrait with clean background')"
+                                <button onclick="addQuickPrompt('프로필 사진, professional headshot portrait with clean background')"
                                     class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-xs text-gray-700 transition-colors">
-                                    프로필 사진
+                                    📷 프로필 사진
                                 </button>
-                                <button onclick="setQuickPrompt('modern minimalist logo design')"
+                                <button onclick="addQuickPrompt('미니멀 로고, modern minimalist logo design')"
                                     class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-xs text-gray-700 transition-colors">
-                                    로고 디자인
+                                    🎨 로고 디자인
                                 </button>
-                                <button onclick="setQuickPrompt('abstract background with soft gradient colors')"
+                                <button onclick="addQuickPrompt('그라데이션 배경, abstract background with soft gradient colors')"
                                     class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-xs text-gray-700 transition-colors">
-                                    배경 이미지
+                                    🌈 배경 이미지
                                 </button>
-                                <button onclick="setQuickPrompt('product photography on white background')"
+                                <button onclick="addQuickPrompt('제품 사진, product photography on white background')"
                                     class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-xs text-gray-700 transition-colors">
-                                    제품 사진
+                                    📦 제품 사진
+                                </button>
+                                <button onclick="addQuickPrompt('자연 풍경, beautiful nature landscape with dramatic lighting')"
+                                    class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-xs text-gray-700 transition-colors">
+                                    🏞️ 자연 풍경
+                                </button>
+                                <button onclick="addQuickPrompt('음식 사진, delicious food photography with artistic plating')"
+                                    class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-xs text-gray-700 transition-colors">
+                                    🍽️ 음식 사진
                                 </button>
                             </div>
                         </div>
@@ -422,9 +430,21 @@
             document.getElementById('imageModal').classList.add('hidden');
         }
 
-        // Quick Prompt
-        function setQuickPrompt(prompt) {
-            document.getElementById('promptInput').value = prompt;
+        // Quick Prompt - 기존 텍스트에 추가
+        function addQuickPrompt(prompt) {
+            const input = document.getElementById('promptInput');
+            const currentValue = input.value.trim();
+
+            if (currentValue) {
+                // 기존 텍스트가 있으면 쉼표로 구분해서 추가
+                input.value = currentValue + ', ' + prompt;
+            } else {
+                // 비어있으면 바로 설정
+                input.value = prompt;
+            }
+
+            // 입력 필드에 포커스
+            input.focus();
         }
 
         // Aspect Ratio
