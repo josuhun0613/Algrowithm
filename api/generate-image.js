@@ -1,5 +1,5 @@
-// Vertex AI Imagen 3 이미지 생성 API
-// Google Cloud Vertex AI를 통해 Imagen 3 모델로 이미지 생성
+// Google AI Studio Imagen 3 이미지 생성 API
+// Gemini API 키로 Imagen 3 모델 사용 (Google AI Studio)
 
 export default async function handler(req, res) {
     // CORS 헤더 설정
@@ -26,23 +26,9 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'API 키가 필요합니다' });
         }
 
-        // Aspect ratio를 Imagen 3 형식으로 변환
-        const aspectRatioMap = {
-            '1:1': '1:1',
-            '16:9': '16:9',
-            '9:16': '9:16',
-            '4:3': '4:3',
-            '3:4': '3:4'
-        };
-
-        const imagenAspectRatio = aspectRatioMap[aspectRatio] || '1:1';
-
-        // Google Cloud 프로젝트 설정
-        const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID || 'your-project-id';
-        const location = 'us-central1';
-
-        // Vertex AI Imagen 3 API 엔드포인트
-        const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-generate-001:predict`;
+        // Google AI Studio Imagen 3 API 엔드포인트
+        // 참고: https://ai.google.dev/gemini-api/docs/imagen
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
 
         const requestBody = {
             instances: [
@@ -52,18 +38,17 @@ export default async function handler(req, res) {
             ],
             parameters: {
                 sampleCount: 1,
-                aspectRatio: imagenAspectRatio,
-                safetyFilterLevel: 'block_some',
-                personGeneration: 'allow_adult',
-                // 이미지 품질 설정
-                addWatermark: false
+                aspectRatio: aspectRatio || '1:1',
+                // 안전 필터 설정
+                safetyFilterLevel: 'BLOCK_MEDIUM_AND_ABOVE',
+                // 사람 생성 허용
+                personGeneration: 'ALLOW_ADULT'
             }
         };
 
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${apiKey}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(requestBody)
@@ -72,53 +57,70 @@ export default async function handler(req, res) {
         const result = await response.json();
 
         if (!response.ok) {
-            console.error('Vertex AI error:', result);
+            console.error('Imagen API error:', result);
 
-            // 에러 메시지 파싱
             let errorMessage = '이미지 생성에 실패했습니다';
+
             if (result.error) {
                 if (result.error.message) {
                     errorMessage = result.error.message;
                 }
-                if (result.error.code === 401) {
-                    errorMessage = 'API 키가 유효하지 않습니다';
+                if (result.error.status === 'INVALID_ARGUMENT') {
+                    errorMessage = '잘못된 요청입니다. 프롬프트를 확인해주세요.';
                 }
-                if (result.error.code === 403) {
-                    errorMessage = 'API 접근 권한이 없습니다. Google Cloud 프로젝트 설정을 확인하세요';
+                if (result.error.status === 'PERMISSION_DENIED') {
+                    errorMessage = 'API 키가 유효하지 않거나 Imagen 접근 권한이 없습니다.';
                 }
-                if (result.error.code === 429) {
-                    errorMessage = 'API 요청 한도를 초과했습니다. 잠시 후 다시 시도하세요';
+                if (result.error.status === 'RESOURCE_EXHAUSTED') {
+                    errorMessage = 'API 요청 한도를 초과했습니다. 잠시 후 다시 시도하세요.';
+                }
+                // Imagen이 아직 API 키로 지원되지 않는 경우
+                if (result.error.message && result.error.message.includes('not found')) {
+                    errorMessage = 'Imagen 3 API는 현재 Google AI Studio에서 제한적으로 지원됩니다. Vertex AI를 사용해주세요.';
                 }
             }
 
-            return res.status(response.status).json({ error: errorMessage });
+            return res.status(response.status || 500).json({ error: errorMessage });
         }
 
         // 응답에서 이미지 추출
-        if (!result.predictions || result.predictions.length === 0) {
-            return res.status(500).json({ error: '이미지 생성 결과가 없습니다' });
+        if (result.predictions && result.predictions.length > 0) {
+            const prediction = result.predictions[0];
+
+            // base64 인코딩된 이미지
+            if (prediction.bytesBase64Encoded) {
+                const imageUrl = `data:image/png;base64,${prediction.bytesBase64Encoded}`;
+                return res.status(200).json({
+                    success: true,
+                    imageUrl: imageUrl,
+                    mimeType: 'image/png'
+                });
+            }
+
+            // 이미지 URL이 직접 반환된 경우
+            if (prediction.image) {
+                return res.status(200).json({
+                    success: true,
+                    imageUrl: prediction.image
+                });
+            }
         }
 
-        const prediction = result.predictions[0];
-
-        // Imagen 3는 base64 인코딩된 이미지를 반환
-        if (prediction.bytesBase64Encoded) {
-            const imageBase64 = prediction.bytesBase64Encoded;
-            const imageUrl = `data:image/png;base64,${imageBase64}`;
-
-            return res.status(200).json({
-                success: true,
-                imageUrl: imageUrl,
-                mimeType: prediction.mimeType || 'image/png'
-            });
-        }
-
-        // 대체: GCS URI가 반환된 경우
-        if (prediction.gcsUri) {
-            return res.status(200).json({
-                success: true,
-                imageUrl: prediction.gcsUri
-            });
+        // Gemini의 generateContent 형식 응답 처리 (대체 방식)
+        if (result.candidates && result.candidates.length > 0) {
+            const candidate = result.candidates[0];
+            if (candidate.content && candidate.content.parts) {
+                for (const part of candidate.content.parts) {
+                    if (part.inlineData) {
+                        const imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+                        return res.status(200).json({
+                            success: true,
+                            imageUrl: imageUrl,
+                            mimeType: part.inlineData.mimeType
+                        });
+                    }
+                }
+            }
         }
 
         return res.status(500).json({ error: '이미지 데이터를 파싱할 수 없습니다' });

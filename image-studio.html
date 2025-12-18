@@ -288,9 +288,9 @@
                     <div class="flex items-start gap-3">
                         <i class="fa-solid fa-key text-amber-500 mt-0.5"></i>
                         <div class="text-sm">
-                            <p class="font-medium text-amber-800 mb-1">API 키 필요</p>
+                            <p class="font-medium text-amber-800 mb-1">Gemini API 키 필요</p>
                             <p class="text-amber-700 text-xs">
-                                Vertex AI Imagen 3 사용을 위해 Google Cloud API 키가 필요합니다.
+                                기존 Gemini API 키로 Imagen 3를 사용할 수 있습니다.
                                 <button onclick="showApiKeyModal()" class="underline hover:text-amber-900">API 키 설정</button>
                             </p>
                         </div>
@@ -352,14 +352,14 @@
     <!-- API Key Modal -->
     <div id="apiKeyModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
-            <h3 class="text-lg font-bold mb-4">Vertex AI API 키 설정</h3>
+            <h3 class="text-lg font-bold mb-4">Gemini API 키 설정</h3>
             <p class="text-sm text-gray-600 mb-4">
-                Google Cloud Console에서 발급받은 API 키를 입력하세요.
-                키는 브라우저에 안전하게 저장됩니다.
+                Google AI Studio에서 발급받은 Gemini API 키를 입력하세요.
+                <a href="https://aistudio.google.com/apikey" target="_blank" class="text-soft-gold underline">API 키 발급받기</a>
             </p>
             <input type="password" id="apiKeyInput"
                 class="w-full px-4 py-3 border border-gray-200 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-soft-gold"
-                placeholder="API 키 입력">
+                placeholder="Gemini API 키 입력">
             <div class="flex gap-3">
                 <button onclick="saveApiKey()"
                     class="flex-1 py-3 bg-soft-gold text-white rounded-xl font-medium hover:bg-yellow-600">
@@ -386,15 +386,18 @@
         let selectedAspectRatio = '1:1';
         let generatedImageUrl = null;
 
-        // API Key Management
+        // API Key Management (Gemini API 키와 공유)
         function getApiKey() {
-            return localStorage.getItem('vertex_ai_api_key') || '';
+            // imagen 전용 키가 있으면 사용, 없으면 gemini 키 사용
+            return localStorage.getItem('imagen_api_key') || localStorage.getItem('gemini_api_key') || '';
         }
 
         function saveApiKey() {
             const key = document.getElementById('apiKeyInput').value.trim();
             if (key) {
-                localStorage.setItem('vertex_ai_api_key', key);
+                localStorage.setItem('imagen_api_key', key);
+                // gemini 키도 같이 저장 (다른 페이지에서도 사용 가능하도록)
+                localStorage.setItem('gemini_api_key', key);
                 closeApiKeyModal();
                 showToast('API 키가 저장되었습니다');
             }
