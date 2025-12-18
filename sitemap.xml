@@ -2,60 +2,60 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- 메인 페이지 -->
   <url>
-    <loc>https://algrowithm.vercel.app/</loc>
+    <loc>https://algrowithm.org/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <!-- About 페이지 -->
   <url>
-    <loc>https://algrowithm.vercel.app/about</loc>
+    <loc>https://algrowithm.org/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- 일정 페이지 -->
   <url>
-    <loc>https://algrowithm.vercel.app/schedule</loc>
+    <loc>https://algrowithm.org/schedule</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- 워크북 페이지들 -->
   <url>
-    <loc>https://algrowithm.vercel.app/workbook_1</loc>
+    <loc>https://algrowithm.org/workbook_1</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://algrowithm.vercel.app/workbook_2</loc>
+    <loc>https://algrowithm.org/workbook_2</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://algrowithm.vercel.app/workbook_3</loc>
+    <loc>https://algrowithm.org/workbook_3</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://algrowithm.vercel.app/workbook_4</loc>
+    <loc>https://algrowithm.org/workbook_4</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- AI 도구 페이지들 -->
   <url>
-    <loc>https://algrowithm.vercel.app/prompt-studio</loc>
+    <loc>https://algrowithm.org/prompt-studio</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://algrowithm.vercel.app/ebook-generator</loc>
+    <loc>https://algrowithm.org/ebook-generator</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://algrowithm.vercel.app/ebook-pdf-generator</loc>
+    <loc>https://algrowithm.org/ebook-pdf-generator</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
