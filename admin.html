@@ -475,6 +475,9 @@
         let currentTab = 'inquiries';
 
         // ============ 인증 ============
+        // 페이지 로드 시 항상 로그인 상태 초기화 (매번 비밀번호 입력 필요)
+        sessionStorage.removeItem('adminLoggedIn');
+
         function login(e) {
             e.preventDefault();
             const password = document.getElementById('adminPassword').value;
@@ -498,6 +501,7 @@
             switchTab('inquiries');
         }
 
+        // 이미 로그인 상태면 바로 패널 표시 (같은 세션 내에서만)
         if (sessionStorage.getItem('adminLoggedIn') === 'true') {
             showAdminPanel();
         }
