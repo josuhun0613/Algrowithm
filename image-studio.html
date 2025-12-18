@@ -291,18 +291,25 @@
                     </div>
                 </div>
 
-                <!-- API Key Notice -->
-                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                    <div class="flex items-start gap-3">
-                        <i class="fa-solid fa-key text-amber-500 mt-0.5"></i>
-                        <div class="text-sm">
-                            <p class="font-medium text-amber-800 mb-1">Gemini API 키 필요</p>
-                            <p class="text-amber-700 text-xs">
-                                기존 Gemini API 키로 Imagen 3를 사용할 수 있습니다.
-                                <button onclick="showApiKeyModal()" class="underline hover:text-amber-900">API 키 설정</button>
-                            </p>
-                        </div>
+                <!-- Access Code Input -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fa-solid fa-lock text-soft-gold"></i>
+                        <p class="font-medium text-rich-black">접근 코드</p>
+                        <span id="accessStatus" class="ml-auto text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-500">미인증</span>
                     </div>
+                    <div class="flex gap-2">
+                        <input type="password" id="accessCodeInput"
+                            class="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-soft-gold"
+                            placeholder="접근 코드 입력">
+                        <button onclick="verifyAccessCode()"
+                            class="px-4 py-2.5 bg-soft-gold text-white rounded-xl text-sm font-medium hover:bg-yellow-600 transition-colors">
+                            확인
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2">
+                        접근 코드가 없으면 <button onclick="showApiKeyModal()" class="text-soft-gold underline">직접 API 키 입력</button>
+                    </p>
                 </div>
             </div>
 
@@ -393,10 +400,71 @@
         // State
         let selectedAspectRatio = '1:1';
         let generatedImageUrl = null;
+        let verifiedAccessCode = null;  // 인증된 접근 코드
 
-        // API Key Management (Gemini API 키와 공유)
+        // 접근 코드 관리
+        function getAccessCode() {
+            return localStorage.getItem('image_access_code') || '';
+        }
+
+        function saveAccessCode(code) {
+            localStorage.setItem('image_access_code', code);
+            verifiedAccessCode = code;
+        }
+
+        async function verifyAccessCode() {
+            const code = document.getElementById('accessCodeInput').value.trim();
+            if (!code) {
+                showToast('접근 코드를 입력해주세요', 'error');
+                return;
+            }
+
+            // 서버에 코드 검증 요청 (간단한 테스트 요청)
+            try {
+                const response = await fetch('/api/generate-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt: 'test',
+                        accessCode: code,
+                        testOnly: true
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.status === 401) {
+                    showToast('접근 코드가 올바르지 않습니다', 'error');
+                    updateAccessStatus(false);
+                    return;
+                }
+
+                // 인증 성공
+                saveAccessCode(code);
+                updateAccessStatus(true);
+                showToast('접근 코드가 확인되었습니다');
+
+            } catch (error) {
+                // 네트워크 오류 시에도 일단 저장 (실제 사용 시 검증됨)
+                saveAccessCode(code);
+                updateAccessStatus(true);
+                showToast('접근 코드가 저장되었습니다');
+            }
+        }
+
+        function updateAccessStatus(verified) {
+            const status = document.getElementById('accessStatus');
+            if (verified) {
+                status.textContent = '인증됨';
+                status.className = 'ml-auto text-xs px-2 py-1 rounded-full bg-green-100 text-green-600';
+            } else {
+                status.textContent = '미인증';
+                status.className = 'ml-auto text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-500';
+            }
+        }
+
+        // API Key Management (직접 입력용)
         function getApiKey() {
-            // imagen 전용 키가 있으면 사용, 없으면 gemini 키 사용
             return localStorage.getItem('imagen_api_key') || localStorage.getItem('gemini_api_key') || '';
         }
 
@@ -404,7 +472,6 @@
             const key = document.getElementById('apiKeyInput').value.trim();
             if (key) {
                 localStorage.setItem('imagen_api_key', key);
-                // gemini 키도 같이 저장 (다른 페이지에서도 사용 가능하도록)
                 localStorage.setItem('gemini_api_key', key);
                 closeApiKeyModal();
                 showToast('API 키가 저장되었습니다');
@@ -419,6 +486,16 @@
         function closeApiKeyModal() {
             document.getElementById('apiKeyModal').classList.add('hidden');
         }
+
+        // 페이지 로드 시 저장된 접근 코드 복원
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedCode = getAccessCode();
+            if (savedCode) {
+                document.getElementById('accessCodeInput').value = savedCode;
+                verifiedAccessCode = savedCode;
+                updateAccessStatus(true);
+            }
+        });
 
         // Image Modal
         function openImageModal(src) {
@@ -481,9 +558,12 @@
                 return;
             }
 
+            // 접근 코드 또는 API 키 확인
+            const accessCode = getAccessCode();
             const apiKey = getApiKey();
-            if (!apiKey) {
-                showApiKeyModal();
+
+            if (!accessCode && !apiKey) {
+                showToast('접근 코드를 입력하거나 API 키를 설정해주세요', 'error');
                 return;
             }
 
@@ -494,16 +574,24 @@
             const fullPrompt = `${prompt}, ${stylePrompts[style]}`;
 
             try {
+                // 요청 본문 구성 (접근 코드 우선, 없으면 API 키)
+                const requestBody = {
+                    prompt: fullPrompt,
+                    aspectRatio: selectedAspectRatio
+                };
+
+                if (accessCode) {
+                    requestBody.accessCode = accessCode;
+                } else {
+                    requestBody.apiKey = apiKey;
+                }
+
                 const response = await fetch('/api/generate-image', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        prompt: fullPrompt,
-                        aspectRatio: selectedAspectRatio,
-                        apiKey: apiKey
-                    })
+                    body: JSON.stringify(requestBody)
                 });
 
                 const result = await response.json();

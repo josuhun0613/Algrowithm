@@ -16,19 +16,44 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { prompt, aspectRatio, apiKey } = req.body;
+        const { prompt, aspectRatio, apiKey, accessCode, testOnly } = req.body;
+
+        // 접근 코드 검증만 하는 경우
+        if (testOnly && accessCode) {
+            const serverAccessCode = process.env.IMAGE_ACCESS_CODE;
+            if (accessCode === serverAccessCode) {
+                return res.status(200).json({ success: true, message: '접근 코드가 확인되었습니다' });
+            } else {
+                return res.status(401).json({ error: '접근 코드가 올바르지 않습니다' });
+            }
+        }
 
         if (!prompt) {
             return res.status(400).json({ error: '프롬프트가 필요합니다' });
         }
 
-        if (!apiKey) {
-            return res.status(400).json({ error: 'API 키가 필요합니다' });
+        // API 키 결정: 암호가 맞으면 서버 키 사용, 아니면 사용자 키 사용
+        let finalApiKey = apiKey;
+
+        if (accessCode) {
+            // 환경변수에서 암호와 API 키 가져오기
+            const serverAccessCode = process.env.IMAGE_ACCESS_CODE;
+            const serverApiKey = process.env.GEMINI_API_KEY;
+
+            if (accessCode === serverAccessCode && serverApiKey) {
+                finalApiKey = serverApiKey;
+            } else if (accessCode !== serverAccessCode) {
+                return res.status(401).json({ error: '접근 코드가 올바르지 않습니다' });
+            }
+        }
+
+        if (!finalApiKey) {
+            return res.status(400).json({ error: 'API 키 또는 접근 코드가 필요합니다' });
         }
 
         // Google AI Studio Imagen 3 API 엔드포인트
         // 참고: https://ai.google.dev/gemini-api/docs/imagen
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${finalApiKey}`;
 
         const requestBody = {
             instances: [
