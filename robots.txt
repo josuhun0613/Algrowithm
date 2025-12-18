@@ -1,0 +1,12 @@
+# Algrowithm - AI Personal Branding
+# https://algrowithm.vercel.app
+
+User-agent: *
+Allow: /
+
+# 관리자 페이지 크롤링 방지
+Disallow: /admin
+Disallow: /홍보포스터
+
+# Sitemap 위치
+Sitemap: https://algrowithm.vercel.app/sitemap.xml
