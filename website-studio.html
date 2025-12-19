@@ -1472,6 +1472,28 @@ console.log('Website loaded successfully!');`
             editor.setValue(codeFiles[tab]);
         }
 
+        // 코드 상태 자동 저장 (뒤로가기 대응)
+        function saveCodeState() {
+            sessionStorage.setItem('website_studio_code', JSON.stringify(codeFiles));
+            sessionStorage.setItem('website_studio_chat', document.getElementById('chatMessages')?.innerHTML || '');
+        }
+
+        function restoreCodeState() {
+            const savedCode = sessionStorage.getItem('website_studio_code');
+            const savedChat = sessionStorage.getItem('website_studio_chat');
+
+            if (savedCode) {
+                try {
+                    const parsed = JSON.parse(savedCode);
+                    codeFiles.html = parsed.html || codeFiles.html;
+                    codeFiles.css = parsed.css || codeFiles.css;
+                    codeFiles.js = parsed.js || codeFiles.js;
+                    return true;
+                } catch (e) {}
+            }
+            return false;
+        }
+
         // Run code in preview
         function runCode() {
             const html = codeFiles.html;
@@ -1490,6 +1512,9 @@ console.log('Website loaded successfully!');`
             if (codePreviewFrame) {
                 codePreviewFrame.srcdoc = fullHtml;
             }
+
+            // 상태 저장
+            saveCodeState();
         }
 
         // Refresh preview
@@ -2474,6 +2499,24 @@ ${codeFiles.js}
         document.addEventListener('DOMContentLoaded', async () => {
             // GitHub OAuth 콜백 처리
             await handleGithubCallback();
+
+            // 이전 작업 상태 복원 (뒤로가기 대응)
+            const hasRestoredState = restoreCodeState();
+            if (hasRestoredState) {
+                // 채팅 내역 복원
+                const savedChat = sessionStorage.getItem('website_studio_chat');
+                if (savedChat) {
+                    document.getElementById('chatMessages').innerHTML = savedChat;
+                    document.getElementById('welcomeMessage').classList.add('hidden');
+                }
+                // 에디터 및 프리뷰 업데이트는 Monaco 로드 후 실행됨
+                setTimeout(() => {
+                    if (editor) {
+                        editor.setValue(codeFiles[currentTab]);
+                    }
+                    runCode();
+                }, 500);
+            }
 
             const urlParams = new URLSearchParams(window.location.search);
             const promptFromUrl = urlParams.get('prompt');

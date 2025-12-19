@@ -20,7 +20,8 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: 'GitHub Client ID가 설정되지 않았습니다' });
         }
 
-        const redirectUri = `${req.headers.origin || 'https://algrowithm.org'}/api/github-auth?action=callback`;
+        // 고정 redirect URI 사용 (GitHub OAuth App 설정과 일치해야 함)
+        const redirectUri = 'https://algrowithm.org/api/github-auth?action=callback';
         const scope = 'repo';
         const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}`;
 
