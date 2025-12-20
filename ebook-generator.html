@@ -337,53 +337,17 @@
                     <h2 class="text-2xl font-bold mb-6">어떤 장르의 글을 쓰시겠습니까?</h2>
 
                     <div class="mb-8">
-                        <h3 class="text-sm font-bold text-soft-gold mb-4 uppercase tracking-wider">문학</h3>
-                        <div class="grid grid-cols-3 gap-4">
+                        <h3 class="text-sm font-bold text-soft-gold mb-4 uppercase tracking-wider">나만의 이야기</h3>
+                        <div class="grid grid-cols-2 gap-4">
                             <div class="genre-card" data-genre="수필">
                                 <div class="text-3xl mb-2"><i class="fa-solid fa-feather-pointed text-soft-gold"></i></div>
                                 <div class="font-bold">수필 (에세이)</div>
-                                <div class="text-sm text-gray-500">개인적 경험과 성찰</div>
+                                <div class="text-sm text-gray-500">개인적 경험과 성찰을 담은 글</div>
                             </div>
-                            <div class="genre-card" data-genre="소설">
-                                <div class="text-3xl mb-2"><i class="fa-solid fa-book-open text-soft-gold"></i></div>
-                                <div class="font-bold">소설</div>
-                                <div class="text-sm text-gray-500">순문학/대중소설</div>
-                            </div>
-                            <div class="genre-card" data-genre="시">
-                                <div class="text-3xl mb-2"><i class="fa-solid fa-pen-fancy text-soft-gold"></i></div>
-                                <div class="font-bold">시</div>
-                                <div class="text-sm text-gray-500">시적 표현과 운율</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mb-8">
-                        <h3 class="text-sm font-bold text-soft-gold mb-4 uppercase tracking-wider">비문학</h3>
-                        <div class="grid grid-cols-3 gap-4">
-                            <div class="genre-card" data-genre="자기계발서">
-                                <div class="text-3xl mb-2"><i class="fa-solid fa-rocket text-soft-gold"></i></div>
-                                <div class="font-bold">자기계발서</div>
-                                <div class="text-sm text-gray-500">성장과 동기부여</div>
-                            </div>
-                            <div class="genre-card" data-genre="인문학">
-                                <div class="text-3xl mb-2"><i class="fa-solid fa-landmark text-soft-gold"></i></div>
-                                <div class="font-bold">인문학 도서</div>
-                                <div class="text-sm text-gray-500">철학, 역사, 문화</div>
-                            </div>
-                            <div class="genre-card" data-genre="심리학">
-                                <div class="text-3xl mb-2"><i class="fa-solid fa-brain text-soft-gold"></i></div>
-                                <div class="font-bold">심리학 도서</div>
-                                <div class="text-sm text-gray-500">마음과 행동 이해</div>
-                            </div>
-                            <div class="genre-card" data-genre="사회경제">
-                                <div class="text-3xl mb-2"><i class="fa-solid fa-chart-line text-soft-gold"></i></div>
-                                <div class="font-bold">사회/정치/경제</div>
-                                <div class="text-sm text-gray-500">사회 분석과 전망</div>
-                            </div>
-                            <div class="genre-card" data-genre="실용서">
-                                <div class="text-3xl mb-2"><i class="fa-solid fa-tools text-soft-gold"></i></div>
-                                <div class="font-bold">실용서</div>
-                                <div class="text-sm text-gray-500">실용적 가이드</div>
+                            <div class="genre-card" data-genre="자서전">
+                                <div class="text-3xl mb-2"><i class="fa-solid fa-user-pen text-soft-gold"></i></div>
+                                <div class="font-bold">자서전 / 회고록</div>
+                                <div class="text-sm text-gray-500">나의 삶의 여정을 기록</div>
                             </div>
                         </div>
                     </div>
@@ -984,7 +948,7 @@
         }
 
         function createPrompt() {
-            const isLiterature = ['수필', '소설', '시'].includes(formData.genre);
+            const isLiterature = ['수필', '자서전'].includes(formData.genre);
 
             const worldBuildingContent = isLiterature ? `
 **[문학 장르의 경우 포함 요소]**

@@ -311,15 +311,57 @@
     </script>
 
     <style>
-        /* Magazine-style scroll snap - JS로 제어 */
+        /* CSS Scroll Snap - 네이티브 스냅 */
         html {
+            scroll-snap-type: y mandatory;
             overflow-y: scroll;
+            scroll-behavior: smooth;
         }
 
         body {
             font-family: 'Pretendard', sans-serif;
             background-color: #ffffff;
             color: #1a1a1a;
+        }
+
+        /* 각 섹션에 스냅 포인트 적용 */
+        section {
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Hero 섹션은 정확히 100vh */
+        #hero {
+            min-height: 100vh;
+            height: 100vh;
+            display: block;
+        }
+
+        /* Footer는 auto height */
+        footer {
+            scroll-snap-align: start;
+            min-height: auto;
+        }
+
+        /* Philosophy, AI Tools 섹션 - 내부 콘텐츠 정렬 */
+        #philosophy, #ai-tools {
+            padding-top: 5rem;
+            padding-bottom: 5rem;
+        }
+
+        /* Reviews 섹션 - overflow 허용 */
+        #reviews {
+            overflow: visible;
+        }
+
+        /* Quote 섹션 */
+        #quote {
+            padding-top: 8rem;
+            padding-bottom: 8rem;
         }
 
         /* Header - Glass effect with strong blur */
@@ -1211,232 +1253,18 @@
         // GSAP ScrollTrigger 사용
         gsap.registerPlugin(ScrollTrigger);
 
-        // 부드러운 섹션 스냅 (매거진 스타일)
-        (function initSectionSnap() {
-            const sections = document.querySelectorAll('section, footer');
-            let isScrolling = false;
-            let currentSection = 0;
-            const SCROLL_DURATION = 1000; // 스크롤 속도 (ms)
-
-            // 섹션 경계에서 대기 상태
-            let atBoundary = false;
-            let boundaryTimeout = null;
-
-            // 부드러운 스크롤 함수
-            function smoothScrollTo(target, duration) {
-                const start = window.scrollY;
-                const distance = target - start;
-                const startTime = performance.now();
-
-                function animation(currentTime) {
-                    const elapsed = currentTime - startTime;
-                    const progress = Math.min(elapsed / duration, 1);
-
-                    // easeInOutCubic
-                    const ease = progress < 0.5
-                        ? 4 * progress * progress * progress
-                        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-
-                    window.scrollTo(0, start + distance * ease);
-
-                    if (progress < 1) {
-                        requestAnimationFrame(animation);
-                    } else {
-                        isScrolling = false;
-                    }
-                }
-
-                requestAnimationFrame(animation);
-            }
-
-            // 현재 섹션 인덱스 찾기
-            function getCurrentSectionIndex() {
-                const scrollY = window.scrollY;
-                for (let i = sections.length - 1; i >= 0; i--) {
-                    if (scrollY >= sections[i].offsetTop - 50) {
-                        return i;
-                    }
-                }
-                return 0;
-            }
-
-            // 섹션 경계 체크 (긴 섹션 처리)
-            function isAtSectionBottom(section) {
-                const viewportHeight = window.innerHeight;
-                const sectionBottom = section.offsetTop + section.offsetHeight;
-                const scrollBottom = window.scrollY + viewportHeight;
-                return scrollBottom >= sectionBottom - 20;
-            }
-
-            function isAtSectionTop(section) {
-                return window.scrollY <= section.offsetTop + 20;
-            }
-
-            // 휠 이벤트
-            let wheelTimeout;
-            let accumulatedDelta = 0;
-
-            window.addEventListener('wheel', (e) => {
-                if (document.querySelector('.modal-overlay.active')) return;
-                if (isScrolling) {
-                    e.preventDefault();
-                    return;
-                }
-
-                const currentIdx = getCurrentSectionIndex();
-                const currentSect = sections[currentIdx];
-                const sectionHeight = currentSect.offsetHeight;
-                const viewportHeight = window.innerHeight;
-                const isLongSection = sectionHeight > viewportHeight + 100;
-
-                // 긴 섹션일 경우
-                if (isLongSection) {
-                    if (e.deltaY > 0) {
-                        // 아래로 스크롤
-                        if (!isAtSectionBottom(currentSect)) {
-                            // 아직 섹션 끝까지 안 봄 - 일반 스크롤
-                            atBoundary = false;
-                            return;
-                        }
-
-                        // 섹션 끝에 도달함
-                        e.preventDefault(); // 더 이상 스크롤 안 되게 막음
-
-                        if (!atBoundary) {
-                            // 처음 경계에 도달 - 멈춤
-                            atBoundary = true;
-                            clearTimeout(boundaryTimeout);
-                            boundaryTimeout = setTimeout(() => {
-                                atBoundary = false;
-                            }, 500); // 0.5초 후 리셋
-                            return;
-                        }
-
-                        // 이미 경계에서 대기 중 - 다음 섹션으로 스냅
-                        if (currentIdx < sections.length - 1) {
-                            atBoundary = false;
-                            isScrolling = true;
-                            currentSection = currentIdx + 1;
-                            smoothScrollTo(sections[currentSection].offsetTop, SCROLL_DURATION);
-                        }
-                    } else {
-                        // 위로 스크롤
-                        if (!isAtSectionTop(currentSect)) {
-                            // 아직 섹션 상단 아님 - 일반 스크롤
-                            atBoundary = false;
-                            return;
-                        }
-
-                        // 섹션 상단에 도달함
-                        e.preventDefault();
-
-                        if (!atBoundary) {
-                            // 처음 경계에 도달 - 멈춤
-                            atBoundary = true;
-                            clearTimeout(boundaryTimeout);
-                            boundaryTimeout = setTimeout(() => {
-                                atBoundary = false;
-                            }, 500);
-                            return;
-                        }
-
-                        // 이미 경계에서 대기 중 - 이전 섹션으로 스냅
-                        if (currentIdx > 0) {
-                            atBoundary = false;
-                            isScrolling = true;
-                            currentSection = currentIdx - 1;
-                            const prevSect = sections[currentSection];
-                            const prevHeight = prevSect.offsetHeight;
-                            if (prevHeight > viewportHeight + 100) {
-                                smoothScrollTo(prevSect.offsetTop + prevHeight - viewportHeight, SCROLL_DURATION);
-                            } else {
-                                smoothScrollTo(prevSect.offsetTop, SCROLL_DURATION);
-                            }
-                        }
-                    }
+        // CSS scroll-snap 사용 - 모달 열릴 때 스냅 비활성화
+        (function initScrollSnapControl() {
+            // 모달이 열리면 스냅 비활성화
+            const observer = new MutationObserver(() => {
+                const hasActiveModal = document.querySelector('.modal-overlay.active');
+                if (hasActiveModal) {
+                    document.documentElement.style.scrollSnapType = 'none';
                 } else {
-                    // 짧은 섹션: 바로 스냅
-                    e.preventDefault();
-
-                    clearTimeout(wheelTimeout);
-                    accumulatedDelta += e.deltaY;
-
-                    wheelTimeout = setTimeout(() => {
-                        const direction = accumulatedDelta > 0 ? 1 : -1;
-                        let targetIdx = currentIdx + direction;
-                        targetIdx = Math.max(0, Math.min(sections.length - 1, targetIdx));
-
-                        if (targetIdx !== currentSection || Math.abs(window.scrollY - sections[targetIdx].offsetTop) > 50) {
-                            isScrolling = true;
-                            currentSection = targetIdx;
-                            smoothScrollTo(sections[targetIdx].offsetTop, SCROLL_DURATION);
-                        }
-                        accumulatedDelta = 0;
-                    }, 100);
+                    document.documentElement.style.scrollSnapType = 'y mandatory';
                 }
-            }, { passive: false });
-
-            // 터치 이벤트 (모바일)
-            let touchStartY = 0;
-            let touchAtBoundary = false;
-
-            document.addEventListener('touchstart', (e) => {
-                touchStartY = e.touches[0].clientY;
-            }, { passive: true });
-
-            document.addEventListener('touchend', (e) => {
-                if (document.querySelector('.modal-overlay.active')) return;
-                if (isScrolling) return;
-
-                const touchEndY = e.changedTouches[0].clientY;
-                const deltaY = touchStartY - touchEndY;
-
-                if (Math.abs(deltaY) > 50) {
-                    const currentIdx = getCurrentSectionIndex();
-                    const currentSect = sections[currentIdx];
-                    const sectionHeight = currentSect.offsetHeight;
-                    const viewportHeight = window.innerHeight;
-                    const isLongSection = sectionHeight > viewportHeight + 100;
-
-                    if (isLongSection) {
-                        if (deltaY > 0 && isAtSectionBottom(currentSect)) {
-                            if (!touchAtBoundary) {
-                                touchAtBoundary = true;
-                                setTimeout(() => { touchAtBoundary = false; }, 500);
-                                return;
-                            }
-                            if (currentIdx < sections.length - 1) {
-                                touchAtBoundary = false;
-                                isScrolling = true;
-                                currentSection = currentIdx + 1;
-                                smoothScrollTo(sections[currentSection].offsetTop, SCROLL_DURATION);
-                            }
-                        } else if (deltaY < 0 && isAtSectionTop(currentSect)) {
-                            if (!touchAtBoundary) {
-                                touchAtBoundary = true;
-                                setTimeout(() => { touchAtBoundary = false; }, 500);
-                                return;
-                            }
-                            if (currentIdx > 0) {
-                                touchAtBoundary = false;
-                                isScrolling = true;
-                                currentSection = currentIdx - 1;
-                                smoothScrollTo(sections[currentSection].offsetTop, SCROLL_DURATION);
-                            }
-                        } else {
-                            touchAtBoundary = false;
-                        }
-                    } else {
-                        const direction = deltaY > 0 ? 1 : -1;
-                        let targetIdx = currentIdx + direction;
-                        targetIdx = Math.max(0, Math.min(sections.length - 1, targetIdx));
-
-                        isScrolling = true;
-                        currentSection = targetIdx;
-                        smoothScrollTo(sections[targetIdx].offsetTop, SCROLL_DURATION);
-                    }
-                }
-            }, { passive: true });
+            });
+            observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
         })();
 
         // Hero Swiper 인스턴스 (동적 로드 후 초기화)
