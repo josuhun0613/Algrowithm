@@ -315,7 +315,7 @@
         html {
             scroll-snap-type: y mandatory;
             overflow-y: scroll;
-            scroll-behavior: smooth;
+            /* scroll-behavior는 JS에서 제어 - 1000ms 부드러운 애니메이션 */
         }
 
         body {
@@ -1253,13 +1253,90 @@
         // GSAP ScrollTrigger 사용
         gsap.registerPlugin(ScrollTrigger);
 
-        // CSS scroll-snap 사용 - 모달 열릴 때 스냅 비활성화
+        // 스크롤 스냅 제어 - 원래 속도(1000ms) 유지
         (function initScrollSnapControl() {
+            const SCROLL_DURATION = 1000; // 원래 속도: 1000ms
+            let isScrolling = false;
+            let lastScrollTime = 0;
+            let scrollTimeout = null;
+
+            // 부드러운 스크롤 함수 (easeInOutCubic)
+            function smoothScrollTo(targetY, duration) {
+                const startY = window.scrollY;
+                const distance = targetY - startY;
+                const startTime = performance.now();
+
+                function easeInOutCubic(t) {
+                    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+                }
+
+                function animate(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const eased = easeInOutCubic(progress);
+
+                    window.scrollTo(0, startY + distance * eased);
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        isScrolling = false;
+                    }
+                }
+
+                isScrolling = true;
+                requestAnimationFrame(animate);
+            }
+
+            // 섹션 위치 계산
+            function getSectionPositions() {
+                const sections = document.querySelectorAll('section, footer');
+                return Array.from(sections).map(s => s.offsetTop);
+            }
+
+            // 가장 가까운 스냅 포인트 찾기
+            function findNearestSnapPoint(scrollY, positions) {
+                let nearest = positions[0];
+                let minDistance = Math.abs(scrollY - positions[0]);
+
+                for (let i = 1; i < positions.length; i++) {
+                    const distance = Math.abs(scrollY - positions[i]);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        nearest = positions[i];
+                    }
+                }
+                return nearest;
+            }
+
+            // 스크롤 종료 감지 및 스냅 적용
+            function handleScrollEnd() {
+                if (isScrolling) return;
+
+                const positions = getSectionPositions();
+                const currentY = window.scrollY;
+                const targetY = findNearestSnapPoint(currentY, positions);
+
+                // 이미 정확한 위치면 스킵
+                if (Math.abs(currentY - targetY) < 5) return;
+
+                smoothScrollTo(targetY, SCROLL_DURATION);
+            }
+
+            // 스크롤 이벤트 (debounced)
+            window.addEventListener('scroll', () => {
+                if (isScrolling) return;
+
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(handleScrollEnd, 150);
+            }, { passive: true });
+
             // 모달이 열리면 스냅 비활성화
             const observer = new MutationObserver(() => {
                 const hasActiveModal = document.querySelector('.modal-overlay.active');
                 if (hasActiveModal) {
                     document.documentElement.style.scrollSnapType = 'none';
+                    clearTimeout(scrollTimeout);
                 } else {
                     document.documentElement.style.scrollSnapType = 'y mandatory';
                 }
