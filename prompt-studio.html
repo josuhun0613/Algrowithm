@@ -756,6 +756,33 @@ ${style.designGuide}
         }
 
         // 다중 파일 처리
+        // 이미지 압축 함수 (API 오류 방지)
+        function compressImage(imageData, maxWidth = 1600, quality = 0.8) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // 비율 유지하면서 리사이즈
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', quality));
+                };
+                img.src = imageData;
+            });
+        }
+
         // 이미지 밝기 체크 함수
         function checkImageBrightness(imageData) {
             return new Promise((resolve) => {
@@ -840,8 +867,20 @@ ${style.designGuide}
                 const reader = new FileReader();
                 reader.onload = async (e) => {
                     let imageData = e.target.result;
+                    let wasCompressed = false;
+                    let wasBrightnessAdjusted = false;
 
-                    // 밝기 체크
+                    // 1. 이미지 압축 (API 오류 방지)
+                    const originalSize = imageData.length;
+                    imageData = await compressImage(imageData, 1600, 0.8);
+                    const compressedSize = imageData.length;
+
+                    if (originalSize > compressedSize * 1.2) {
+                        wasCompressed = true;
+                        console.log(`이미지 압축: ${(originalSize / 1024).toFixed(0)}KB → ${(compressedSize / 1024).toFixed(0)}KB`);
+                    }
+
+                    // 2. 밝기 체크
                     const brightness = await checkImageBrightness(imageData);
                     console.log(`이미지 밝기: ${brightness.toFixed(1)}`);
 
@@ -849,12 +888,23 @@ ${style.designGuide}
                     if (brightness < 70) {
                         const factor = Math.min(2.0, 100 / brightness); // 최대 2배까지 보정
                         imageData = await adjustImageBrightness(imageData, factor);
+                        wasBrightnessAdjusted = true;
                         console.log(`밝기 보정 적용: ${factor.toFixed(2)}배`);
+                    }
 
-                        // 사용자에게 알림
+                    // 사용자에게 처리 결과 알림
+                    if (wasCompressed || wasBrightnessAdjusted) {
                         const toast = document.createElement('div');
                         toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 text-sm';
-                        toast.innerHTML = '<i class="fa-solid fa-sun mr-2"></i>어두운 이미지가 감지되어 자동 밝기 보정을 적용했습니다';
+                        let message = '<i class="fa-solid fa-wand-magic-sparkles mr-2"></i>';
+                        if (wasCompressed && wasBrightnessAdjusted) {
+                            message += '이미지 압축 및 밝기 보정이 적용되었습니다';
+                        } else if (wasCompressed) {
+                            message += '이미지가 자동 압축되었습니다';
+                        } else {
+                            message += '어두운 이미지가 감지되어 밝기 보정을 적용했습니다';
+                        }
+                        toast.innerHTML = message;
                         document.body.appendChild(toast);
                         setTimeout(() => toast.remove(), 3000);
                     }
