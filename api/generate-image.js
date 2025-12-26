@@ -1,5 +1,5 @@
-// Gemini 2.0 Flash 이미지 생성 API
-// Gemini API 키로 이미지 생성 (Google AI Studio)
+// Imagen 3 이미지 생성 API
+// Google Imagen 3 모델 사용 (고품질 이미지 생성)
 
 export default async function handler(req, res) {
     // CORS 헤더 설정
@@ -51,30 +51,28 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'API 키 또는 접근 코드가 필요합니다' });
         }
 
-        // 비율에 따른 안내 추가
-        let aspectGuide = '';
+        // Imagen 3 지원 비율: "1:1", "3:4", "4:3", "9:16", "16:9"
+        let imagenAspectRatio = '1:1';
         if (aspectRatio === '16:9') {
-            aspectGuide = 'wide landscape format (16:9 aspect ratio)';
+            imagenAspectRatio = '16:9';
         } else if (aspectRatio === '9:16') {
-            aspectGuide = 'tall portrait format (9:16 aspect ratio)';
+            imagenAspectRatio = '9:16';
         } else if (aspectRatio === '4:3') {
-            aspectGuide = 'standard landscape format (4:3 aspect ratio)';
-        } else {
-            aspectGuide = 'square format (1:1 aspect ratio)';
+            imagenAspectRatio = '4:3';
+        } else if (aspectRatio === '3:4') {
+            imagenAspectRatio = '3:4';
         }
 
-        // Gemini 2.0 Flash Experimental 이미지 생성 엔드포인트
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${finalApiKey}`;
+        // Imagen 3 엔드포인트
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict`;
 
         const requestBody = {
-            contents: [{
-                parts: [{
-                    text: `Generate a high-quality image: ${prompt}. The image should be in ${aspectGuide}. Only generate the image, no text response needed.`
-                }]
+            instances: [{
+                prompt: prompt
             }],
-            generationConfig: {
-                responseModalities: ["image", "text"],
-                responseMimeType: "text/plain"
+            parameters: {
+                sampleCount: 1,
+                aspectRatio: imagenAspectRatio
             }
         };
 
@@ -82,6 +80,7 @@ export default async function handler(req, res) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'x-goog-api-key': finalApiKey
             },
             body: JSON.stringify(requestBody)
         });
@@ -89,7 +88,7 @@ export default async function handler(req, res) {
         const result = await response.json();
 
         if (!response.ok) {
-            console.error('Gemini API error:', result);
+            console.error('Imagen 3 API error:', result);
 
             let errorMessage = '이미지 생성에 실패했습니다';
 
@@ -101,7 +100,7 @@ export default async function handler(req, res) {
                     errorMessage = '잘못된 요청입니다. 프롬프트를 확인해주세요.';
                 }
                 if (result.error.status === 'PERMISSION_DENIED') {
-                    errorMessage = 'API 키가 유효하지 않습니다.';
+                    errorMessage = 'API 키가 유효하지 않거나 Imagen 3 접근 권한이 없습니다.';
                 }
                 if (result.error.status === 'RESOURCE_EXHAUSTED') {
                     errorMessage = 'API 요청 한도를 초과했습니다. 잠시 후 다시 시도하세요.';
@@ -111,38 +110,24 @@ export default async function handler(req, res) {
             return res.status(response.status || 500).json({ error: errorMessage });
         }
 
-        // Gemini 응답에서 이미지 추출
-        if (result.candidates && result.candidates.length > 0) {
-            const candidate = result.candidates[0];
-            if (candidate.content && candidate.content.parts) {
-                for (const part of candidate.content.parts) {
-                    // 인라인 이미지 데이터
-                    if (part.inlineData) {
-                        const imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
-                        return res.status(200).json({
-                            success: true,
-                            imageUrl: imageUrl,
-                            mimeType: part.inlineData.mimeType
-                        });
-                    }
-                }
+        // Imagen 3 응답에서 이미지 추출
+        if (result.predictions && result.predictions.length > 0) {
+            const prediction = result.predictions[0];
 
-                // 이미지가 없으면 텍스트 응답 확인
-                for (const part of candidate.content.parts) {
-                    if (part.text) {
-                        // 이미지 생성이 거부된 경우
-                        if (part.text.includes('cannot') || part.text.includes('sorry') || part.text.includes('unable')) {
-                            return res.status(400).json({
-                                error: '이 프롬프트로는 이미지를 생성할 수 없습니다. 다른 설명을 시도해주세요.'
-                            });
-                        }
-                    }
-                }
+            // base64 이미지 데이터
+            if (prediction.bytesBase64Encoded) {
+                const imageUrl = `data:image/png;base64,${prediction.bytesBase64Encoded}`;
+                return res.status(200).json({
+                    success: true,
+                    imageUrl: imageUrl,
+                    mimeType: 'image/png',
+                    model: 'imagen-3.0-generate-002'
+                });
             }
         }
 
         // 안전 필터로 차단된 경우
-        if (result.candidates && result.candidates[0]?.finishReason === 'SAFETY') {
+        if (result.predictions && result.predictions.length === 0) {
             return res.status(400).json({
                 error: '안전 정책으로 인해 이미지를 생성할 수 없습니다. 다른 프롬프트를 시도해주세요.'
             });
