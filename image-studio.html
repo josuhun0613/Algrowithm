@@ -182,12 +182,130 @@
         </div>
 
         <!-- Workbook Upload Section (hidden by default) -->
-        <div id="workbookSection" class="hidden mb-8">
+        <div id="workbookSection" class="hidden mb-8 space-y-6">
+            <!-- Step 1: 캐릭터 스타일 선택 -->
             <div class="bg-white rounded-2xl p-6 shadow-sm">
                 <h2 class="text-lg font-bold text-rich-black mb-4 flex items-center gap-2">
-                    <span class="w-7 h-7 bg-soft-gold text-white rounded-full flex items-center justify-center text-sm">
-                        <i class="fa-solid fa-upload text-xs"></i>
-                    </span>
+                    <span class="w-7 h-7 bg-soft-gold text-white rounded-full flex items-center justify-center text-sm">1</span>
+                    캐릭터 스타일 선택
+                </h2>
+
+                <!-- 캐릭터 스타일 -->
+                <div class="mb-4">
+                    <p class="text-sm font-medium text-gray-700 mb-2">스타일</p>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2" id="characterStyleSelector">
+                        <label class="style-option cursor-pointer">
+                            <input type="radio" name="charStyle" value="minion" class="hidden" checked>
+                            <div class="p-3 border-2 border-minion-yellow bg-minion-yellow/10 rounded-xl text-center transition-all">
+                                <div class="text-2xl mb-1">🍌</div>
+                                <p class="font-bold text-sm text-rich-black">미니언즈</p>
+                                <p class="text-xs text-gray-500">귀여운 노란 미니언</p>
+                            </div>
+                        </label>
+                        <label class="style-option cursor-pointer">
+                            <input type="radio" name="charStyle" value="chibi" class="hidden">
+                            <div class="p-3 border-2 border-gray-200 rounded-xl text-center transition-all hover:border-soft-gold">
+                                <div class="text-2xl mb-1">🎀</div>
+                                <p class="font-bold text-sm text-rich-black">치비/SD</p>
+                                <p class="text-xs text-gray-500">귀여운 마스코트</p>
+                            </div>
+                        </label>
+                        <label class="style-option cursor-pointer">
+                            <input type="radio" name="charStyle" value="anime" class="hidden">
+                            <div class="p-3 border-2 border-gray-200 rounded-xl text-center transition-all hover:border-soft-gold">
+                                <div class="text-2xl mb-1">✨</div>
+                                <p class="font-bold text-sm text-rich-black">애니메이션</p>
+                                <p class="text-xs text-gray-500">일본 애니 스타일</p>
+                            </div>
+                        </label>
+                        <label class="style-option cursor-pointer">
+                            <input type="radio" name="charStyle" value="pixar" class="hidden">
+                            <div class="p-3 border-2 border-gray-200 rounded-xl text-center transition-all hover:border-soft-gold">
+                                <div class="text-2xl mb-1">🎬</div>
+                                <p class="font-bold text-sm text-rich-black">픽사/디즈니</p>
+                                <p class="text-xs text-gray-500">3D 카툰 스타일</p>
+                            </div>
+                        </label>
+                        <label class="style-option cursor-pointer">
+                            <input type="radio" name="charStyle" value="webtoon" class="hidden">
+                            <div class="p-3 border-2 border-gray-200 rounded-xl text-center transition-all hover:border-soft-gold">
+                                <div class="text-2xl mb-1">📱</div>
+                                <p class="font-bold text-sm text-rich-black">웹툰</p>
+                                <p class="text-xs text-gray-500">한국 웹툰 스타일</p>
+                            </div>
+                        </label>
+                        <label class="style-option cursor-pointer">
+                            <input type="radio" name="charStyle" value="minimal" class="hidden">
+                            <div class="p-3 border-2 border-gray-200 rounded-xl text-center transition-all hover:border-soft-gold">
+                                <div class="text-2xl mb-1">⚪</div>
+                                <p class="font-bold text-sm text-rich-black">미니멀</p>
+                                <p class="text-xs text-gray-500">심플 아이콘</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 캐릭터 형태 -->
+                <div class="mb-4">
+                    <p class="text-sm font-medium text-gray-700 mb-2">캐릭터 형태</p>
+                    <div class="flex flex-wrap gap-2" id="characterTypeSelector">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="charType" value="human" class="hidden" checked>
+                            <div class="px-4 py-2 border-2 border-soft-gold bg-soft-gold/10 rounded-full text-sm font-medium transition-all">
+                                👤 사람형
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="charType" value="animal" class="hidden">
+                            <div class="px-4 py-2 border-2 border-gray-200 rounded-full text-sm font-medium transition-all hover:border-soft-gold">
+                                🐱 동물형
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="charType" value="fantasy" class="hidden">
+                            <div class="px-4 py-2 border-2 border-gray-200 rounded-full text-sm font-medium transition-all hover:border-soft-gold">
+                                🧚 판타지
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="charType" value="robot" class="hidden">
+                            <div class="px-4 py-2 border-2 border-gray-200 rounded-full text-sm font-medium transition-all hover:border-soft-gold">
+                                🤖 로봇
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 배경 -->
+                <div>
+                    <p class="text-sm font-medium text-gray-700 mb-2">배경</p>
+                    <div class="flex flex-wrap gap-2" id="backgroundSelector">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="bgType" value="transparent" class="hidden" checked>
+                            <div class="px-4 py-2 border-2 border-soft-gold bg-soft-gold/10 rounded-full text-sm font-medium transition-all">
+                                🔲 투명 배경
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="bgType" value="gradient" class="hidden">
+                            <div class="px-4 py-2 border-2 border-gray-200 rounded-full text-sm font-medium transition-all hover:border-soft-gold">
+                                🌈 그라데이션
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="bgType" value="themed" class="hidden">
+                            <div class="px-4 py-2 border-2 border-gray-200 rounded-full text-sm font-medium transition-all hover:border-soft-gold">
+                                🎨 관심사 테마
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: 워크지 업로드 -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <h2 class="text-lg font-bold text-rich-black mb-4 flex items-center gap-2">
+                    <span class="w-7 h-7 bg-soft-gold text-white rounded-full flex items-center justify-center text-sm">2</span>
                     워크지 업로드
                 </h2>
                 <p class="text-gray-500 text-sm mb-4">
@@ -219,16 +337,77 @@
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                     <span>워크지 분석 & 캐릭터 생성</span>
                 </button>
+            </div>
 
-                <!-- Analysis Result -->
-                <div id="analysisResult" class="hidden mt-4 p-4 bg-gray-50 rounded-xl">
-                    <h3 class="font-bold text-sm text-rich-black mb-2">
-                        <i class="fa-solid fa-robot text-soft-gold mr-2"></i>AI 분석 결과
-                    </h3>
-                    <div id="analysisContent" class="text-sm text-gray-700 whitespace-pre-wrap"></div>
-                    <div id="generatedPrompt" class="hidden mt-3 p-3 bg-white rounded-lg border border-gray-200">
+            <!-- Step 3: 결과 (생성 후 표시) -->
+            <div id="workbookResultSection" class="hidden">
+                <!-- 분석 결과 -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+                    <h2 class="text-lg font-bold text-rich-black mb-4 flex items-center gap-2">
+                        <span class="w-7 h-7 bg-soft-gold text-white rounded-full flex items-center justify-center text-sm">3</span>
+                        AI 분석 결과
+                    </h2>
+                    <div id="analysisContent" class="text-sm text-gray-700 whitespace-pre-wrap p-4 bg-gray-50 rounded-xl"></div>
+                    <div id="generatedPrompt" class="hidden mt-3 p-3 bg-minion-yellow/10 rounded-lg border border-minion-yellow/30">
                         <p class="text-xs text-gray-500 mb-1">생성된 프롬프트:</p>
                         <p id="promptText" class="text-sm text-gray-800"></p>
+                    </div>
+                </div>
+
+                <!-- 생성된 이미지 -->
+                <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 shadow-sm">
+                    <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-image text-soft-gold"></i>
+                        생성된 캐릭터
+                    </h2>
+
+                    <div class="bg-white/10 rounded-xl p-4 mb-4">
+                        <img id="workbookGeneratedImage" src="" alt="Generated character" class="max-h-96 mx-auto rounded-lg">
+                    </div>
+
+                    <!-- 액션 버튼들 -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                        <button onclick="downloadWorkbookImage()"
+                            class="py-3 bg-soft-gold text-white rounded-xl font-medium hover:bg-yellow-600 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-download"></i>
+                            다운로드
+                        </button>
+                        <button onclick="copyWorkbookImage()"
+                            class="py-3 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-copy"></i>
+                            복사
+                        </button>
+                        <button onclick="regenerateWorkbookImage()"
+                            class="py-3 bg-white/20 text-white rounded-xl font-medium hover:bg-white/30 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-rotate"></i>
+                            다시 생성
+                        </button>
+                        <button onclick="generateKlingPrompt()"
+                            class="py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-video"></i>
+                            영상 프롬프트
+                        </button>
+                    </div>
+
+                    <!-- 클링 영상 프롬프트 결과 -->
+                    <div id="klingPromptResult" class="hidden p-4 bg-gradient-to-r from-purple-900/50 to-indigo-900/50 rounded-xl border border-purple-500/30">
+                        <h3 class="font-bold text-sm text-white mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-film text-purple-300"></i>
+                            클링(Kling) 영상 프롬프트
+                        </h3>
+                        <div id="klingPromptContent" class="text-sm text-gray-200 whitespace-pre-wrap mb-3 p-3 bg-black/30 rounded-lg"></div>
+                        <div class="flex gap-2">
+                            <button onclick="copyKlingPrompt()"
+                                class="flex-1 py-2 bg-white/20 text-white rounded-lg text-sm font-medium hover:bg-white/30 transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-copy"></i>
+                                프롬프트 복사
+                            </button>
+                            <button onclick="openKling()"
+                                class="flex-1 py-2 bg-purple-500 text-white rounded-lg text-sm font-medium hover:bg-purple-600 transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-external-link"></i>
+                                클링에서 열기
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -523,6 +702,56 @@
         let workbookImageData = null;  // 업로드된 워크지 이미지 데이터
         let lastGeneratedPrompt = '';  // 마지막으로 사용된 프롬프트
         let lastVideoPrompt = '';  // 마지막 영상화 프롬프트
+        let lastKlingPrompt = '';  // 클링 영상 프롬프트
+        let workbookGeneratedImageUrl = null;  // 워크북 모드에서 생성된 이미지
+
+        // 캐릭터 스타일 선택 초기화
+        function initStyleSelectors() {
+            // 스타일 옵션 클릭 이벤트
+            document.querySelectorAll('#characterStyleSelector .style-option input').forEach(input => {
+                input.addEventListener('change', () => updateStyleSelection('charStyle'));
+            });
+            document.querySelectorAll('#characterTypeSelector input').forEach(input => {
+                input.addEventListener('change', () => updateStyleSelection('charType'));
+            });
+            document.querySelectorAll('#backgroundSelector input').forEach(input => {
+                input.addEventListener('change', () => updateStyleSelection('bgType'));
+            });
+        }
+
+        function updateStyleSelection(groupName) {
+            const container = groupName === 'charStyle' ? '#characterStyleSelector' :
+                             groupName === 'charType' ? '#characterTypeSelector' : '#backgroundSelector';
+
+            document.querySelectorAll(`${container} label`).forEach(label => {
+                const input = label.querySelector('input');
+                const div = label.querySelector('div');
+                if (input.checked) {
+                    if (groupName === 'charStyle') {
+                        div.classList.remove('border-gray-200');
+                        div.classList.add('border-minion-yellow', 'bg-minion-yellow/10');
+                    } else {
+                        div.classList.remove('border-gray-200');
+                        div.classList.add('border-soft-gold', 'bg-soft-gold/10');
+                    }
+                } else {
+                    div.classList.remove('border-minion-yellow', 'border-soft-gold', 'bg-minion-yellow/10', 'bg-soft-gold/10');
+                    div.classList.add('border-gray-200');
+                }
+            });
+        }
+
+        function getSelectedStyle() {
+            return document.querySelector('input[name="charStyle"]:checked')?.value || 'minion';
+        }
+
+        function getSelectedCharType() {
+            return document.querySelector('input[name="charType"]:checked')?.value || 'human';
+        }
+
+        function getSelectedBackground() {
+            return document.querySelector('input[name="bgType"]:checked')?.value || 'transparent';
+        }
 
         // Mode switching
         function setMode(mode) {
@@ -569,7 +798,7 @@
             document.getElementById('workbookPreview').classList.add('hidden');
             document.getElementById('workbookUploadZone').classList.remove('has-image');
             document.getElementById('analyzeBtn').disabled = true;
-            document.getElementById('analysisResult').classList.add('hidden');
+            document.getElementById('workbookResultSection').classList.add('hidden');
         }
 
         // 이미지 압축 함수
@@ -613,11 +842,16 @@
 
             document.getElementById('analyzeBtn').disabled = true;
             document.getElementById('analyzeBtn').innerHTML = '<div class="loading-spinner"></div> <span>분석 중...</span>';
-            document.getElementById('analysisResult').classList.add('hidden');
+            document.getElementById('workbookResultSection').classList.add('hidden');
 
             try {
                 // 이미지 압축
                 const compressedImage = await compressImage(workbookImageData);
+
+                // 선택된 스타일 옵션들 가져오기
+                const charStyle = getSelectedStyle();
+                const charType = getSelectedCharType();
+                const bgType = getSelectedBackground();
 
                 const response = await fetch('/api/analyze', {
                     method: 'POST',
@@ -625,6 +859,9 @@
                     body: JSON.stringify({
                         images: [compressedImage],
                         mode: 'character',
+                        characterStyle: charStyle,
+                        characterType: charType,
+                        backgroundType: bgType,
                         accessCode: accessCode || undefined,
                         apiKey: !accessCode ? apiKey : undefined
                     })
@@ -636,9 +873,11 @@
                     throw new Error(result.error || '분석에 실패했습니다');
                 }
 
+                // 결과 섹션 표시
+                document.getElementById('workbookResultSection').classList.remove('hidden');
+
                 // 분석 결과 표시
                 document.getElementById('analysisContent').textContent = result.analysis || '분석 완료';
-                document.getElementById('analysisResult').classList.remove('hidden');
 
                 // 이미지 생성 프롬프트가 있으면 자동 생성
                 if (result.imagePrompt) {
@@ -647,7 +886,7 @@
                     lastGeneratedPrompt = result.imagePrompt;
 
                     // 자동으로 이미지 생성
-                    await generateImageFromPrompt(result.imagePrompt);
+                    await generateWorkbookImage(result.imagePrompt);
                 }
 
             } catch (error) {
@@ -657,6 +896,148 @@
                 document.getElementById('analyzeBtn').disabled = false;
                 document.getElementById('analyzeBtn').innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> <span>워크지 분석 & 캐릭터 생성</span>';
             }
+        }
+
+        // 워크북 모드 전용 이미지 생성
+        async function generateWorkbookImage(prompt) {
+            const accessCode = getAccessCode();
+            const apiKey = getApiKey();
+
+            try {
+                const requestBody = {
+                    prompt: prompt,
+                    aspectRatio: '1:1'
+                };
+
+                if (accessCode) {
+                    requestBody.accessCode = accessCode;
+                } else {
+                    requestBody.apiKey = apiKey;
+                }
+
+                const response = await fetch('/api/generate-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || '이미지 생성에 실패했습니다');
+                }
+
+                workbookGeneratedImageUrl = result.imageUrl;
+                document.getElementById('workbookGeneratedImage').src = workbookGeneratedImageUrl;
+                showToast('캐릭터 이미지가 생성되었습니다!');
+
+            } catch (error) {
+                console.error('Image generation error:', error);
+                showToast(error.message, 'error');
+            }
+        }
+
+        // 워크북 이미지 다운로드
+        function downloadWorkbookImage() {
+            if (!workbookGeneratedImageUrl) {
+                showToast('다운로드할 이미지가 없습니다', 'error');
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.href = workbookGeneratedImageUrl;
+            link.download = `algrowithm-character-${Date.now()}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('이미지가 다운로드되었습니다');
+        }
+
+        // 워크북 이미지 복사
+        async function copyWorkbookImage() {
+            if (!workbookGeneratedImageUrl) {
+                showToast('복사할 이미지가 없습니다', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(workbookGeneratedImageUrl);
+                const blob = await response.blob();
+                await navigator.clipboard.write([
+                    new ClipboardItem({ [blob.type]: blob })
+                ]);
+                showToast('이미지가 클립보드에 복사되었습니다');
+            } catch (error) {
+                showToast('이미지 복사에 실패했습니다', 'error');
+            }
+        }
+
+        // 워크북 이미지 다시 생성
+        async function regenerateWorkbookImage() {
+            if (!lastGeneratedPrompt) {
+                showToast('먼저 워크지를 분석해주세요', 'error');
+                return;
+            }
+            await generateWorkbookImage(lastGeneratedPrompt);
+        }
+
+        // 클링 영상 프롬프트 생성
+        async function generateKlingPrompt() {
+            if (!workbookGeneratedImageUrl) {
+                showToast('먼저 이미지를 생성해주세요', 'error');
+                return;
+            }
+
+            const accessCode = getAccessCode();
+            const apiKey = getApiKey();
+
+            if (!accessCode && !apiKey) {
+                showToast('접근 코드를 입력하거나 API 키를 설정해주세요', 'error');
+                return;
+            }
+
+            showToast('영상 프롬프트 생성 중...');
+
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        images: [workbookGeneratedImageUrl],
+                        mode: 'video',
+                        platform: 'kling',
+                        originalPrompt: lastGeneratedPrompt,
+                        accessCode: accessCode || undefined,
+                        apiKey: !accessCode ? apiKey : undefined
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || '프롬프트 생성에 실패했습니다');
+                }
+
+                lastKlingPrompt = result.videoPrompt || result.analysis;
+                document.getElementById('klingPromptContent').textContent = lastKlingPrompt;
+                document.getElementById('klingPromptResult').classList.remove('hidden');
+                showToast('영상 프롬프트가 생성되었습니다');
+
+            } catch (error) {
+                console.error('Kling prompt error:', error);
+                showToast(error.message, 'error');
+            }
+        }
+
+        function copyKlingPrompt() {
+            if (lastKlingPrompt) {
+                navigator.clipboard.writeText(lastKlingPrompt);
+                showToast('프롬프트가 복사되었습니다');
+            }
+        }
+
+        function openKling() {
+            window.open('https://klingai.com/', '_blank');
         }
 
         // Generate image from extracted prompt
@@ -847,6 +1228,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             // 접근 코드는 세션 전용이므로 복원하지 않음
             updateAccessStatus(false);
+            // 스타일 선택자 초기화
+            initStyleSelectors();
         });
 
         // Image Modal

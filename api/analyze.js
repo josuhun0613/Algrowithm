@@ -24,6 +24,12 @@ export default async function handler(req, res) {
         const accessCode = req.body.accessCode;
         const userApiKey = req.body.apiKey;
 
+        // 캐릭터 스타일 옵션 (워크북 모드용)
+        const characterStyle = req.body.characterStyle || 'minion';  // minion, chibi, anime, pixar, webtoon, minimal
+        const characterType = req.body.characterType || 'human';     // human, animal, fantasy, robot
+        const backgroundType = req.body.backgroundType || 'transparent'; // transparent, gradient, themed
+        const platform = req.body.platform || 'runway';  // runway, kling
+
         if (!images || images.length === 0) {
             return res.status(400).json({ error: 'At least one image is required' });
         }
@@ -64,8 +70,36 @@ export default async function handler(req, res) {
 
         // 모드별 프롬프트 설정
         if (mode === 'character') {
+            // 스타일별 프롬프트 힌트
+            const styleHints = {
+                minion: 'Minions/Despicable Me style, yellow round cute character, goggles, overalls, playful and mischievous',
+                chibi: 'Chibi/SD style, super deformed proportions, big head small body, cute kawaii',
+                anime: 'Japanese anime style, expressive eyes, dynamic pose, vibrant colors',
+                pixar: 'Pixar/Disney 3D style, high quality 3D render, soft lighting, family friendly',
+                webtoon: 'Korean webtoon style, clean lines, soft shading, modern digital art',
+                minimal: 'Minimal icon style, simple shapes, flat design, clean lines'
+            };
+
+            const typeHints = {
+                human: 'human character design',
+                animal: 'anthropomorphic animal character, cute animal features',
+                fantasy: 'fantasy creature, magical elements, ethereal',
+                robot: 'cute robot character, mechanical design, friendly appearance'
+            };
+
+            const bgHints = {
+                transparent: 'solid white background, clean backdrop, isolated character',
+                gradient: 'soft gradient background, pastel colors, subtle glow',
+                themed: 'themed environment background matching character personality'
+            };
+
             // 캐릭터 이미지 생성용 프롬프트
             promptText = `이 이미지는 "내 안의 빌런을 찾아라!" 워크지입니다.
+
+## 사용자 선택 스타일 옵션:
+- **캐릭터 스타일**: ${characterStyle} (${styleHints[characterStyle] || styleHints.minion})
+- **캐릭터 형태**: ${characterType} (${typeHints[characterType] || typeHints.human})
+- **배경 타입**: ${backgroundType} (${bgHints[backgroundType] || bgHints.transparent})
 
 ## 워크지 구조 (손글씨로 작성됨)
 - **표지**: 이름, 생년월일, MBTI
@@ -79,7 +113,7 @@ export default async function handler(req, res) {
 
 ---
 
-워크지에서 다음 정보를 추출하고, 이를 바탕으로 **Imagen/Midjourney용 캐릭터 이미지 생성 프롬프트**를 만들어주세요.
+워크지에서 다음 정보를 추출하고, **위의 선택된 스타일 옵션을 반드시 반영하여** Imagen용 캐릭터 이미지 생성 프롬프트를 만들어주세요.
 
 ## 추출할 정보:
 1. 이름/캐릭터명
@@ -97,30 +131,32 @@ export default async function handler(req, res) {
 ## 출력 형식:
 
 **분석 결과:**
-[추출된 정보 요약 - 3-5줄로 간단히]
+[추출된 정보 요약 - 3-5줄로 간단히. 캐릭터명, MBTI, 주요 특성 포함]
 
 **이미지 생성 프롬프트:**
-[영어로 작성된 Imagen/Midjourney 프롬프트. 다음 요소 포함:
-- 캐릭터 스타일 (3D cartoon, anime, digital art 등)
-- 캐릭터 외형 (체크된 속성과 동물 표현 반영)
-- 컬러 팔레트 (시그니처 컬러 활용)
-- 표정과 포즈 (슬로건/성격 반영)
-- 배경 스타일
-- 아트 스타일 키워드]
+[영어로 작성된 Imagen 프롬프트. 반드시 아래 요소를 포함:
+- 사용자가 선택한 캐릭터 스타일 (${styleHints[characterStyle] || styleHints.minion})
+- 사용자가 선택한 캐릭터 형태 (${typeHints[characterType] || typeHints.human})
+- 시그니처 컬러 반영 (워크지에서 추출)
+- 성격과 특성을 반영한 표정/포즈
+- 사용자가 선택한 배경 스타일 (${bgHints[backgroundType] || bgHints.transparent})
+- high quality, detailed illustration]
 
 프롬프트는 반드시 영어로, 쉼표로 구분된 키워드 형태로 작성해주세요.
-예시: "3D cartoon character, cute owl wearing goggles, purple and yellow color scheme, confident pose, minimal background, Pixar style, high quality render"`;
+${characterStyle === 'minion' ? '예시: "Minions style character, yellow round body, goggles, blue overalls, cute mischievous expression, holding banana, white clean background, Despicable Me animation style, high quality 3D render"' : '예시: "3D cartoon character, cute design, vibrant colors, expressive face, dynamic pose, clean background, high quality render"'}`;
 
         } else if (mode === 'video') {
-            // 영상화 프롬프트 추출
+            // 영상화 프롬프트 추출 (Kling 또는 Runway)
+            const platformName = platform === 'kling' ? 'Kling AI' : 'Runway Gen-3';
+
             promptText = `이 이미지는 AI가 생성한 캐릭터 이미지입니다.
 ${originalPrompt ? `원본 이미지 생성 프롬프트: ${originalPrompt}` : ''}
 
-이 캐릭터 이미지를 **Runway Gen-3, Pika, Sora** 같은 AI 영상 생성 도구에서 사용할 수 있는 **영상화 프롬프트**로 변환해주세요.
+이 캐릭터 이미지를 **${platformName}**에서 사용할 수 있는 **영상화 프롬프트**로 변환해주세요.
 
 ## 요청사항:
 1. 이미지의 캐릭터, 스타일, 분위기를 분석
-2. 3-5가지 다른 움직임/애니메이션 옵션 제안
+2. ${platformName}에 최적화된 3-5가지 움직임/애니메이션 옵션 제안
 3. 각 옵션에 대한 영어 프롬프트 제공
 
 ## 출력 형식:
@@ -128,34 +164,25 @@ ${originalPrompt ? `원본 이미지 생성 프롬프트: ${originalPrompt}` : '
 **캐릭터 분석:**
 [캐릭터의 특징, 스타일, 분위기 간단 분석 - 2-3줄]
 
-**영상화 프롬프트 옵션:**
+**${platformName} 영상화 프롬프트:**
 
 1. **인트로 모션** (캐릭터 등장)
-\`\`\`
-[영어 프롬프트 - 캐릭터가 화면에 등장하는 애니메이션]
-\`\`\`
+[영어 프롬프트 - 캐릭터가 화면에 자연스럽게 등장하는 애니메이션. ${platform === 'kling' ? '카메라가 캐릭터를 향해 천천히 줌인' : '캐릭터가 프레임 안으로 등장'}]
 
 2. **아이들 모션** (자연스러운 움직임)
-\`\`\`
-[영어 프롬프트 - 캐릭터가 가만히 있을 때의 자연스러운 움직임]
-\`\`\`
+[영어 프롬프트 - 캐릭터가 가만히 있을 때의 자연스러운 미세한 움직임, 호흡, 눈 깜빡임]
 
 3. **인터랙션 모션** (특정 동작)
-\`\`\`
-[영어 프롬프트 - 캐릭터가 손을 흔들거나 특정 동작을 하는 애니메이션]
-\`\`\`
+[영어 프롬프트 - 캐릭터가 손을 흔들거나, 춤을 추거나, 점프하는 등의 특정 동작]
 
 4. **루프 모션** (반복 가능한 움직임)
-\`\`\`
-[영어 프롬프트 - 무한 반복 가능한 부드러운 움직임]
-\`\`\`
+[영어 프롬프트 - 무한 반복 가능한 부드러운 움직임, 자연스러운 루프]
 
 5. **시네마틱 모션** (영화같은 연출)
-\`\`\`
-[영어 프롬프트 - 카메라 무브먼트와 함께하는 드라마틱한 연출]
-\`\`\`
+[영어 프롬프트 - 드라마틱한 카메라 무브먼트와 함께하는 영화같은 연출]
 
-각 프롬프트는 Runway Gen-3에 바로 사용할 수 있는 형태로 작성해주세요.`;
+각 프롬프트는 ${platformName}에 바로 복사해서 사용할 수 있도록 영어로 간결하게 작성해주세요.
+${platform === 'kling' ? '참고: Kling AI는 카메라 무브먼트와 캐릭터 모션을 잘 처리합니다.' : '참고: Runway Gen-3는 일관된 스타일 유지를 잘 합니다.'}`;
 
         } else {
             // 기본 웹사이트 생성 프롬프트 (기존 로직)
