@@ -1,5 +1,5 @@
-// Imagen 3 이미지 생성 API
-// Google Imagen 3 모델 사용 (고품질 이미지 생성)
+// Imagen 4 이미지 생성 API
+// Google Imagen 4 모델 사용 (최신 고품질 이미지 생성)
 
 export default async function handler(req, res) {
     // CORS 헤더 설정
@@ -51,7 +51,7 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'API 키 또는 접근 코드가 필요합니다' });
         }
 
-        // Imagen 3 지원 비율: "1:1", "3:4", "4:3", "9:16", "16:9"
+        // Imagen 4 지원 비율: "1:1", "3:4", "4:3", "9:16", "16:9"
         let imagenAspectRatio = '1:1';
         if (aspectRatio === '16:9') {
             imagenAspectRatio = '16:9';
@@ -63,8 +63,8 @@ export default async function handler(req, res) {
             imagenAspectRatio = '3:4';
         }
 
-        // Imagen 3 엔드포인트
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict`;
+        // Imagen 4 엔드포인트
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict`;
 
         const requestBody = {
             instances: [{
@@ -88,7 +88,7 @@ export default async function handler(req, res) {
         const result = await response.json();
 
         if (!response.ok) {
-            console.error('Imagen 3 API error:', result);
+            console.error('Imagen 4 API error:', result);
 
             let errorMessage = '이미지 생성에 실패했습니다';
 
@@ -100,7 +100,7 @@ export default async function handler(req, res) {
                     errorMessage = '잘못된 요청입니다. 프롬프트를 확인해주세요.';
                 }
                 if (result.error.status === 'PERMISSION_DENIED') {
-                    errorMessage = 'API 키가 유효하지 않거나 Imagen 3 접근 권한이 없습니다.';
+                    errorMessage = 'API 키가 유효하지 않거나 Imagen 4 접근 권한이 없습니다.';
                 }
                 if (result.error.status === 'RESOURCE_EXHAUSTED') {
                     errorMessage = 'API 요청 한도를 초과했습니다. 잠시 후 다시 시도하세요.';
@@ -110,7 +110,7 @@ export default async function handler(req, res) {
             return res.status(response.status || 500).json({ error: errorMessage });
         }
 
-        // Imagen 3 응답에서 이미지 추출
+        // Imagen 4 응답에서 이미지 추출
         if (result.predictions && result.predictions.length > 0) {
             const prediction = result.predictions[0];
 
@@ -121,7 +121,7 @@ export default async function handler(req, res) {
                     success: true,
                     imageUrl: imageUrl,
                     mimeType: 'image/png',
-                    model: 'imagen-3.0-generate-002'
+                    model: 'imagen-4.0-generate-001'
                 });
             }
         }
