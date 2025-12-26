@@ -199,85 +199,121 @@
 
             <!-- 스탯 영역 -->
             <div class="bg-gradient-to-br from-minion-yellow/15 to-minion-blue/10 rounded-lg p-3 mb-2 border border-minion-yellow/30">
-                <h3 class="text-sm font-bold text-minion-blue mb-2 flex items-center gap-2">
+                <h3 class="text-sm font-bold text-minion-blue mb-3 flex items-center gap-2">
                     <i class="fa-solid fa-gamepad text-xs"></i> MY STATS (해당하는 곳에 체크!)
                 </h3>
 
-                <div class="space-y-2.5">
+                <div class="space-y-4">
                     <!-- 에너지 -->
-                    <div class="flex items-center gap-2">
-                        <span class="text-base">⚡</span>
+                    <div class="flex items-start gap-2">
+                        <span class="text-base mt-1">⚡</span>
                         <div class="flex-1">
-                            <div class="flex justify-between items-center text-xs text-gray-700 mb-1">
-                                <span class="font-bold">ENERGY</span>
-                                <div class="flex gap-4">
-                                    <label class="flex items-center gap-1"><span class="print-radio"></span> 아침형</label>
-                                    <label class="flex items-center gap-1"><span class="print-radio"></span> 저녁형</label>
-                                    <label class="flex items-center gap-1"><span class="print-radio"></span> 새벽형</label>
+                            <span class="text-xs font-bold text-gray-700 block mb-1">ENERGY</span>
+                            <div class="relative">
+                                <div class="h-4 bg-white rounded-full border border-gray-300"></div>
+                                <div class="absolute top-0 left-0 right-0 flex justify-between px-1" style="top: -2px;">
+                                    <div class="flex flex-col items-center">
+                                        <span class="print-radio"></span>
+                                        <span class="text-[9px] text-gray-600 mt-0.5">아침형</span>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <span class="print-radio"></span>
+                                        <span class="text-[9px] text-gray-600 mt-0.5">저녁형</span>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <span class="print-radio"></span>
+                                        <span class="text-[9px] text-gray-600 mt-0.5">새벽형</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="print-slider"></div>
                         </div>
                     </div>
 
                     <!-- 집중 -->
-                    <div class="flex items-center gap-2">
-                        <span class="text-base">🎯</span>
+                    <div class="flex items-start gap-2">
+                        <span class="text-base mt-1">🎯</span>
                         <div class="flex-1">
-                            <div class="flex justify-between items-center text-xs text-gray-700 mb-1">
-                                <span class="font-bold">FOCUS</span>
-                                <div class="flex gap-4">
-                                    <label class="flex items-center gap-1"><span class="print-radio"></span> 한 우물형</label>
-                                    <label class="flex items-center gap-1"><span class="print-radio"></span> 멀티태스킹</label>
+                            <span class="text-xs font-bold text-gray-700 block mb-1">FOCUS</span>
+                            <div class="relative">
+                                <div class="h-4 bg-white rounded-full border border-gray-300"></div>
+                                <div class="absolute top-0 left-0 right-0 flex justify-between px-1" style="top: -2px;">
+                                    <div class="flex flex-col items-center">
+                                        <span class="print-radio"></span>
+                                        <span class="text-[9px] text-gray-600 mt-0.5">한우물형</span>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <span class="print-radio"></span>
+                                        <span class="text-[9px] text-gray-600 mt-0.5">멀티태스킹</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="print-slider"></div>
                         </div>
                     </div>
 
                     <!-- 행동 -->
-                    <div class="flex items-center gap-2">
-                        <span class="text-base">🚀</span>
+                    <div class="flex items-start gap-2">
+                        <span class="text-base mt-1">🚀</span>
                         <div class="flex-1">
-                            <div class="flex justify-between items-center text-xs text-gray-700 mb-1">
-                                <span class="font-bold">ACTION</span>
-                                <div class="flex gap-4">
-                                    <label class="flex items-center gap-1"><span class="print-radio"></span> 계획형</label>
-                                    <label class="flex items-center gap-1"><span class="print-radio"></span> 즉흥형</label>
-                                    <label class="flex items-center gap-1"><span class="print-radio"></span> 반반</label>
+                            <span class="text-xs font-bold text-gray-700 block mb-1">ACTION</span>
+                            <div class="relative">
+                                <div class="h-4 bg-white rounded-full border border-gray-300"></div>
+                                <div class="absolute top-0 left-0 right-0 flex justify-between px-1" style="top: -2px;">
+                                    <div class="flex flex-col items-center">
+                                        <span class="print-radio"></span>
+                                        <span class="text-[9px] text-gray-600 mt-0.5">계획형</span>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <span class="print-radio"></span>
+                                        <span class="text-[9px] text-gray-600 mt-0.5">반반</span>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <span class="print-radio"></span>
+                                        <span class="text-[9px] text-gray-600 mt-0.5">즉흥형</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="print-slider"></div>
                         </div>
                     </div>
 
                     <!-- 소통 -->
-                    <div class="flex items-center gap-2">
-                        <span class="text-base">💬</span>
+                    <div class="flex items-start gap-2">
+                        <span class="text-base mt-1">💬</span>
                         <div class="flex-1">
-                            <div class="flex justify-between items-center text-xs text-gray-700 mb-1">
-                                <span class="font-bold">SOCIAL</span>
-                                <div class="flex gap-4">
-                                    <label class="flex items-center gap-1"><span class="print-radio"></span> 혼자 충전</label>
-                                    <label class="flex items-center gap-1"><span class="print-radio"></span> 같이 충전</label>
+                            <span class="text-xs font-bold text-gray-700 block mb-1">SOCIAL</span>
+                            <div class="relative">
+                                <div class="h-4 bg-white rounded-full border border-gray-300"></div>
+                                <div class="absolute top-0 left-0 right-0 flex justify-between px-1" style="top: -2px;">
+                                    <div class="flex flex-col items-center">
+                                        <span class="print-radio"></span>
+                                        <span class="text-[9px] text-gray-600 mt-0.5">혼자충전</span>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <span class="print-radio"></span>
+                                        <span class="text-[9px] text-gray-600 mt-0.5">같이충전</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="print-slider"></div>
                         </div>
                     </div>
 
                     <!-- 창작 -->
-                    <div class="flex items-center gap-2">
-                        <span class="text-base">🎨</span>
+                    <div class="flex items-start gap-2">
+                        <span class="text-base mt-1">🎨</span>
                         <div class="flex-1">
-                            <div class="flex justify-between items-center text-xs text-gray-700 mb-1">
-                                <span class="font-bold">CREATE</span>
-                                <div class="flex gap-4">
-                                    <label class="flex items-center gap-1"><span class="print-radio"></span> 새로운 거</label>
-                                    <label class="flex items-center gap-1"><span class="print-radio"></span> 기존 거 발전</label>
+                            <span class="text-xs font-bold text-gray-700 block mb-1">CREATE</span>
+                            <div class="relative">
+                                <div class="h-4 bg-white rounded-full border border-gray-300"></div>
+                                <div class="absolute top-0 left-0 right-0 flex justify-between px-1" style="top: -2px;">
+                                    <div class="flex flex-col items-center">
+                                        <span class="print-radio"></span>
+                                        <span class="text-[9px] text-gray-600 mt-0.5">새로운거</span>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <span class="print-radio"></span>
+                                        <span class="text-[9px] text-gray-600 mt-0.5">발전시키기</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="print-slider"></div>
                         </div>
                     </div>
                 </div>
@@ -289,42 +325,60 @@
                     <i class="fa-solid fa-wand-sparkles text-xs"></i> 나의 숨겨진 속성 (해당하는 거 모두 체크!)
                 </h3>
 
-                <div class="grid grid-cols-2 gap-x-4 gap-y-1.5">
-                    <label class="flex items-center gap-2 text-xs">
+                <div class="grid grid-cols-3 gap-x-2 gap-y-1">
+                    <label class="flex items-center gap-1.5 text-sm">
                         <span class="print-checkbox"></span> 🌙 야행성
                     </label>
-                    <label class="flex items-center gap-2 text-xs">
-                        <span class="print-checkbox"></span> 🎧 음악 필수
+                    <label class="flex items-center gap-1.5 text-sm">
+                        <span class="print-checkbox"></span> 🎧 음악필수
                     </label>
-                    <label class="flex items-center gap-2 text-xs">
+                    <label class="flex items-center gap-1.5 text-sm">
                         <span class="print-checkbox"></span> 🍜 맛집러
                     </label>
-                    <label class="flex items-center gap-2 text-xs">
-                        <span class="print-checkbox"></span> 🎮 승부욕 폭발
+                    <label class="flex items-center gap-1.5 text-sm">
+                        <span class="print-checkbox"></span> 🎮 승부욕
                     </label>
-                    <label class="flex items-center gap-2 text-xs">
-                        <span class="print-checkbox"></span> 🛋️ 집순이/집돌이
+                    <label class="flex items-center gap-1.5 text-sm">
+                        <span class="print-checkbox"></span> 🛋️ 집순이
                     </label>
-                    <label class="flex items-center gap-2 text-xs">
+                    <label class="flex items-center gap-1.5 text-sm">
                         <span class="print-checkbox"></span> ✈️ 여행러
                     </label>
-                    <label class="flex items-center gap-2 text-xs">
-                        <span class="print-checkbox"></span> 🐱 동물 덕후
+                    <label class="flex items-center gap-1.5 text-sm">
+                        <span class="print-checkbox"></span> 🐱 동물덕후
                     </label>
-                    <label class="flex items-center gap-2 text-xs">
+                    <label class="flex items-center gap-1.5 text-sm">
                         <span class="print-checkbox"></span> 💬 수다쟁이
                     </label>
-                    <label class="flex items-center gap-2 text-xs">
-                        <span class="print-checkbox"></span> 📚 정보 수집가
+                    <label class="flex items-center gap-1.5 text-sm">
+                        <span class="print-checkbox"></span> 📚 정보수집
                     </label>
-                    <label class="flex items-center gap-2 text-xs">
-                        <span class="print-checkbox"></span> 🎨 만들기 좋아
+                    <label class="flex items-center gap-1.5 text-sm">
+                        <span class="print-checkbox"></span> 🎨 만들기
                     </label>
-                    <label class="flex items-center gap-2 text-xs">
-                        <span class="print-checkbox"></span> ☕ 카페인 중독
+                    <label class="flex items-center gap-1.5 text-sm">
+                        <span class="print-checkbox"></span> ☕ 카페인
                     </label>
-                    <label class="flex items-center gap-2 text-xs">
-                        <span class="print-checkbox"></span> 📱 SNS 마스터
+                    <label class="flex items-center gap-1.5 text-sm">
+                        <span class="print-checkbox"></span> 📱 SNS
+                    </label>
+                    <label class="flex items-center gap-1.5 text-sm">
+                        <span class="print-checkbox"></span> 🎬 드라마
+                    </label>
+                    <label class="flex items-center gap-1.5 text-sm">
+                        <span class="print-checkbox"></span> 🏃 운동러
+                    </label>
+                    <label class="flex items-center gap-1.5 text-sm">
+                        <span class="print-checkbox"></span> 🎤 노래방
+                    </label>
+                    <label class="flex items-center gap-1.5 text-sm">
+                        <span class="print-checkbox"></span> 🛒 쇼핑러
+                    </label>
+                    <label class="flex items-center gap-1.5 text-sm">
+                        <span class="print-checkbox"></span> 📖 독서광
+                    </label>
+                    <label class="flex items-center gap-1.5 text-sm">
+                        <span class="print-checkbox"></span> 🧹 정리왕
                     </label>
                 </div>
             </div>
@@ -338,36 +392,9 @@
 
         <!-- 오른쪽: 표지 -->
         <div class="w-1/2 pl-4 flex flex-col h-full bg-white relative">
-            <!-- 미니언즈 캐릭터 일러스트 -->
-            <div class="absolute top-6 right-6 w-28 h-28">
-                <svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
-                    <!-- 미니언 몸통 -->
-                    <ellipse cx="60" cy="85" rx="40" ry="50" fill="#FFE135"/>
-                    <!-- 고글 밴드 -->
-                    <rect x="15" y="45" width="90" height="8" fill="#333"/>
-                    <!-- 고글 왼쪽 -->
-                    <circle cx="40" cy="50" r="18" fill="#777"/>
-                    <circle cx="40" cy="50" r="14" fill="#fff"/>
-                    <circle cx="42" cy="50" r="8" fill="#5D4037"/>
-                    <circle cx="44" cy="48" r="3" fill="#000"/>
-                    <!-- 고글 오른쪽 -->
-                    <circle cx="80" cy="50" r="18" fill="#777"/>
-                    <circle cx="80" cy="50" r="14" fill="#fff"/>
-                    <circle cx="78" cy="50" r="8" fill="#5D4037"/>
-                    <circle cx="76" cy="48" r="3" fill="#000"/>
-                    <!-- 입 -->
-                    <path d="M 45 85 Q 60 100 75 85" stroke="#333" stroke-width="3" fill="none"/>
-                    <!-- 바지 -->
-                    <path d="M 20 100 L 100 100 L 95 135 L 25 135 Z" fill="#4169E1"/>
-                    <!-- 멜빵 -->
-                    <rect x="35" y="75" width="8" height="25" fill="#4169E1"/>
-                    <rect x="77" y="75" width="8" height="25" fill="#4169E1"/>
-                    <!-- 포켓 -->
-                    <rect x="50" y="105" width="20" height="15" fill="#3459C4" rx="2"/>
-                    <!-- 머리카락 -->
-                    <path d="M 55 15 Q 60 5 65 15" stroke="#333" stroke-width="3" fill="none"/>
-                    <path d="M 50 18 Q 52 8 58 16" stroke="#333" stroke-width="2" fill="none"/>
-                </svg>
+            <!-- 미니언즈 이미지 -->
+            <div class="absolute top-4 right-4 w-32 h-32">
+                <img src="./assets/미니언즈점프.png" alt="Minion" class="w-full h-full object-contain">
             </div>
 
             <div class="flex-1 flex flex-col justify-center items-center text-center px-6">
@@ -642,30 +669,30 @@
             </div>
 
             <!-- 최종 키워드 TOP 5 -->
-            <div class="bg-minion-blue/10 rounded-lg p-3 flex-1 border border-minion-blue/30">
-                <h3 class="text-sm font-bold text-minion-blue mb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-star text-xs"></i> 최종 키워드 TOP 5
+            <div class="bg-gray-50 rounded-lg p-3 flex-1 border border-gray-300">
+                <h3 class="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-star text-minion-yellow text-xs"></i> 최종 키워드 TOP 5
                 </h3>
-                <div class="flex flex-wrap gap-2">
-                    <div class="flex items-center bg-minion-yellow/30 rounded-full px-3 py-1 border-2 border-minion-yellow">
-                        <span class="text-rich-black text-xs font-bold mr-1">#</span>
-                        <div class="w-16 border-b-2 border-rich-black/30"></div>
+                <div class="grid grid-cols-5 gap-2">
+                    <div class="bg-white rounded-lg px-2 py-1.5 border border-gray-300 text-center">
+                        <span class="text-gray-400 text-xs font-medium">#1</span>
+                        <div class="mt-1 border-b-2 border-gray-300 w-full"></div>
                     </div>
-                    <div class="flex items-center bg-minion-blue/20 rounded-full px-3 py-1 border-2 border-minion-blue">
-                        <span class="text-minion-blue text-xs font-bold mr-1">#</span>
-                        <div class="w-16 border-b-2 border-minion-blue/50"></div>
+                    <div class="bg-white rounded-lg px-2 py-1.5 border border-gray-300 text-center">
+                        <span class="text-gray-400 text-xs font-medium">#2</span>
+                        <div class="mt-1 border-b-2 border-gray-300 w-full"></div>
                     </div>
-                    <div class="flex items-center bg-villain-purple/20 rounded-full px-3 py-1 border-2 border-villain-purple">
-                        <span class="text-villain-purple text-xs font-bold mr-1">#</span>
-                        <div class="w-16 border-b-2 border-villain-purple/50"></div>
+                    <div class="bg-white rounded-lg px-2 py-1.5 border border-gray-300 text-center">
+                        <span class="text-gray-400 text-xs font-medium">#3</span>
+                        <div class="mt-1 border-b-2 border-gray-300 w-full"></div>
                     </div>
-                    <div class="flex items-center bg-green-100 rounded-full px-3 py-1 border-2 border-green-500">
-                        <span class="text-green-600 text-xs font-bold mr-1">#</span>
-                        <div class="w-16 border-b-2 border-green-500/50"></div>
+                    <div class="bg-white rounded-lg px-2 py-1.5 border border-gray-300 text-center">
+                        <span class="text-gray-400 text-xs font-medium">#4</span>
+                        <div class="mt-1 border-b-2 border-gray-300 w-full"></div>
                     </div>
-                    <div class="flex items-center bg-pink-100 rounded-full px-3 py-1 border-2 border-pink-400">
-                        <span class="text-pink-500 text-xs font-bold mr-1">#</span>
-                        <div class="w-16 border-b-2 border-pink-400/50"></div>
+                    <div class="bg-white rounded-lg px-2 py-1.5 border border-gray-300 text-center">
+                        <span class="text-gray-400 text-xs font-medium">#5</span>
+                        <div class="mt-1 border-b-2 border-gray-300 w-full"></div>
                     </div>
                 </div>
             </div>
