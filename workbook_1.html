@@ -44,22 +44,19 @@
                 margin: 0;
             }
 
-            body {
-                margin: 0;
-                padding: 0;
-                background: white;
+            html, body {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+                height: auto !important;
+                min-height: 0 !important;
             }
 
             .no-print {
                 display: none !important;
             }
 
-            html, body {
-                margin: 0;
-                padding: 0;
-                background: white;
-            }
-
+            /* 첫 번째 페이지만 page-break-after 적용 */
             .print-container {
                 width: 297mm;
                 height: 210mm;
@@ -68,16 +65,18 @@
                 overflow: hidden;
                 border: none;
                 box-shadow: none;
-                page-break-after: always;
                 page-break-inside: avoid;
             }
 
-            .print-container:last-of-type {
-                page-break-after: avoid;
+            /* 첫 번째 컨테이너: 다음 페이지로 넘김 */
+            .print-container:first-of-type {
+                page-break-after: always;
             }
 
-            .page-break {
-                page-break-before: auto;
+            /* 마지막 컨테이너: page-break 없음 */
+            .print-container:last-of-type {
+                page-break-after: avoid;
+                page-break-before: avoid;
             }
         }
 
@@ -443,7 +442,7 @@
     </div>
 
     <!-- ==================== 2페이지 ==================== -->
-    <div class="print-container page-break relative flex">
+    <div class="print-container relative flex">
         <!-- 왼쪽: 섹션 2 - 나의 강점 키워드 발굴 -->
         <div class="w-1/2 pr-4 border-r-2 border-dashed border-gray-300 flex flex-col h-full">
             <div class="flex items-center gap-3 mb-3">
