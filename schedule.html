@@ -274,46 +274,10 @@
 
 <body class="antialiased">
 
-    <!-- Navigation - Same as Landing Page -->
-    <nav class="fixed w-full z-50 header-blur transition-all duration-300" id="navbar">
-        <div class="w-full px-[60px] py-5 flex justify-between items-center">
-            <a href="/" class="flex items-center gap-3">
-                <img src="./assets/logo.svg" alt="Logo" class="w-10 h-10">
-                <span class="text-2xl font-serif font-bold tracking-tight">Algrowithm</span>
-            </a>
-
-            <div class="hidden md:flex items-center gap-12 text-lg font-medium text-gray-700">
-                <a href="about.html" class="hover:text-soft-gold transition-colors">About</a>
-
-                <div class="dropdown">
-                    <button class="hover:text-soft-gold transition-colors flex items-center gap-1">
-                        실습
-                        <i class="fa-solid fa-chevron-down text-[12px] ml-1"></i>
-                    </button>
-                    <div class="dropdown-menu">
-                        <a href="workbook_1.html" class="dropdown-item">
-                            <span class="text-soft-gold font-bold mr-2">01</span> 나는 누구인가
-                        </a>
-                        <a href="workbook_2.html" class="dropdown-item">
-                            <span class="text-soft-gold font-bold mr-2">02</span> 이미지 아이덴티티
-                        </a>
-                        <a href="workbook_3.html" class="dropdown-item">
-                            <span class="text-soft-gold font-bold mr-2">03</span> 커리어 브랜딩
-                        </a>
-                        <div class="border-t border-gray-100 my-2"></div>
-                        <a href="prompt-studio.html" class="dropdown-item">
-                            <i class="fa-solid fa-wand-magic-sparkles text-soft-gold mr-2"></i> 프롬프트 생성기
-                        </a>
-                        <a href="ebook-generator.html" class="dropdown-item">
-                            <i class="fa-solid fa-book text-soft-gold mr-2"></i> E-book 생성기
-                        </a>
-                    </div>
-                </div>
-
-                <a href="schedule.html" class="text-soft-gold transition-colors">일정</a>
-            </div>
-        </div>
-    </nav>
+    <!-- 네비게이션 - 공통 헤더 사용 -->
+    <div id="header-placeholder"></div>
+    <script src="./js/header.js"></script>
+    <script>initHeader({ showStartButton: false });</script>
 
     <!-- Event Sidebar - Fixed Right -->
     <aside class="event-sidebar">

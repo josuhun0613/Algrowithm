@@ -37,7 +37,7 @@ function getHeaderHTML(options = {}) {
                         </button>
                         <div class="dropdown-menu">
                             <a href="workbook_1.html" class="dropdown-item">
-                                <span class="text-soft-gold font-bold mr-2">01</span> 나는 누구인가
+                                <span class="text-soft-gold font-bold mr-2">01</span> 내 안의 빌런을 찾아라
                             </a>
                             <a href="workbook_2.html" class="dropdown-item">
                                 <span class="text-soft-gold font-bold mr-2">02</span> 이미지 아이덴티티
