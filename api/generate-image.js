@@ -32,23 +32,25 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: '프롬프트가 필요합니다' });
         }
 
-        // API 키 결정: 암호가 맞으면 서버 키 사용, 아니면 사용자 키 사용
-        let finalApiKey = apiKey;
+        // API 키 결정: 환경변수 키를 기본으로 사용
+        // 접근 코드 없이도 환경변수의 API 키를 기본으로 사용
+        let finalApiKey = process.env.GEMINI_API_KEY;
 
         if (accessCode) {
             // 환경변수에서 암호와 API 키 가져오기
             const serverAccessCode = process.env.IMAGE_ACCESS_CODE;
-            const serverApiKey = process.env.GEMINI_API_KEY;
 
-            if (accessCode === serverAccessCode && serverApiKey) {
-                finalApiKey = serverApiKey;
-            } else if (accessCode !== serverAccessCode) {
+            if (accessCode !== serverAccessCode) {
                 return res.status(401).json({ error: '접근 코드가 올바르지 않습니다' });
             }
+        } else if (apiKey) {
+            // 사용자가 직접 API 키를 제공한 경우
+            finalApiKey = apiKey;
         }
+        // 접근 코드나 사용자 API 키가 없으면 환경변수 API 키 사용 (기본값)
 
         if (!finalApiKey) {
-            return res.status(400).json({ error: 'API 키 또는 접근 코드가 필요합니다' });
+            return res.status(400).json({ error: 'API 키가 설정되지 않았습니다' });
         }
 
         // Imagen 4 지원 비율: "1:1", "3:4", "4:3", "9:16", "16:9"

@@ -309,24 +309,24 @@
                     워크지 업로드
                 </h2>
                 <p class="text-gray-500 text-sm mb-4">
-                    작성한 워크지 사진을 업로드하면 AI가 분석하여 캐릭터 이미지를 생성합니다.
+                    작성한 워크지 사진을 업로드하면 AI가 분석하여 캐릭터 이미지를 생성합니다. <span class="text-soft-gold font-medium">(최대 4장)</span>
                 </p>
 
                 <!-- Upload Zone -->
                 <div id="workbookUploadZone"
                     class="upload-zone border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-soft-gold transition-all"
                     onclick="document.getElementById('workbookFileInput').click()">
-                    <input type="file" id="workbookFileInput" accept="image/*" class="hidden" onchange="handleWorkbookUpload(event)">
+                    <input type="file" id="workbookFileInput" accept="image/*" multiple class="hidden" onchange="handleWorkbookUpload(event)">
                     <div id="workbookPlaceholder">
                         <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 mb-3"></i>
                         <p class="text-gray-600 font-medium">클릭하여 워크지 사진 업로드</p>
-                        <p class="text-gray-400 text-sm mt-1">또는 파일을 여기에 드래그</p>
+                        <p class="text-gray-400 text-sm mt-1">또는 파일을 여기에 드래그 (최대 4장)</p>
                     </div>
                     <div id="workbookPreview" class="hidden">
-                        <img id="workbookImage" src="" alt="Uploaded workbook" class="max-h-64 mx-auto rounded-lg">
+                        <div id="workbookImagesGrid" class="grid grid-cols-2 gap-3 max-w-md mx-auto"></div>
                         <button onclick="event.stopPropagation(); clearWorkbook()"
                             class="mt-3 text-red-500 text-sm hover:text-red-600">
-                            <i class="fa-solid fa-trash mr-1"></i>삭제
+                            <i class="fa-solid fa-trash mr-1"></i>전체 삭제
                         </button>
                     </div>
                 </div>
@@ -699,7 +699,7 @@
         let generatedImageUrl = null;
         let verifiedAccessCode = null;  // 인증된 접근 코드
         let currentMode = 'prompt';  // 'prompt' or 'workbook'
-        let workbookImageData = null;  // 업로드된 워크지 이미지 데이터
+        let workbookImagesData = [];  // 업로드된 워크지 이미지 데이터 배열 (최대 4장)
         let lastGeneratedPrompt = '';  // 마지막으로 사용된 프롬프트
         let lastVideoPrompt = '';  // 마지막 영상화 프롬프트
         let lastKlingPrompt = '';  // 클링 영상 프롬프트
@@ -774,31 +774,67 @@
             }
         }
 
-        // Workbook upload handling
+        // Workbook upload handling (다중 이미지 지원)
         function handleWorkbookUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+            const files = Array.from(event.target.files);
+            if (!files.length) return;
 
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                workbookImageData = e.target.result;
-                document.getElementById('workbookImage').src = workbookImageData;
-                document.getElementById('workbookPlaceholder').classList.add('hidden');
-                document.getElementById('workbookPreview').classList.remove('hidden');
-                document.getElementById('workbookUploadZone').classList.add('has-image');
-                document.getElementById('analyzeBtn').disabled = false;
-            };
-            reader.readAsDataURL(file);
+            // 최대 4장 제한
+            const remainingSlots = 4 - workbookImagesData.length;
+            const filesToProcess = files.slice(0, remainingSlots);
+
+            if (files.length > remainingSlots) {
+                showToast(`최대 4장까지 업로드 가능합니다. ${remainingSlots}장만 추가됩니다.`, 'warning');
+            }
+
+            filesToProcess.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    workbookImagesData.push(e.target.result);
+                    updateWorkbookPreview();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateWorkbookPreview() {
+            const grid = document.getElementById('workbookImagesGrid');
+            grid.innerHTML = '';
+
+            workbookImagesData.forEach((imgData, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'relative';
+                wrapper.innerHTML = `
+                    <img src="${imgData}" alt="워크지 ${index + 1}" class="w-full h-32 object-cover rounded-lg border border-gray-200">
+                    <button onclick="event.stopPropagation(); removeWorkbookImage(${index})"
+                        class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 flex items-center justify-center">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                    <span class="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">${index + 1}</span>
+                `;
+                grid.appendChild(wrapper);
+            });
+
+            document.getElementById('workbookPlaceholder').classList.toggle('hidden', workbookImagesData.length > 0);
+            document.getElementById('workbookPreview').classList.toggle('hidden', workbookImagesData.length === 0);
+            document.getElementById('workbookUploadZone').classList.toggle('has-image', workbookImagesData.length > 0);
+            document.getElementById('analyzeBtn').disabled = workbookImagesData.length === 0;
+        }
+
+        function removeWorkbookImage(index) {
+            workbookImagesData.splice(index, 1);
+            updateWorkbookPreview();
         }
 
         function clearWorkbook() {
-            workbookImageData = null;
+            workbookImagesData = [];
             document.getElementById('workbookFileInput').value = '';
             document.getElementById('workbookPlaceholder').classList.remove('hidden');
             document.getElementById('workbookPreview').classList.add('hidden');
             document.getElementById('workbookUploadZone').classList.remove('has-image');
             document.getElementById('analyzeBtn').disabled = true;
             document.getElementById('workbookResultSection').classList.add('hidden');
+            document.getElementById('workbookImagesGrid').innerHTML = '';
         }
 
         // 이미지 압축 함수
@@ -827,7 +863,7 @@
 
         // Analyze workbook with Gemini
         async function analyzeWorkbook() {
-            if (!workbookImageData) {
+            if (workbookImagesData.length === 0) {
                 showToast('워크지 이미지를 업로드해주세요', 'error');
                 return;
             }
@@ -835,36 +871,40 @@
             const accessCode = getAccessCode();
             const apiKey = getApiKey();
 
-            if (!accessCode && !apiKey) {
-                showToast('접근 코드를 입력하거나 API 키를 설정해주세요', 'error');
-                return;
-            }
-
             document.getElementById('analyzeBtn').disabled = true;
             document.getElementById('analyzeBtn').innerHTML = '<div class="loading-spinner"></div> <span>분석 중...</span>';
             document.getElementById('workbookResultSection').classList.add('hidden');
 
             try {
-                // 이미지 압축
-                const compressedImage = await compressImage(workbookImageData);
+                // 모든 이미지 압축
+                const compressedImages = await Promise.all(
+                    workbookImagesData.map(img => compressImage(img))
+                );
 
                 // 선택된 스타일 옵션들 가져오기
                 const charStyle = getSelectedStyle();
                 const charType = getSelectedCharType();
                 const bgType = getSelectedBackground();
 
+                const requestBody = {
+                    images: compressedImages,
+                    mode: 'character',
+                    characterStyle: charStyle,
+                    characterType: charType,
+                    backgroundType: bgType
+                };
+
+                // 접근 코드나 API 키가 있으면 추가 (없어도 서버 환경변수 사용)
+                if (accessCode) {
+                    requestBody.accessCode = accessCode;
+                } else if (apiKey) {
+                    requestBody.apiKey = apiKey;
+                }
+
                 const response = await fetch('/api/analyze', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        images: [compressedImage],
-                        mode: 'character',
-                        characterStyle: charStyle,
-                        characterType: charType,
-                        backgroundType: bgType,
-                        accessCode: accessCode || undefined,
-                        apiKey: !accessCode ? apiKey : undefined
-                    })
+                    body: JSON.stringify(requestBody)
                 });
 
                 const result = await response.json();

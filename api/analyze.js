@@ -40,19 +40,20 @@ export default async function handler(req, res) {
         }
 
         // API 키 결정 (접근 코드 > 사용자 입력 > 환경변수)
+        // 접근 코드 없이도 환경변수의 API 키를 기본으로 사용
         let API_KEY = process.env.GEMINI_API_KEY;
 
         if (accessCode) {
-            // 접근 코드 검증
+            // 접근 코드 검증 (선택적)
             const validAccessCode = process.env.ACCESS_CODE;
-            if (accessCode === validAccessCode) {
-                API_KEY = process.env.GEMINI_API_KEY;
-            } else {
+            if (accessCode !== validAccessCode) {
                 return res.status(401).json({ error: '접근 코드가 올바르지 않습니다' });
             }
         } else if (userApiKey) {
+            // 사용자가 직접 API 키를 제공한 경우
             API_KEY = userApiKey;
         }
+        // 접근 코드나 사용자 API 키가 없으면 환경변수 API 키 사용 (기본값)
 
         if (!API_KEY) {
             return res.status(500).json({ error: 'API key not configured' });
