@@ -141,10 +141,11 @@ export default async function handler(req, res) {
 - 시그니처 컬러 반영 (워크지에서 추출)
 - 성격과 특성을 반영한 표정/포즈
 - 사용자가 선택한 배경 스타일 (${bgHints[backgroundType] || bgHints.transparent})
-- high quality, detailed illustration]
+- high quality, detailed illustration
+- **중요: 이미지에 텍스트, 글자, 문자, 로고가 절대 포함되지 않도록 "no text, no letters, no words, no typography, no logo, no watermark" 반드시 포함**]
 
 프롬프트는 반드시 영어로, 쉼표로 구분된 키워드 형태로 작성해주세요.
-${characterStyle === 'minion' ? '예시: "Minions style character, yellow round body, goggles, blue overalls, cute mischievous expression, holding banana, white clean background, Despicable Me animation style, high quality 3D render"' : '예시: "3D cartoon character, cute design, vibrant colors, expressive face, dynamic pose, clean background, high quality render"'}`;
+${characterStyle === 'minion' ? '예시: "Minions style character, yellow round body, goggles, blue overalls, cute mischievous expression, holding banana, white clean background, Despicable Me animation style, high quality 3D render, no text, no letters, no words, no typography"' : '예시: "3D cartoon character, cute design, vibrant colors, expressive face, dynamic pose, clean background, high quality render, no text, no letters, no words"'}`;
 
         } else if (mode === 'video') {
             // 영상화 프롬프트 추출 (Kling 또는 Runway)
