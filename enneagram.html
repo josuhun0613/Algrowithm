@@ -506,25 +506,28 @@
                 </div>
 
                 <h2 class="text-3xl font-serif font-bold mb-4 text-white">검사가 완료되었습니다</h2>
-                <p id="completionName" class="text-soft-gold text-lg mb-2">홍길동님</p>
-                <p class="text-white/80 mb-8">
-                    응답이 성공적으로 저장되었습니다.<br>
-                    결과는 담당 컨설턴트를 통해 안내받으실 수 있습니다.
-                </p>
+                <p id="completionName" class="text-soft-gold text-lg mb-4">홍길동님</p>
 
-                <!-- Submission ID -->
-                <div class="bg-white/10 rounded-xl p-4 mb-8">
-                    <p class="text-xs text-white/60 mb-1">제출 ID</p>
-                    <p id="submissionId" class="text-lg font-mono text-soft-gold">-</p>
+                <!-- 안내 메시지 -->
+                <div class="bg-white/10 rounded-xl p-5 mb-8 text-left">
+                    <p class="text-white/90 mb-3" style="word-break: keep-all;">
+                        <i class="fa-solid fa-circle-check text-soft-gold mr-2"></i>
+                        응답이 성공적으로 저장되었습니다.
+                    </p>
+                    <p class="text-white/70 text-sm leading-relaxed" style="word-break: keep-all;">
+                        <i class="fa-solid fa-comment-dots text-soft-gold/70 mr-2"></i>
+                        담당 컨설턴트에게 <span class="text-soft-gold font-medium">검사 완료</span>했다고 알려주세요.<br>
+                        결과 분석 리포트를 받아보실 수 있습니다.
+                    </p>
                 </div>
 
                 <div class="space-y-3">
-                    <button onclick="restartTest()" class="btn-secondary w-full">
-                        <i class="fa-solid fa-redo mr-2"></i> 다시 검사하기
-                    </button>
                     <a href="index.html" class="btn-primary w-full block">
                         홈으로 돌아가기
                     </a>
+                    <button onclick="restartTest()" class="btn-secondary w-full">
+                        <i class="fa-solid fa-redo mr-2"></i> 다시 검사하기
+                    </button>
                 </div>
             </div>
         </div>
@@ -836,7 +839,6 @@
                     document.getElementById('testScreen').style.opacity = '1';
                     document.getElementById('completionScreen').classList.remove('hidden');
                     document.getElementById('completionName').textContent = userName + '님';
-                    document.getElementById('submissionId').textContent = docRef.id.substring(0, 8).toUpperCase();
                 }, 300);
 
             } catch (error) {
