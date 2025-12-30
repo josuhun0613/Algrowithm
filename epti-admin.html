@@ -517,8 +517,8 @@
                                     <!-- 유형별 점과 레이블 -->
                                     <g id="typePoints"></g>
 
-                                    <!-- 주유형 강조 -->
-                                    <circle id="mainTypeHighlight" r="20" fill="rgba(201,162,39,0.3)" stroke="#c9a227" stroke-width="3"/>
+                                    <!-- 주유형 강조 (초기에 숨김) -->
+                                    <circle id="mainTypeHighlight" cx="200" cy="50" r="20" fill="rgba(201,162,39,0.3)" stroke="#c9a227" stroke-width="3"/>
 
                                     <!-- 성장/스트레스 방향 화살표 -->
                                     <g id="directionArrows"></g>
@@ -755,8 +755,10 @@
                 document.getElementById('reportText').innerHTML = marked.parse(currentResult.aiReport);
                 document.getElementById('reportContent').classList.remove('hidden');
                 document.getElementById('generateReportBtn').innerHTML = '<i class="fa-solid fa-refresh mr-2"></i> 다시 생성';
-                // 다이어그램 그리기
-                drawEnneagramDiagram(currentResult.scores, currentResult.mainType);
+                // 다이어그램 그리기 (DOM 렌더링 후 실행)
+                setTimeout(() => {
+                    drawEnneagramDiagram(currentResult.scores, currentResult.mainType);
+                }, 100);
             }
 
             modal.classList.add('active');
@@ -805,8 +807,10 @@
                     document.getElementById('reportText').innerHTML = marked.parse(data.report);
                     contentEl.classList.remove('hidden');
 
-                    // 다이어그램 그리기
-                    drawEnneagramDiagram(currentResult.scores, currentResult.mainType);
+                    // 다이어그램 그리기 (DOM 렌더링 후 실행)
+                    setTimeout(() => {
+                        drawEnneagramDiagram(currentResult.scores, currentResult.mainType);
+                    }, 100);
 
                     // Firebase에 리포트 저장
                     await db.collection('eptiResults').doc(currentResult.id).update({
@@ -831,6 +835,7 @@
 
         // 에니어그램 다이어그램 그리기
         function drawEnneagramDiagram(scores, mainType) {
+            console.log('Drawing diagram for type:', mainType, 'scores:', scores);
             const cx = 200, cy = 200, r = 150;
 
             // 각 유형의 각도 계산 (9시 방향부터 시계방향)
