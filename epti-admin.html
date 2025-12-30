@@ -653,84 +653,120 @@
                         <div id="horneyDiagram" class="mb-8 p-6 bg-white/5 rounded-xl">
                             <h3 class="text-lg font-semibold text-white mb-4 text-center">대인관계 스타일 (호나이 그룹)</h3>
                             <div class="flex justify-center">
-                                <svg id="horneySvg" viewBox="0 0 400 300" class="w-full max-w-md">
-                                    <!-- 세 그룹 영역 -->
-                                    <!-- 주장형 (위쪽) -->
-                                    <path d="M200,150 L100,30 L300,30 Z" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.5)" stroke-width="2"/>
-                                    <text x="200" y="60" text-anchor="middle" fill="#ef4444" font-size="14" font-weight="bold">주장형</text>
-                                    <text x="200" y="78" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="11">타인에게 맞서감</text>
-                                    <text x="200" y="95" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="12">3, 7, 8</text>
+                                <svg id="horneySvg" viewBox="0 0 400 320" class="w-full max-w-lg">
+                                    <defs>
+                                        <linearGradient id="assertiveGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                            <stop offset="0%" stop-color="rgba(239,68,68,0.3)"/>
+                                            <stop offset="100%" stop-color="rgba(239,68,68,0.1)"/>
+                                        </linearGradient>
+                                        <linearGradient id="compliantGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="rgba(59,130,246,0.3)"/>
+                                            <stop offset="100%" stop-color="rgba(59,130,246,0.1)"/>
+                                        </linearGradient>
+                                        <linearGradient id="withdrawnGrad" x1="100%" y1="0%" x2="0%" y2="100%">
+                                            <stop offset="0%" stop-color="rgba(34,197,94,0.3)"/>
+                                            <stop offset="100%" stop-color="rgba(34,197,94,0.1)"/>
+                                        </linearGradient>
+                                        <filter id="glow">
+                                            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                            <feMerge>
+                                                <feMergeNode in="coloredBlur"/>
+                                                <feMergeNode in="SourceGraphic"/>
+                                            </feMerge>
+                                        </filter>
+                                    </defs>
 
-                                    <!-- 순응형 (왼쪽 아래) -->
-                                    <path d="M200,150 L100,30 L50,270 L200,270 Z" fill="rgba(59,130,246,0.15)" stroke="rgba(59,130,246,0.5)" stroke-width="2"/>
-                                    <text x="110" y="180" text-anchor="middle" fill="#3b82f6" font-size="14" font-weight="bold">순응형</text>
-                                    <text x="110" y="198" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="11">타인에게 다가감</text>
-                                    <text x="110" y="215" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="12">1, 2, 6</text>
+                                    <!-- 주장형 (위쪽 원) -->
+                                    <circle cx="200" cy="80" r="60" fill="url(#assertiveGrad)" stroke="#ef4444" stroke-width="2"/>
+                                    <text x="200" y="65" text-anchor="middle" fill="#ef4444" font-size="15" font-weight="bold">주장형</text>
+                                    <text x="200" y="82" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="11">타인에게 맞서감</text>
+                                    <text x="200" y="100" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="13" font-weight="600">3, 7, 8</text>
 
-                                    <!-- 위축형 (오른쪽 아래) -->
-                                    <path d="M200,150 L300,30 L350,270 L200,270 Z" fill="rgba(34,197,94,0.15)" stroke="rgba(34,197,94,0.5)" stroke-width="2"/>
-                                    <text x="290" y="180" text-anchor="middle" fill="#22c55e" font-size="14" font-weight="bold">위축형</text>
-                                    <text x="290" y="198" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="11">타인에게서 물러남</text>
-                                    <text x="290" y="215" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="12">4, 5, 9</text>
+                                    <!-- 순응형 (왼쪽 아래 원) -->
+                                    <circle cx="120" cy="220" r="60" fill="url(#compliantGrad)" stroke="#3b82f6" stroke-width="2"/>
+                                    <text x="120" y="205" text-anchor="middle" fill="#3b82f6" font-size="15" font-weight="bold">순응형</text>
+                                    <text x="120" y="222" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="11">타인에게 다가감</text>
+                                    <text x="120" y="240" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="13" font-weight="600">1, 2, 6</text>
+
+                                    <!-- 위축형 (오른쪽 아래 원) -->
+                                    <circle cx="280" cy="220" r="60" fill="url(#withdrawnGrad)" stroke="#22c55e" stroke-width="2"/>
+                                    <text x="280" y="205" text-anchor="middle" fill="#22c55e" font-size="15" font-weight="bold">위축형</text>
+                                    <text x="280" y="222" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="11">타인에게서 물러남</text>
+                                    <text x="280" y="240" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="13" font-weight="600">4, 5, 9</text>
+
+                                    <!-- 연결선 -->
+                                    <line x1="200" y1="140" x2="150" y2="170" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="4,4"/>
+                                    <line x1="200" y1="140" x2="250" y2="170" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="4,4"/>
+                                    <line x1="170" y1="220" x2="230" y2="220" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="4,4"/>
 
                                     <!-- 중앙 원 (주유형 표시) -->
-                                    <circle id="horneyMainType" cx="200" cy="150" r="25" fill="rgba(201,162,39,0.3)" stroke="#c9a227" stroke-width="3"/>
-                                    <text id="horneyMainTypeText" x="200" y="155" text-anchor="middle" dominant-baseline="middle" fill="#c9a227" font-size="18" font-weight="bold"></text>
+                                    <circle id="horneyMainType" cx="200" cy="170" r="28" fill="rgba(201,162,39,0.4)" stroke="#c9a227" stroke-width="3" filter="url(#glow)"/>
+                                    <text id="horneyMainTypeText" x="200" y="175" text-anchor="middle" dominant-baseline="middle" fill="#fbbf24" font-size="20" font-weight="bold"></text>
                                 </svg>
                             </div>
                         </div>
 
                         <!-- 성장 로드맵 이미지 -->
-                        <div id="growthRoadmap" class="mb-8 p-6 bg-white/5 rounded-xl">
-                            <h3 class="text-lg font-semibold text-white mb-4 text-center">내면 성장 로드맵</h3>
+                        <div id="growthRoadmap" class="mb-8 p-8 bg-white/5 rounded-xl">
+                            <h3 class="text-lg font-semibold text-white mb-6 text-center">내면 성장 로드맵</h3>
                             <div class="flex justify-center">
-                                <svg viewBox="0 0 500 200" class="w-full max-w-2xl">
-                                    <!-- 배경 선 -->
-                                    <line x1="50" y1="100" x2="450" y2="100" stroke="rgba(255,255,255,0.2)" stroke-width="4" stroke-linecap="round"/>
-
-                                    <!-- 진행 선 -->
-                                    <line x1="50" y1="100" x2="450" y2="100" stroke="url(#roadmapGradient)" stroke-width="4" stroke-linecap="round" stroke-dasharray="8,4"/>
-
+                                <svg viewBox="0 0 600 180" class="w-full" style="max-width: 700px;">
                                     <defs>
                                         <linearGradient id="roadmapGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                                             <stop offset="0%" stop-color="#c9a227"/>
                                             <stop offset="50%" stop-color="#d4af37"/>
                                             <stop offset="100%" stop-color="#fbbf24"/>
                                         </linearGradient>
+                                        <filter id="roadmapGlow">
+                                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                                            <feMerge>
+                                                <feMergeNode in="coloredBlur"/>
+                                                <feMergeNode in="SourceGraphic"/>
+                                            </feMerge>
+                                        </filter>
                                     </defs>
 
+                                    <!-- 배경 선 -->
+                                    <line x1="80" y1="70" x2="520" y2="70" stroke="rgba(255,255,255,0.15)" stroke-width="6" stroke-linecap="round"/>
+                                    <!-- 진행 선 (그라디언트) -->
+                                    <line x1="80" y1="70" x2="520" y2="70" stroke="url(#roadmapGradient)" stroke-width="4" stroke-linecap="round" stroke-dasharray="12,6"/>
+
                                     <!-- 1단계: 자각 -->
-                                    <circle cx="80" cy="100" r="30" fill="#1e293b" stroke="#c9a227" stroke-width="3"/>
-                                    <text x="80" y="95" text-anchor="middle" fill="#c9a227" font-size="20">👁</text>
-                                    <text x="80" y="115" text-anchor="middle" fill="white" font-size="9" font-weight="bold">자각</text>
-                                    <text x="80" y="145" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">오늘부터</text>
-                                    <text x="80" y="158" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9">알아차리기</text>
+                                    <circle cx="80" cy="70" r="38" fill="#1e293b" stroke="#c9a227" stroke-width="3" filter="url(#roadmapGlow)"/>
+                                    <text x="80" y="62" text-anchor="middle" fill="#c9a227" font-size="26">👁</text>
+                                    <text x="80" y="85" text-anchor="middle" fill="white" font-size="12" font-weight="bold">자각</text>
+                                    <text x="80" y="125" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="12">오늘부터</text>
+                                    <text x="80" y="142" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="11">알아차리기</text>
+
+                                    <!-- 화살표 1 -->
+                                    <path d="M125,70 L175,70" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" marker-end="url(#roadmapArrow)"/>
 
                                     <!-- 2단계: 수용 -->
-                                    <circle cx="190" cy="100" r="30" fill="#1e293b" stroke="#d4af37" stroke-width="3"/>
-                                    <text x="190" y="95" text-anchor="middle" fill="#d4af37" font-size="20">💚</text>
-                                    <text x="190" y="115" text-anchor="middle" fill="white" font-size="9" font-weight="bold">수용</text>
-                                    <text x="190" y="145" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">1-3개월</text>
-                                    <text x="190" y="158" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9">자기 포용</text>
+                                    <circle cx="227" cy="70" r="38" fill="#1e293b" stroke="#d4af37" stroke-width="3" filter="url(#roadmapGlow)"/>
+                                    <text x="227" y="62" text-anchor="middle" fill="#d4af37" font-size="26">💚</text>
+                                    <text x="227" y="85" text-anchor="middle" fill="white" font-size="12" font-weight="bold">수용</text>
+                                    <text x="227" y="125" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="12">1-3개월</text>
+                                    <text x="227" y="142" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="11">자기 포용</text>
+
+                                    <!-- 화살표 2 -->
+                                    <path d="M272,70 L322,70" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none"/>
 
                                     <!-- 3단계: 통합 -->
-                                    <circle cx="310" cy="100" r="30" fill="#1e293b" stroke="#fbbf24" stroke-width="3"/>
-                                    <text x="310" y="95" text-anchor="middle" fill="#fbbf24" font-size="20">🔄</text>
-                                    <text x="310" y="115" text-anchor="middle" fill="white" font-size="9" font-weight="bold">통합</text>
-                                    <text x="310" y="145" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">6개월-1년</text>
-                                    <text x="310" y="158" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9">자아 확장</text>
+                                    <circle cx="373" cy="70" r="38" fill="#1e293b" stroke="#fbbf24" stroke-width="3" filter="url(#roadmapGlow)"/>
+                                    <text x="373" y="62" text-anchor="middle" fill="#fbbf24" font-size="26">🔄</text>
+                                    <text x="373" y="85" text-anchor="middle" fill="white" font-size="12" font-weight="bold">통합</text>
+                                    <text x="373" y="125" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="12">6개월-1년</text>
+                                    <text x="373" y="142" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="11">자아 확장</text>
+
+                                    <!-- 화살표 3 -->
+                                    <path d="M418,70 L468,70" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none"/>
 
                                     <!-- 4단계: 완성 -->
-                                    <circle cx="420" cy="100" r="30" fill="#1e293b" stroke="#fcd34d" stroke-width="3"/>
-                                    <text x="420" y="95" text-anchor="middle" fill="#fcd34d" font-size="20">✨</text>
-                                    <text x="420" y="115" text-anchor="middle" fill="white" font-size="9" font-weight="bold">완성</text>
-                                    <text x="420" y="145" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">지속</text>
-                                    <text x="420" y="158" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9">온전한 나</text>
-
-                                    <!-- 화살표 -->
-                                    <path d="M115,100 L155,100 M150,95 L160,100 L150,105" stroke="rgba(255,255,255,0.4)" stroke-width="2" fill="none"/>
-                                    <path d="M225,100 L275,100 M270,95 L280,100 L270,105" stroke="rgba(255,255,255,0.4)" stroke-width="2" fill="none"/>
-                                    <path d="M345,100 L385,100 M380,95 L390,100 L380,105" stroke="rgba(255,255,255,0.4)" stroke-width="2" fill="none"/>
+                                    <circle cx="520" cy="70" r="38" fill="#1e293b" stroke="#fcd34d" stroke-width="3" filter="url(#roadmapGlow)"/>
+                                    <text x="520" y="62" text-anchor="middle" fill="#fcd34d" font-size="26">✨</text>
+                                    <text x="520" y="85" text-anchor="middle" fill="white" font-size="12" font-weight="bold">완성</text>
+                                    <text x="520" y="125" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="12">지속</text>
+                                    <text x="520" y="142" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="11">온전한 나</text>
                                 </svg>
                             </div>
                         </div>
@@ -1060,7 +1096,7 @@
 
         // 레이더 차트 그리기
         function drawRadarChart(scores) {
-            const cx = 200, cy = 200, maxR = 140;
+            const cx = 200, cy = 200, maxR = 130;
             const grid = document.getElementById('radarGrid');
             const labels = document.getElementById('radarLabels');
             const area = document.getElementById('radarArea');
@@ -1070,12 +1106,15 @@
             labels.innerHTML = '';
             dots.innerHTML = '';
 
-            // 배경 그리드 (5단계)
+            const numTypes = 9;
+            const angleStep = (2 * Math.PI) / numTypes; // 정확히 360/9 = 40도
+
+            // 배경 그리드 (5단계 동심 다각형)
             for (let level = 1; level <= 5; level++) {
                 const r = (level / 5) * maxR;
                 let points = '';
-                for (let i = 1; i <= 9; i++) {
-                    const angle = ((i - 1) * 40 - 90) * Math.PI / 180;
+                for (let i = 0; i < numTypes; i++) {
+                    const angle = i * angleStep - Math.PI / 2; // 12시 방향부터 시작
                     const x = cx + r * Math.cos(angle);
                     const y = cy + r * Math.sin(angle);
                     points += `${x},${y} `;
@@ -1083,7 +1122,7 @@
                 const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
                 polygon.setAttribute('points', points.trim());
                 polygon.setAttribute('fill', 'none');
-                polygon.setAttribute('stroke', `rgba(255,255,255,${0.05 + level * 0.03})`);
+                polygon.setAttribute('stroke', `rgba(255,255,255,${0.08 + level * 0.04})`);
                 polygon.setAttribute('stroke-width', '1');
                 grid.appendChild(polygon);
             }
@@ -1092,8 +1131,9 @@
             const maxScore = Math.max(...Object.values(scores));
             let areaPoints = '';
 
-            for (let type = 1; type <= 9; type++) {
-                const angle = ((type - 1) * 40 - 90) * Math.PI / 180;
+            for (let i = 0; i < numTypes; i++) {
+                const type = i + 1;
+                const angle = i * angleStep - Math.PI / 2; // 12시 방향부터 시계방향
                 const score = scores[type] || 0;
                 const scoreR = (score / 45) * maxR;
 
@@ -1103,18 +1143,21 @@
                 line.setAttribute('y1', cy);
                 line.setAttribute('x2', cx + maxR * Math.cos(angle));
                 line.setAttribute('y2', cy + maxR * Math.sin(angle));
-                line.setAttribute('stroke', 'rgba(255,255,255,0.1)');
+                line.setAttribute('stroke', 'rgba(255,255,255,0.15)');
                 line.setAttribute('stroke-width', '1');
                 grid.appendChild(line);
 
-                // 레이블
-                const labelR = maxR + 25;
+                // 레이블 위치 (바깥쪽)
+                const labelR = maxR + 30;
+                const labelX = cx + labelR * Math.cos(angle);
+                const labelY = cy + labelR * Math.sin(angle);
+
                 const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', cx + labelR * Math.cos(angle));
-                text.setAttribute('y', cy + labelR * Math.sin(angle) + 4);
+                text.setAttribute('x', labelX);
+                text.setAttribute('y', labelY + 4);
                 text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('fill', scores[type] === maxScore ? '#c9a227' : 'rgba(255,255,255,0.7)');
-                text.setAttribute('font-size', scores[type] === maxScore ? '14' : '11');
+                text.setAttribute('fill', scores[type] === maxScore ? '#fbbf24' : 'rgba(255,255,255,0.8)');
+                text.setAttribute('font-size', scores[type] === maxScore ? '13' : '11');
                 text.setAttribute('font-weight', scores[type] === maxScore ? 'bold' : 'normal');
                 text.textContent = `${type}유형 (${score})`;
                 labels.appendChild(text);
@@ -1317,38 +1360,29 @@
 
         // 호나이 다이어그램 업데이트
         function updateHorneyDiagram(mainType) {
-            // 호나이 그룹 매핑
-            const horneyGroups = {
-                assertive: [3, 7, 8],  // 주장형
-                compliant: [1, 2, 6],  // 순응형
-                withdrawn: [4, 5, 9]   // 위축형
+            // 호나이 그룹 매핑 (새 원형 레이아웃)
+            // 주장형: 200, 80 / 순응형: 120, 220 / 위축형: 280, 220
+            const groupCenters = {
+                assertive: { x: 200, y: 80 },   // 주장형 (위)
+                compliant: { x: 120, y: 220 },  // 순응형 (왼쪽 아래)
+                withdrawn: { x: 280, y: 220 }   // 위축형 (오른쪽 아래)
             };
 
-            // 유형에 따른 위치 계산
-            const positions = {
-                // 주장형 (위쪽 삼각형)
-                3: { x: 160, y: 80 },
-                7: { x: 240, y: 80 },
-                8: { x: 200, y: 110 },
-                // 순응형 (왼쪽 아래)
-                1: { x: 80, y: 160 },
-                2: { x: 120, y: 200 },
-                6: { x: 140, y: 240 },
-                // 위축형 (오른쪽 아래)
-                4: { x: 320, y: 160 },
-                5: { x: 280, y: 200 },
-                9: { x: 260, y: 240 }
-            };
+            // 유형에 따른 그룹 결정
+            let group;
+            if ([3, 7, 8].includes(mainType)) group = 'assertive';
+            else if ([1, 2, 6].includes(mainType)) group = 'compliant';
+            else group = 'withdrawn';
 
-            const pos = positions[mainType];
+            const center = groupCenters[group];
             const highlight = document.getElementById('horneyMainType');
             const text = document.getElementById('horneyMainTypeText');
 
-            if (pos) {
-                highlight.setAttribute('cx', pos.x);
-                highlight.setAttribute('cy', pos.y);
-                text.setAttribute('x', pos.x);
-                text.setAttribute('y', pos.y + 5);
+            if (center) {
+                highlight.setAttribute('cx', center.x);
+                highlight.setAttribute('cy', center.y);
+                text.setAttribute('x', center.x);
+                text.setAttribute('y', center.y + 5);
                 text.textContent = mainType;
             }
         }
