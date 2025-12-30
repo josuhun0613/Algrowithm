@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EPTI 애니어그램 검사 - Algrowithm</title>
+    <title>EPTI 성격유형 검사 - Algrowithm</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -173,20 +173,17 @@
             border-color: rgba(201, 162, 39, 0.3);
         }
 
-        /* Question Transition */
-        .question-enter {
-            animation: questionEnter 0.5s ease forwards;
+        /* Question Transition - Fade In/Out */
+        .question-container {
+            transition: opacity 0.3s ease;
         }
 
-        @keyframes questionEnter {
-            from {
-                opacity: 0;
-                transform: translateX(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        .question-fade-out {
+            opacity: 0;
+        }
+
+        .question-fade-in {
+            opacity: 1;
         }
 
         /* Glass Card */
@@ -283,6 +280,13 @@
                 height: 48px;
                 font-size: 1.1rem;
             }
+
+            /* 모바일 질문 줄바꿈 개선 */
+            #questionText {
+                word-break: keep-all;
+                word-wrap: break-word;
+                line-height: 1.6;
+            }
         }
 
         /* Loading Spinner */
@@ -336,7 +340,7 @@
                             <div class="md:w-1/2 md:border-r md:border-white/10 md:pr-8 mb-6 md:mb-0">
                                 <h2 class="text-2xl font-semibold text-white mb-3">나를 발견하는 81가지 질문</h2>
                                 <p class="text-white/80 text-base mb-5 leading-relaxed">
-                                    애니어그램 9가지 성격 유형 검사를 통해 당신의 내면을 탐색해보세요.
+                                    9가지 성격 유형 검사를 통해 당신의 내면을 탐색해보세요.
                                 </p>
 
                                 <!-- Info 리스트 -->
@@ -446,7 +450,7 @@
             <!-- Question Area -->
             <main class="flex-1 flex items-center justify-center p-6">
                 <div class="max-w-2xl w-full">
-                    <div id="questionContainer" class="question-enter">
+                    <div id="questionContainer" class="question-container question-fade-in">
                         <!-- Type Name -->
                         <p id="typeName" class="text-soft-gold text-sm tracking-wider mb-4 text-center">완벽주의자</p>
 
@@ -650,7 +654,7 @@
         let userAge = '';
         let userGender = '';
 
-        // 검사 시작
+        // 검사 시작 (페이드 효과 적용)
         function startTest() {
             userName = document.getElementById('userName').value.trim();
             userAge = document.getElementById('userAge').value;
@@ -661,58 +665,82 @@
                 return;
             }
 
-            document.getElementById('startScreen').classList.add('hidden');
-            document.getElementById('testScreen').classList.remove('hidden');
-            showQuestion(0);
+            // 페이드아웃
+            const startScreen = document.getElementById('startScreen');
+            startScreen.style.transition = 'opacity 0.3s ease';
+            startScreen.style.opacity = '0';
+
+            setTimeout(() => {
+                startScreen.classList.add('hidden');
+                startScreen.style.opacity = '1';
+                document.getElementById('testScreen').classList.remove('hidden');
+                showQuestion(0);
+            }, 300);
         }
 
-        // 문항 표시
-        function showQuestion(index) {
-            currentQuestion = index;
-            const typeNum = Math.floor(index / 9) + 1;
-            const percent = Math.round((index / 81) * 100);
-
-            // Progress 업데이트
-            document.getElementById('currentQ').textContent = index + 1;
-            document.getElementById('progressPercent').textContent = percent + '%';
-            document.getElementById('currentType').textContent = typeNum;
-            document.getElementById('typeName').textContent = typeNames[typeNum];
-
-            // Progress Ring
-            const circle = document.getElementById('progressCircle');
-            const circumference = 2 * Math.PI * 24; // r=24
-            const offset = circumference - (percent / 100) * circumference;
-            circle.style.strokeDashoffset = offset;
-
-            // Question Text
-            document.getElementById('questionText').textContent = questions[index];
-
-            // 버튼 상태 초기화
-            document.querySelectorAll('.score-option').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-
-            // 이전 답변이 있으면 표시
-            if (answers[index] !== null) {
-                document.querySelector(`.score-option[data-score="${answers[index]}"]`).classList.add('selected');
-            }
-
-            // 네비게이션 버튼 상태
-            document.getElementById('prevBtn').disabled = index === 0;
-            document.getElementById('nextBtn').disabled = answers[index] === null;
-
-            // 마지막 문항이면 버튼 텍스트 변경
-            if (index === 80) {
-                document.getElementById('nextBtn').innerHTML = '완료 <i class="fa-solid fa-check ml-2"></i>';
-            } else {
-                document.getElementById('nextBtn').innerHTML = '다음 <i class="fa-solid fa-chevron-right ml-2"></i>';
-            }
-
-            // 애니메이션
+        // 문항 표시 (페이드 효과 포함)
+        function showQuestion(index, withFade = false) {
             const container = document.getElementById('questionContainer');
-            container.classList.remove('question-enter');
-            void container.offsetWidth;
-            container.classList.add('question-enter');
+
+            const updateContent = () => {
+                currentQuestion = index;
+                const typeNum = Math.floor(index / 9) + 1;
+                const percent = Math.round((index / 81) * 100);
+
+                // Progress 업데이트
+                document.getElementById('currentQ').textContent = index + 1;
+                document.getElementById('progressPercent').textContent = percent + '%';
+                document.getElementById('currentType').textContent = typeNum;
+                document.getElementById('typeName').textContent = typeNames[typeNum];
+
+                // Progress Ring
+                const circle = document.getElementById('progressCircle');
+                const circumference = 2 * Math.PI * 24; // r=24
+                const offset = circumference - (percent / 100) * circumference;
+                circle.style.strokeDashoffset = offset;
+
+                // Question Text
+                document.getElementById('questionText').textContent = questions[index];
+
+                // 버튼 상태 초기화 - 모든 선택 해제
+                document.querySelectorAll('.score-option').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+
+                // 이전 답변이 있으면 표시
+                if (answers[index] !== null) {
+                    const selectedBtn = document.querySelector(`.score-option[data-score="${answers[index]}"]`);
+                    if (selectedBtn) {
+                        selectedBtn.classList.add('selected');
+                    }
+                }
+
+                // 네비게이션 버튼 상태
+                document.getElementById('prevBtn').disabled = index === 0;
+                document.getElementById('nextBtn').disabled = answers[index] === null;
+
+                // 마지막 문항이면 버튼 텍스트 변경
+                if (index === 80) {
+                    document.getElementById('nextBtn').innerHTML = '완료 <i class="fa-solid fa-check ml-2"></i>';
+                } else {
+                    document.getElementById('nextBtn').innerHTML = '다음 <i class="fa-solid fa-chevron-right ml-2"></i>';
+                }
+            };
+
+            if (withFade) {
+                // 페이드아웃
+                container.classList.remove('question-fade-in');
+                container.classList.add('question-fade-out');
+
+                setTimeout(() => {
+                    updateContent();
+                    // 페이드인
+                    container.classList.remove('question-fade-out');
+                    container.classList.add('question-fade-in');
+                }, 150);
+            } else {
+                updateContent();
+            }
         }
 
         // 점수 선택
@@ -734,14 +762,14 @@
             }, 250);
         }
 
-        // 이전/다음 문항
+        // 이전/다음 문항 (페이드 효과 적용)
         function prevQuestion() {
-            if (currentQuestion > 0) showQuestion(currentQuestion - 1);
+            if (currentQuestion > 0) showQuestion(currentQuestion - 1, true);
         }
 
         function nextQuestion() {
             if (currentQuestion < 80) {
-                showQuestion(currentQuestion + 1);
+                showQuestion(currentQuestion + 1, true);
             } else {
                 submitTest();
             }
@@ -785,7 +813,10 @@
 
             // Firebase에 저장
             try {
-                const docRef = await db.collection('enneagramResults').add({
+                console.log('Firebase 저장 시도...');
+                console.log('Data:', { userName, userAge, userGender, scores, mainType });
+
+                const docRef = await db.collection('eptiResults').add({
                     userName: userName,
                     userAge: userAge || null,
                     userGender: userGender || null,
@@ -795,15 +826,25 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // 완료 화면 표시
-                document.getElementById('testScreen').classList.add('hidden');
-                document.getElementById('completionScreen').classList.remove('hidden');
-                document.getElementById('completionName').textContent = userName + '님';
-                document.getElementById('submissionId').textContent = docRef.id.substring(0, 8).toUpperCase();
+                console.log('저장 성공! ID:', docRef.id);
+
+                // 완료 화면 표시 (페이드 효과)
+                document.getElementById('testScreen').style.opacity = '0';
+                document.getElementById('testScreen').style.transition = 'opacity 0.3s ease';
+
+                setTimeout(() => {
+                    document.getElementById('testScreen').classList.add('hidden');
+                    document.getElementById('testScreen').style.opacity = '1';
+                    document.getElementById('completionScreen').classList.remove('hidden');
+                    document.getElementById('completionName').textContent = userName + '님';
+                    document.getElementById('submissionId').textContent = docRef.id.substring(0, 8).toUpperCase();
+                }, 300);
 
             } catch (error) {
-                console.error('저장 실패:', error);
-                alert('결과 저장에 실패했습니다. 다시 시도해주세요.');
+                console.error('저장 실패 상세:', error);
+                console.error('Error code:', error.code);
+                console.error('Error message:', error.message);
+                alert('결과 저장에 실패했습니다.\n오류: ' + (error.message || error));
             }
         }
 

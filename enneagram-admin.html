@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>애니어그램 결과 관리 - Algrowithm</title>
+    <title>EPTI 결과 관리 - Algrowithm</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -500,7 +500,7 @@
             listEl.innerHTML = '';
 
             try {
-                const snapshot = await db.collection('enneagramResults')
+                const snapshot = await db.collection('eptiResults')
                     .orderBy('createdAt', 'desc')
                     .get();
 
@@ -683,7 +683,7 @@
                     contentEl.classList.remove('hidden');
 
                     // Firebase에 리포트 저장
-                    await db.collection('enneagramResults').doc(currentResult.id).update({
+                    await db.collection('eptiResults').doc(currentResult.id).update({
                         aiReport: data.report,
                         reportGeneratedAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
