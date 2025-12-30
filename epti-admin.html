@@ -465,7 +465,7 @@
             const code = document.getElementById('accessCode').value;
 
             if (code === VALID_ACCESS_CODE) {
-                sessionStorage.setItem('enneagramAdmin', 'true');
+                sessionStorage.setItem('eptiAdmin', 'true');
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('adminDashboard').classList.remove('hidden');
                 loadResults();
@@ -476,13 +476,13 @@
 
         // 로그아웃
         function logout() {
-            sessionStorage.removeItem('enneagramAdmin');
+            sessionStorage.removeItem('eptiAdmin');
             location.reload();
         }
 
         // 세션 확인
         function checkSession() {
-            if (sessionStorage.getItem('enneagramAdmin') === 'true') {
+            if (sessionStorage.getItem('eptiAdmin') === 'true') {
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('adminDashboard').classList.remove('hidden');
                 loadResults();
