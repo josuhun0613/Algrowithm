@@ -69,8 +69,17 @@
             position: absolute;
             inset: 0;
             background:
-                linear-gradient(90deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0.1) 100%),
-                url('https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=1920&q=80') center/cover;
+                linear-gradient(90deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 40%, rgba(0, 0, 0, 0.2) 100%),
+                url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=1920&q=80') right center/cover;
+        }
+
+        /* 모바일에서는 중앙 오버레이 */
+        @media (max-width: 1024px) {
+            .bg-hero::before {
+                background:
+                    linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 100%),
+                    url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=1920&q=80') center/cover;
+            }
         }
 
         .bg-test {
@@ -306,9 +315,9 @@
         <div class="bg-hero"></div>
 
         <div class="relative z-10 h-full flex items-center">
-            <!-- 왼쪽: 타이틀 영역 -->
-            <div class="w-full lg:w-1/2 h-full flex flex-col justify-center px-8 md:px-16 lg:px-20">
-                <div class="max-w-xl">
+            <!-- 왼쪽: 타이틀 영역 (모바일은 중앙) -->
+            <div class="w-full lg:w-1/2 h-full flex flex-col justify-center items-center lg:items-start px-6 md:px-12 lg:px-16">
+                <div class="max-w-md w-full">
                     <!-- Logo -->
                     <p class="text-soft-gold tracking-[0.3em] text-xs font-medium mb-3">ALGROWITHM</p>
                     <h1 class="font-serif text-4xl md:text-6xl font-bold text-white mb-3 drop-shadow-lg">EPTI</h1>
