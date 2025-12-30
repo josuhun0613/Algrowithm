@@ -284,20 +284,36 @@
                 border: none !important;
             }
             .no-print { display: none !important; }
+            /* 리포트 헤더 */
+            #reportHeader {
+                background: #f8f8f8 !important;
+                border: 2px solid #c9a227 !important;
+                margin-bottom: 20px !important;
+            }
+            #reportHeader p, #reportHeader h2 {
+                color: #333 !important;
+            }
+            #reportHeader .text-soft-gold {
+                color: #b45309 !important;
+            }
             /* 다이어그램 스타일 */
-            #enneagramDiagram, #horneyDiagram, #growthRoadmap {
+            #radarChart, #wingChart, #enneagramDiagram, #horneyDiagram, #growthRoadmap {
                 background: #f8f8f8 !important;
                 border: 1px solid #ddd !important;
                 page-break-inside: avoid !important;
                 margin-bottom: 20px !important;
                 padding: 15px !important;
             }
-            #enneagramDiagram h3, #horneyDiagram h3, #growthRoadmap h3 {
+            #radarChart h3, #wingChart h3, #enneagramDiagram h3, #horneyDiagram h3, #growthRoadmap h3 {
                 color: #333 !important;
                 font-size: 14px !important;
             }
-            #enneagramDiagram svg, #horneyDiagram svg, #growthRoadmap svg {
+            #radarChart svg, #wingChart svg, #enneagramDiagram svg, #horneyDiagram svg, #growthRoadmap svg {
                 max-width: 300px !important;
+            }
+            /* 윙 차트 텍스트 */
+            #wingChart p, #wingChart span {
+                color: #333 !important;
             }
             svg text { fill: #333 !important; }
             svg circle { stroke: #666 !important; }
@@ -305,6 +321,14 @@
             /* 범례 숨김 */
             #enneagramDiagram .flex.justify-center.gap-6,
             #horneyDiagram .flex.justify-center.gap-6 { display: none !important; }
+            /* CTA 인쇄 스타일 */
+            #consultingCTA {
+                background: #f8f8f8 !important;
+                border: 1px solid #c9a227 !important;
+            }
+            #consultingCTA h4, #consultingCTA p {
+                color: #333 !important;
+            }
             /* 리포트 텍스트 */
             .report-content {
                 width: 100% !important;
@@ -512,6 +536,69 @@
 
                     <!-- Report Content -->
                     <div id="reportContent" class="hidden glass-card p-6">
+                        <!-- 리포트 헤더 -->
+                        <div id="reportHeader" class="mb-8 p-6 bg-gradient-to-r from-soft-gold/20 to-transparent rounded-xl border border-soft-gold/30">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-soft-gold text-xs tracking-widest mb-1">ALGROWITHM EPTI REPORT</p>
+                                    <h2 id="reportUserName" class="text-2xl font-bold text-white mb-1">홍길동님의 성격유형 분석</h2>
+                                    <p id="reportDate" class="text-sm text-white/60">2024년 1월 1일</p>
+                                </div>
+                                <div class="text-right">
+                                    <div id="reportMainType" class="type-badge type-1 w-16 h-16 text-2xl text-white mx-auto mb-2">1</div>
+                                    <p id="reportTypeName" class="text-soft-gold font-semibold">완벽주의자</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 레이더 차트 -->
+                        <div id="radarChart" class="mb-8 p-6 bg-white/5 rounded-xl">
+                            <h3 class="text-lg font-semibold text-white mb-4 text-center">9가지 유형별 점수 분포</h3>
+                            <div class="flex justify-center">
+                                <svg id="radarSvg" viewBox="0 0 400 400" class="w-full max-w-md">
+                                    <!-- 배경 그리드 -->
+                                    <g id="radarGrid"></g>
+                                    <!-- 점수 영역 -->
+                                    <polygon id="radarArea" fill="rgba(201,162,39,0.2)" stroke="#c9a227" stroke-width="2"/>
+                                    <!-- 축과 레이블 -->
+                                    <g id="radarLabels"></g>
+                                    <!-- 점수 점 -->
+                                    <g id="radarDots"></g>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- 윙 비교 차트 -->
+                        <div id="wingChart" class="mb-8 p-6 bg-white/5 rounded-xl">
+                            <h3 class="text-lg font-semibold text-white mb-4 text-center">날개(Wing) 점수 비교</h3>
+                            <div class="flex items-center justify-center gap-8">
+                                <div class="text-center">
+                                    <div id="wingLeft" class="type-badge w-14 h-14 text-xl text-white mb-2">1</div>
+                                    <p id="wingLeftScore" class="text-2xl font-bold text-white">30</p>
+                                    <p class="text-xs text-white/60">점</p>
+                                </div>
+                                <div class="flex-1 max-w-xs">
+                                    <div class="relative h-8 bg-white/10 rounded-full overflow-hidden">
+                                        <div id="wingBarLeft" class="absolute left-0 top-0 h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-l-full" style="width: 50%"></div>
+                                        <div id="wingBarRight" class="absolute right-0 top-0 h-full bg-gradient-to-l from-purple-500 to-purple-400 rounded-r-full" style="width: 50%"></div>
+                                        <div class="absolute inset-0 flex items-center justify-center">
+                                            <span id="wingMainType" class="text-white font-bold text-lg bg-soft-gold rounded-full w-10 h-10 flex items-center justify-center">2</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between mt-2 text-xs text-white/60">
+                                        <span id="wingLeftName">완벽주의자</span>
+                                        <span id="wingRightName">성취자</span>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <div id="wingRight" class="type-badge w-14 h-14 text-xl text-white mb-2">3</div>
+                                    <p id="wingRightScore" class="text-2xl font-bold text-white">35</p>
+                                    <p class="text-xs text-white/60">점</p>
+                                </div>
+                            </div>
+                            <p id="wingResult" class="text-center text-soft-gold mt-4 text-sm font-medium">→ 우세한 날개: 3w (성취자)</p>
+                        </div>
+
                         <!-- 에니어그램 도형 -->
                         <div id="enneagramDiagram" class="mb-8 p-6 bg-white/5 rounded-xl">
                             <h3 class="text-lg font-semibold text-white mb-4 text-center">성격 유형 분석 다이어그램</h3>
@@ -650,6 +737,22 @@
 
                         <div id="reportText" class="report-content">
                             <!-- 마크다운 렌더링 -->
+                        </div>
+
+                        <!-- 상담 예약 CTA -->
+                        <div id="consultingCTA" class="mt-8 p-6 bg-gradient-to-r from-soft-gold/10 via-soft-gold/5 to-transparent rounded-xl border border-soft-gold/20">
+                            <div class="flex items-center gap-4">
+                                <div class="w-16 h-16 rounded-full bg-soft-gold/20 flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-comments text-2xl text-soft-gold"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-lg font-bold text-white mb-1">전문 컨설턴트와 1:1 심층 상담</h4>
+                                    <p class="text-white/70 text-sm">이 리포트를 바탕으로 전문가와 함께 더 깊은 자기 이해의 여정을 시작하세요.</p>
+                                </div>
+                                <a href="https://open.kakao.com/o/your-link" target="_blank" class="btn-gold whitespace-nowrap no-print">
+                                    <i class="fa-solid fa-calendar-check mr-2"></i> 상담 예약
+                                </a>
+                            </div>
                         </div>
 
                         <div class="flex gap-3 mt-6 pt-6 border-t border-white/10 no-print">
@@ -941,9 +1044,149 @@
             }
         }
 
+        // 리포트 헤더 업데이트
+        function updateReportHeader(userName, mainType, date) {
+            document.getElementById('reportUserName').textContent = userName + '님의 성격유형 분석';
+            document.getElementById('reportDate').textContent = date ? formatDateKorean(date) : formatDateKorean(new Date());
+            document.getElementById('reportMainType').textContent = mainType;
+            document.getElementById('reportMainType').className = `type-badge type-${mainType} w-16 h-16 text-2xl text-white mx-auto mb-2`;
+            document.getElementById('reportTypeName').textContent = typeInfo[mainType].name;
+        }
+
+        function formatDateKorean(date) {
+            const d = date instanceof Date ? date : new Date();
+            return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
+        }
+
+        // 레이더 차트 그리기
+        function drawRadarChart(scores) {
+            const cx = 200, cy = 200, maxR = 140;
+            const grid = document.getElementById('radarGrid');
+            const labels = document.getElementById('radarLabels');
+            const area = document.getElementById('radarArea');
+            const dots = document.getElementById('radarDots');
+
+            grid.innerHTML = '';
+            labels.innerHTML = '';
+            dots.innerHTML = '';
+
+            // 배경 그리드 (5단계)
+            for (let level = 1; level <= 5; level++) {
+                const r = (level / 5) * maxR;
+                let points = '';
+                for (let i = 1; i <= 9; i++) {
+                    const angle = ((i - 1) * 40 - 90) * Math.PI / 180;
+                    const x = cx + r * Math.cos(angle);
+                    const y = cy + r * Math.sin(angle);
+                    points += `${x},${y} `;
+                }
+                const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                polygon.setAttribute('points', points.trim());
+                polygon.setAttribute('fill', 'none');
+                polygon.setAttribute('stroke', `rgba(255,255,255,${0.05 + level * 0.03})`);
+                polygon.setAttribute('stroke-width', '1');
+                grid.appendChild(polygon);
+            }
+
+            // 축 선과 레이블
+            const maxScore = Math.max(...Object.values(scores));
+            let areaPoints = '';
+
+            for (let type = 1; type <= 9; type++) {
+                const angle = ((type - 1) * 40 - 90) * Math.PI / 180;
+                const score = scores[type] || 0;
+                const scoreR = (score / 45) * maxR;
+
+                // 축 선
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', cx);
+                line.setAttribute('y1', cy);
+                line.setAttribute('x2', cx + maxR * Math.cos(angle));
+                line.setAttribute('y2', cy + maxR * Math.sin(angle));
+                line.setAttribute('stroke', 'rgba(255,255,255,0.1)');
+                line.setAttribute('stroke-width', '1');
+                grid.appendChild(line);
+
+                // 레이블
+                const labelR = maxR + 25;
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', cx + labelR * Math.cos(angle));
+                text.setAttribute('y', cy + labelR * Math.sin(angle) + 4);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('fill', scores[type] === maxScore ? '#c9a227' : 'rgba(255,255,255,0.7)');
+                text.setAttribute('font-size', scores[type] === maxScore ? '14' : '11');
+                text.setAttribute('font-weight', scores[type] === maxScore ? 'bold' : 'normal');
+                text.textContent = `${type}유형 (${score})`;
+                labels.appendChild(text);
+
+                // 점수 포인트
+                const px = cx + scoreR * Math.cos(angle);
+                const py = cy + scoreR * Math.sin(angle);
+                areaPoints += `${px},${py} `;
+
+                // 점
+                const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                dot.setAttribute('cx', px);
+                dot.setAttribute('cy', py);
+                dot.setAttribute('r', '5');
+                dot.setAttribute('fill', '#c9a227');
+                dot.setAttribute('stroke', '#fff');
+                dot.setAttribute('stroke-width', '2');
+                dots.appendChild(dot);
+            }
+
+            area.setAttribute('points', areaPoints.trim());
+        }
+
+        // 윙 차트 업데이트
+        function updateWingChart(scores, mainType) {
+            // 윙 계산 (인접 유형)
+            const leftWing = mainType === 1 ? 9 : mainType - 1;
+            const rightWing = mainType === 9 ? 1 : mainType + 1;
+
+            const leftScore = scores[leftWing] || 0;
+            const rightScore = scores[rightWing] || 0;
+            const total = leftScore + rightScore;
+
+            // UI 업데이트
+            document.getElementById('wingLeft').textContent = leftWing;
+            document.getElementById('wingLeft').className = `type-badge type-${leftWing} w-14 h-14 text-xl text-white mb-2`;
+            document.getElementById('wingLeftScore').textContent = leftScore;
+            document.getElementById('wingLeftName').textContent = typeInfo[leftWing].name;
+
+            document.getElementById('wingRight').textContent = rightWing;
+            document.getElementById('wingRight').className = `type-badge type-${rightWing} w-14 h-14 text-xl text-white mb-2`;
+            document.getElementById('wingRightScore').textContent = rightScore;
+            document.getElementById('wingRightName').textContent = typeInfo[rightWing].name;
+
+            document.getElementById('wingMainType').textContent = mainType;
+
+            // 바 차트
+            const leftPercent = total > 0 ? (leftScore / total) * 50 : 25;
+            const rightPercent = total > 0 ? (rightScore / total) * 50 : 25;
+            document.getElementById('wingBarLeft').style.width = leftPercent + '%';
+            document.getElementById('wingBarRight').style.width = rightPercent + '%';
+
+            // 결과 텍스트
+            let resultText = '';
+            if (leftScore > rightScore) {
+                resultText = `→ 우세한 날개: ${mainType}w${leftWing} (${typeInfo[leftWing].name})`;
+            } else if (rightScore > leftScore) {
+                resultText = `→ 우세한 날개: ${mainType}w${rightWing} (${typeInfo[rightWing].name})`;
+            } else {
+                resultText = `→ 양 날개가 균형 (${leftWing}w와 ${rightWing}w 동일)`;
+            }
+            document.getElementById('wingResult').textContent = resultText;
+        }
+
         // 에니어그램 다이어그램 그리기
         function drawEnneagramDiagram(scores, mainType) {
             console.log('Drawing diagram for type:', mainType, 'scores:', scores);
+
+            // 새 차트들도 함께 그리기
+            updateReportHeader(currentResult.userName, mainType, currentResult.createdAt?.toDate());
+            drawRadarChart(scores);
+            updateWingChart(scores, mainType);
             const cx = 200, cy = 200, r = 150;
 
             // 각 유형의 각도 계산 (9시 방향부터 시계방향)
