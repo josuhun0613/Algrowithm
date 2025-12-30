@@ -1355,7 +1355,18 @@
 
         // 리포트 인쇄
         function printReport() {
+            // 현재 타이틀 저장
+            const originalTitle = document.title;
+            // 사용자 이름으로 타이틀 변경 (PDF 파일명이 됨)
+            const userName = currentResult?.userName || '사용자';
+            document.title = `${userName}님의 EPTI 결과 리포트`;
+
             window.print();
+
+            // 인쇄 후 타이틀 복원
+            setTimeout(() => {
+                document.title = originalTitle;
+            }, 1000);
         }
 
         // 리포트 복사
