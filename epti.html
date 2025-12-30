@@ -289,6 +289,50 @@
                 word-wrap: break-word;
                 line-height: 1.6;
             }
+
+            /* 모바일 시작화면 - 한 화면에 모두 표시 */
+            #startScreen {
+                height: auto;
+                min-height: 100vh;
+                padding-top: 2rem;
+                padding-bottom: 2rem;
+            }
+
+            #startScreen .glass-card {
+                padding: 1.25rem;
+            }
+
+            #startScreen h1 {
+                font-size: 2.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+            #startScreen h2 {
+                font-size: 1.25rem;
+                margin-bottom: 0.5rem;
+            }
+
+            #startScreen .space-y-4 {
+                gap: 0.75rem;
+            }
+
+            #startScreen .space-y-2 {
+                gap: 0.25rem;
+            }
+
+            #startScreen .input-field {
+                padding: 0.625rem 0.75rem;
+            }
+
+            #startScreen button.btn-primary {
+                padding: 0.875rem 1rem;
+                margin-top: 1rem;
+            }
+
+            #startScreen .mt-4.p-2\.5 {
+                margin-top: 0.75rem;
+                padding: 0.5rem;
+            }
         }
 
         /* Loading Spinner */
@@ -394,7 +438,7 @@
                                     </div>
                                     <div>
                                         <label class="block text-sm text-white/70 mb-2">전화번호 <span class="text-soft-gold">*</span></label>
-                                        <input type="tel" id="userPhone" class="input-field text-base py-3" placeholder="010-1234-5678" required>
+                                        <input type="tel" id="userPhone" class="input-field text-base py-3" placeholder="010-1234-5678" maxlength="13" oninput="formatPhoneNumber(this)" required>
                                     </div>
                                 </div>
 
@@ -657,6 +701,17 @@
         let userGender = '';
         let userPhone = '';
 
+        // 전화번호 자동 하이픈 포맷팅
+        function formatPhoneNumber(input) {
+            let value = input.value.replace(/[^0-9]/g, '');
+            if (value.length > 3 && value.length <= 7) {
+                value = value.slice(0, 3) + '-' + value.slice(3);
+            } else if (value.length > 7) {
+                value = value.slice(0, 3) + '-' + value.slice(3, 7) + '-' + value.slice(7, 11);
+            }
+            input.value = value;
+        }
+
         // 검사 시작 (페이드 효과 적용)
         function startTest() {
             userName = document.getElementById('userName').value.trim();
@@ -736,9 +791,23 @@
             };
 
             if (withFade) {
-                // 먼저 선택 상태 초기화 (페이드아웃 전에)
+                // 먼저 선택 상태 초기화 (트랜지션 없이 즉시 리셋)
                 document.querySelectorAll('.score-option').forEach(btn => {
+                    btn.style.transition = 'none';
                     btn.classList.remove('selected');
+                    // 스타일 강제 리셋
+                    btn.style.borderColor = '';
+                    btn.style.background = '';
+                    btn.style.color = '';
+                    btn.style.transform = '';
+                    btn.style.boxShadow = '';
+                });
+
+                // 다음 프레임에서 트랜지션 복원
+                requestAnimationFrame(() => {
+                    document.querySelectorAll('.score-option').forEach(btn => {
+                        btn.style.transition = '';
+                    });
                 });
 
                 // 페이드아웃
