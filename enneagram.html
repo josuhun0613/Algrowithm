@@ -70,7 +70,7 @@
             inset: 0;
             background:
                 linear-gradient(90deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0.1) 100%),
-                url('https://images.unsplash.com/photo-1504439904031-93ded9f93e4e?w=1920&q=80') right center/cover;
+                url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=1920&q=80') right center/cover;
         }
 
         /* 모바일에서는 중앙 오버레이 */
@@ -78,8 +78,14 @@
             .bg-hero::before {
                 background:
                     linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 100%),
-                    url('https://images.unsplash.com/photo-1504439904031-93ded9f93e4e?w=1920&q=80') center top/cover;
+                    url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=1920&q=80') center top/cover;
             }
+        }
+
+        /* 드롭다운 글자색 */
+        select option {
+            color: #1a1a1a;
+            background: #ffffff;
         }
 
         .bg-test {
@@ -353,8 +359,8 @@
                                 <div class="mt-5 p-3 bg-soft-gold/10 rounded-lg border border-soft-gold/20">
                                     <p class="text-white/90 text-sm">
                                         <i class="fa-solid fa-info-circle text-soft-gold mr-2"></i>
-                                        가능하면 3번(보통이다)은 피해주세요.<br>
-                                        <span class="text-white/60 text-xs">조금이라도 기울어진 방향으로 응답해주세요.</span>
+                                        가능하면 3번(보통이다)은 피해주세요.
+                                        <span class="text-white/60 text-xs ml-1">조금이라도 기울어진 방향으로 응답해주세요.</span>
                                     </p>
                                 </div>
                             </div>
