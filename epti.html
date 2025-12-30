@@ -514,7 +514,7 @@
                                 <span>전혀 아니다</span>
                                 <span>매우 그렇다</span>
                             </div>
-                            <div class="flex justify-center gap-4 md:gap-6">
+                            <div id="scoreButtons" class="flex justify-center gap-4 md:gap-6">
                                 <button class="score-option" data-score="1" onclick="selectScore(1)">1</button>
                                 <button class="score-option" data-score="2" onclick="selectScore(2)">2</button>
                                 <button class="score-option" data-score="3" onclick="selectScore(3)">3</button>
@@ -743,10 +743,19 @@
             }, 300);
         }
 
+        // 버튼 HTML 생성
+        function renderScoreButtons(selectedScore) {
+            let html = '';
+            for (let i = 1; i <= 5; i++) {
+                const selected = selectedScore === i ? ' selected' : '';
+                html += `<button class="score-option${selected}" data-score="${i}" onclick="selectScore(${i})">${i}</button>`;
+            }
+            document.getElementById('scoreButtons').innerHTML = html;
+        }
+
         // 문항 표시 (페이드 효과 포함)
         function showQuestion(index, withFade = false) {
             const container = document.getElementById('questionContainer');
-            const buttons = document.querySelectorAll('.score-option');
 
             const updateContent = () => {
                 currentQuestion = index;
@@ -767,13 +776,8 @@
                 // Question Text
                 document.getElementById('questionText').textContent = questions[index];
 
-                // 이전 답변이 있으면 표시
-                if (answers[index] !== null) {
-                    const selectedBtn = document.querySelector(`.score-option[data-score="${answers[index]}"]`);
-                    if (selectedBtn) {
-                        selectedBtn.classList.add('selected');
-                    }
-                }
+                // 버튼 새로 렌더링 (이전 답변 있으면 선택 표시)
+                renderScoreButtons(answers[index]);
 
                 // 네비게이션 버튼 상태
                 document.getElementById('prevBtn').disabled = index === 0;
@@ -788,37 +792,17 @@
             };
 
             if (withFade) {
-                // 1. 모든 버튼의 selected 클래스와 인라인 스타일 완전 초기화
-                buttons.forEach(btn => {
-                    btn.classList.remove('selected', 'no-transition');
-                    // 인라인 스타일로 강제 초기화
-                    btn.style.cssText = '';
-                });
-
-                // 2. 강제 리플로우
-                void container.offsetWidth;
-
-                // 3. 페이드아웃
+                // 페이드아웃
                 container.classList.remove('question-fade-in');
                 container.classList.add('question-fade-out');
 
                 setTimeout(() => {
-                    // 4. 다시 한번 모든 버튼 초기화 (혹시 모를 상태 유지 방지)
-                    buttons.forEach(btn => {
-                        btn.classList.remove('selected');
-                    });
-
                     updateContent();
-
-                    // 5. 페이드인
+                    // 페이드인
                     container.classList.remove('question-fade-out');
                     container.classList.add('question-fade-in');
                 }, 150);
             } else {
-                // 페이드 없이 표시할 때도 먼저 초기화
-                buttons.forEach(btn => {
-                    btn.classList.remove('selected');
-                });
                 updateContent();
             }
         }
