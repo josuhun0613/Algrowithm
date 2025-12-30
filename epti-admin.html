@@ -446,6 +446,7 @@
             <div class="sticky top-0 bg-slate-800 p-6 border-b border-white/10 flex items-center justify-between z-10">
                 <div>
                     <h2 id="modalUserName" class="text-xl font-bold">홍길동</h2>
+                    <p id="modalUserPhone" class="text-sm text-soft-gold mb-1"></p>
                     <p id="modalDate" class="text-sm text-warm-gray">2024.01.01 12:00</p>
                 </div>
                 <button onclick="closeResultModal()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center">
@@ -656,7 +657,7 @@
                     <div class="result-card p-4 md:p-6 flex items-center gap-4 cursor-pointer" onclick="openResultModal('${result.id}')">
                         <div class="type-badge type-${mainType} text-white">${mainType}</div>
                         <div class="flex-1 min-w-0">
-                            <p class="font-semibold truncate">${result.userName || '익명'}</p>
+                            <p class="font-semibold truncate">${result.userName || '익명'} ${result.userPhone ? '<span class="font-normal text-warm-gray text-sm">(' + result.userPhone + ')</span>' : ''}</p>
                             <p class="text-sm text-warm-gray">${typeInfo[mainType].name} · ${dateStr}</p>
                         </div>
                         <div class="text-warm-gray">
@@ -671,7 +672,8 @@
         function filterResults() {
             const query = document.getElementById('searchInput').value.toLowerCase();
             const filtered = allResults.filter(r =>
-                (r.userName || '').toLowerCase().includes(query)
+                (r.userName || '').toLowerCase().includes(query) ||
+                (r.userPhone || '').includes(query)
             );
             renderResults(filtered);
         }
@@ -711,6 +713,7 @@
 
             // 기본 정보
             document.getElementById('modalUserName').textContent = currentResult.userName || '익명';
+            document.getElementById('modalUserPhone').textContent = currentResult.userPhone ? '📞 ' + currentResult.userPhone : '';
             const date = currentResult.createdAt?.toDate();
             document.getElementById('modalDate').textContent = date ? formatDate(date) + ' ' + formatTime(date) : '-';
 
