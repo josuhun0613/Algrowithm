@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>애니어그램 결과 관리 - Algrowithm</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pure-white': '#ffffff',
+                        'off-white': '#f8f7f4',
+                        'text-dark': '#1a1a1a',
+                        'soft-gold': '#c9a227',
+                        'deep-navy': '#0f172a',
+                        'warm-gray': '#78716c',
+                    },
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                        serif: ['Playfair Display', 'Georgia', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <!-- Marked.js for markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background: #0f172a;
+            color: #f8f7f4;
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+        }
+
+        .result-card {
+            transition: all 0.3s;
+        }
+
+        .result-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-2px);
+        }
+
+        .type-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .score-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #c9a227 0%, #d4af37 100%);
+            color: #0f172a;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(201, 162, 39, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #f8f7f4;
+            padding: 12px 24px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .input-field {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 14px 18px;
+            color: #f8f7f4;
+            font-size: 1rem;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #c9a227;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border-radius: 24px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Report Styles */
+        .report-content h2, .report-content h3 {
+            color: #c9a227;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .report-content h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.5rem;
+        }
+
+        .report-content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .report-content p {
+            color: rgba(248, 247, 244, 0.85);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .report-content strong {
+            color: #f8f7f4;
+        }
+
+        .report-content ul, .report-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .report-content li {
+            color: rgba(248, 247, 244, 0.85);
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(201, 162, 39, 0.2);
+            border-top-color: #c9a227;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Type Colors */
+        .type-1 { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .type-2 { background: linear-gradient(135deg, #ec4899, #db2777); }
+        .type-3 { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .type-4 { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .type-5 { background: linear-gradient(135deg, #14b8a6, #0d9488); }
+        .type-6 { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+        .type-7 { background: linear-gradient(135deg, #f97316, #ea580c); }
+        .type-8 { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .type-9 { background: linear-gradient(135deg, #22c55e, #16a34a); }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                color: #1a1a1a;
+            }
+            .no-print { display: none !important; }
+            .glass-card, .modal-content {
+                background: white;
+                border: 1px solid #e5e7eb;
+            }
+            .report-content h2, .report-content h3 {
+                color: #92400e;
+            }
+            .report-content p, .report-content li {
+                color: #374151;
+            }
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+    <!-- Firebase 초기화 -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBK37wEth9Hoz_q17Ca0Ulm1W-JNEyllIk",
+            authDomain: "algrowithm-feea0.firebaseapp.com",
+            projectId: "algrowithm-feea0",
+            storageBucket: "algrowithm-feea0.firebasestorage.app",
+            messagingSenderId: "665224680106",
+            appId: "1:665224680106:web:86a2d938ac636751e336d3"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center p-6">
+        <div class="glass-card max-w-md w-full p-8">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-soft-gold/20 flex items-center justify-center">
+                    <i class="fa-solid fa-lock text-2xl text-soft-gold"></i>
+                </div>
+                <h1 class="text-2xl font-bold mb-2">관리자 인증</h1>
+                <p class="text-warm-gray text-sm">애니어그램 검사 결과 관리 페이지입니다</p>
+            </div>
+
+            <form onsubmit="login(event)">
+                <div class="mb-6">
+                    <label class="block text-sm text-warm-gray mb-2">접근 코드</label>
+                    <input type="password" id="accessCode" class="input-field" placeholder="접근 코드를 입력하세요" required>
+                </div>
+                <button type="submit" class="btn-gold w-full">
+                    <i class="fa-solid fa-sign-in-alt mr-2"></i> 로그인
+                </button>
+            </form>
+
+            <p class="text-center text-warm-gray/60 text-xs mt-6">
+                <a href="index.html" class="hover:text-soft-gold transition-colors">
+                    <i class="fa-solid fa-home mr-1"></i> 홈으로
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="min-h-screen hidden">
+        <!-- Header -->
+        <header class="sticky top-0 z-50 backdrop-blur-xl bg-deep-navy/90 border-b border-white/5">
+            <div class="max-w-7xl mx-auto px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-xl font-bold">애니어그램 결과 관리</h1>
+                        <p class="text-sm text-warm-gray">EPTI 검사 결과 조회 및 리포트 생성</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button onclick="loadResults()" class="btn-secondary text-sm">
+                            <i class="fa-solid fa-refresh mr-2"></i> 새로고침
+                        </button>
+                        <button onclick="logout()" class="text-warm-gray hover:text-white transition-colors">
+                            <i class="fa-solid fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-6 py-8">
+            <!-- Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="glass-card p-5">
+                    <p class="text-warm-gray text-sm mb-1">전체 응답</p>
+                    <p id="totalCount" class="text-3xl font-bold text-soft-gold">0</p>
+                </div>
+                <div class="glass-card p-5">
+                    <p class="text-warm-gray text-sm mb-1">오늘 응답</p>
+                    <p id="todayCount" class="text-3xl font-bold">0</p>
+                </div>
+                <div class="glass-card p-5">
+                    <p class="text-warm-gray text-sm mb-1">가장 많은 유형</p>
+                    <p id="topType" class="text-3xl font-bold">-</p>
+                </div>
+                <div class="glass-card p-5">
+                    <p class="text-warm-gray text-sm mb-1">평균 완료 시간</p>
+                    <p class="text-3xl font-bold">~12분</p>
+                </div>
+            </div>
+
+            <!-- Results List -->
+            <div class="glass-card">
+                <div class="p-6 border-b border-white/10">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <h2 class="text-lg font-bold">검사 결과 목록</h2>
+                        <div class="flex gap-3">
+                            <input type="text" id="searchInput" class="input-field text-sm" style="max-width: 250px;"
+                                placeholder="이름으로 검색..." oninput="filterResults()">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="resultsList" class="divide-y divide-white/5">
+                    <!-- 동적으로 로드 -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="p-12 text-center hidden">
+                    <i class="fa-solid fa-inbox text-4xl text-warm-gray/50 mb-4"></i>
+                    <p class="text-warm-gray">아직 검사 결과가 없습니다</p>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loadingState" class="p-12 flex justify-center">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Result Detail Modal -->
+    <div id="resultModal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <!-- Modal Header -->
+            <div class="sticky top-0 bg-slate-800 p-6 border-b border-white/10 flex items-center justify-between z-10">
+                <div>
+                    <h2 id="modalUserName" class="text-xl font-bold">홍길동</h2>
+                    <p id="modalDate" class="text-sm text-warm-gray">2024.01.01 12:00</p>
+                </div>
+                <button onclick="closeResultModal()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6">
+                <!-- Score Summary -->
+                <div class="mb-8">
+                    <h3 class="text-sm font-semibold text-warm-gray uppercase tracking-wider mb-4">유형별 점수</h3>
+                    <div id="modalScores" class="space-y-3">
+                        <!-- 동적으로 생성 -->
+                    </div>
+                </div>
+
+                <!-- Main Type -->
+                <div class="glass-card p-6 mb-8 text-center">
+                    <p class="text-sm text-warm-gray mb-2">주요 유형</p>
+                    <div id="modalMainType" class="type-badge type-1 w-20 h-20 mx-auto mb-3 text-3xl">1</div>
+                    <h3 id="modalTypeName" class="text-2xl font-bold mb-1">완벽주의자</h3>
+                    <p id="modalTypeDesc" class="text-warm-gray">원칙과 기준을 중시하는 개혁가</p>
+                </div>
+
+                <!-- AI Report Section -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-semibold text-warm-gray uppercase tracking-wider">AI 심층 리포트</h3>
+                        <button id="generateReportBtn" onclick="generateReport()" class="btn-gold text-sm">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> 리포트 생성
+                        </button>
+                    </div>
+
+                    <!-- Report Loading -->
+                    <div id="reportLoading" class="hidden p-8 text-center glass-card">
+                        <div class="spinner mx-auto mb-4"></div>
+                        <p class="text-warm-gray">AI가 심층 리포트를 작성하고 있습니다...</p>
+                        <p class="text-xs text-warm-gray/60 mt-2">약 10~20초 소요됩니다</p>
+                    </div>
+
+                    <!-- Report Content -->
+                    <div id="reportContent" class="hidden glass-card p-6">
+                        <div id="reportText" class="report-content">
+                            <!-- 마크다운 렌더링 -->
+                        </div>
+
+                        <div class="flex gap-3 mt-6 pt-6 border-t border-white/10 no-print">
+                            <button onclick="printReport()" class="btn-secondary flex-1">
+                                <i class="fa-solid fa-print mr-2"></i> 인쇄
+                            </button>
+                            <button onclick="copyReport()" class="btn-secondary flex-1">
+                                <i class="fa-solid fa-copy mr-2"></i> 복사
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 접근 코드
+        const VALID_ACCESS_CODE = 'namsan';
+
+        // 유형 정보
+        const typeInfo = {
+            1: { name: "완벽주의자", desc: "원칙과 기준을 중시하는 개혁가" },
+            2: { name: "돕는 사람", desc: "타인을 돕고 사랑받고 싶어하는 조력자" },
+            3: { name: "성취자", desc: "성공과 인정을 추구하는 성취가" },
+            4: { name: "개인주의자", desc: "독특함과 깊은 감정을 추구하는 예술가" },
+            5: { name: "탐구자", desc: "지식과 이해를 추구하는 사색가" },
+            6: { name: "충실한 사람", desc: "안전과 신뢰를 추구하는 충성가" },
+            7: { name: "열정적인 사람", desc: "즐거움과 다양한 경험을 추구하는 낙천가" },
+            8: { name: "도전자", desc: "힘과 정의를 추구하는 지도자" },
+            9: { name: "평화주의자", desc: "조화와 평화를 추구하는 중재자" }
+        };
+
+        let allResults = [];
+        let currentResult = null;
+
+        // 로그인
+        function login(e) {
+            e.preventDefault();
+            const code = document.getElementById('accessCode').value;
+
+            if (code === VALID_ACCESS_CODE) {
+                sessionStorage.setItem('enneagramAdmin', 'true');
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                loadResults();
+            } else {
+                alert('접근 코드가 올바르지 않습니다.');
+            }
+        }
+
+        // 로그아웃
+        function logout() {
+            sessionStorage.removeItem('enneagramAdmin');
+            location.reload();
+        }
+
+        // 세션 확인
+        function checkSession() {
+            if (sessionStorage.getItem('enneagramAdmin') === 'true') {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                loadResults();
+            }
+        }
+
+        // 결과 로드
+        async function loadResults() {
+            const listEl = document.getElementById('resultsList');
+            const loadingEl = document.getElementById('loadingState');
+            const emptyEl = document.getElementById('emptyState');
+
+            loadingEl.classList.remove('hidden');
+            emptyEl.classList.add('hidden');
+            listEl.innerHTML = '';
+
+            try {
+                const snapshot = await db.collection('enneagramResults')
+                    .orderBy('createdAt', 'desc')
+                    .get();
+
+                allResults = [];
+                snapshot.forEach(doc => {
+                    allResults.push({ id: doc.id, ...doc.data() });
+                });
+
+                loadingEl.classList.add('hidden');
+
+                if (allResults.length === 0) {
+                    emptyEl.classList.remove('hidden');
+                    return;
+                }
+
+                renderResults(allResults);
+                updateStats(allResults);
+
+            } catch (error) {
+                console.error('결과 로드 실패:', error);
+                loadingEl.classList.add('hidden');
+                listEl.innerHTML = '<div class="p-8 text-center text-red-400">데이터를 불러오는데 실패했습니다.</div>';
+            }
+        }
+
+        // 결과 렌더링
+        function renderResults(results) {
+            const listEl = document.getElementById('resultsList');
+            listEl.innerHTML = results.map(result => {
+                const date = result.createdAt?.toDate();
+                const dateStr = date ? formatDate(date) : '-';
+                const mainType = result.mainType || 1;
+
+                return `
+                    <div class="result-card p-4 md:p-6 flex items-center gap-4 cursor-pointer" onclick="openResultModal('${result.id}')">
+                        <div class="type-badge type-${mainType} text-white">${mainType}</div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-semibold truncate">${result.userName || '익명'}</p>
+                            <p class="text-sm text-warm-gray">${typeInfo[mainType].name} · ${dateStr}</p>
+                        </div>
+                        <div class="text-warm-gray">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 검색 필터
+        function filterResults() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allResults.filter(r =>
+                (r.userName || '').toLowerCase().includes(query)
+            );
+            renderResults(filtered);
+        }
+
+        // 통계 업데이트
+        function updateStats(results) {
+            document.getElementById('totalCount').textContent = results.length;
+
+            // 오늘 응답
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const todayResults = results.filter(r => {
+                const date = r.createdAt?.toDate();
+                return date && date >= today;
+            });
+            document.getElementById('todayCount').textContent = todayResults.length;
+
+            // 가장 많은 유형
+            const typeCounts = {};
+            results.forEach(r => {
+                const type = r.mainType || 1;
+                typeCounts[type] = (typeCounts[type] || 0) + 1;
+            });
+            const topType = Object.entries(typeCounts).sort((a, b) => b[1] - a[1])[0];
+            if (topType) {
+                document.getElementById('topType').textContent = topType[0] + '유형';
+            }
+        }
+
+        // 결과 상세 모달 열기
+        function openResultModal(id) {
+            currentResult = allResults.find(r => r.id === id);
+            if (!currentResult) return;
+
+            const modal = document.getElementById('resultModal');
+            const mainType = currentResult.mainType || 1;
+
+            // 기본 정보
+            document.getElementById('modalUserName').textContent = currentResult.userName || '익명';
+            const date = currentResult.createdAt?.toDate();
+            document.getElementById('modalDate').textContent = date ? formatDate(date) + ' ' + formatTime(date) : '-';
+
+            // 주유형
+            const mainTypeEl = document.getElementById('modalMainType');
+            mainTypeEl.textContent = mainType;
+            mainTypeEl.className = `type-badge type-${mainType} w-20 h-20 mx-auto mb-3 text-3xl text-white`;
+            document.getElementById('modalTypeName').textContent = typeInfo[mainType].name;
+            document.getElementById('modalTypeDesc').textContent = typeInfo[mainType].desc;
+
+            // 점수 차트
+            const scores = currentResult.scores || {};
+            const sortedScores = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+            document.getElementById('modalScores').innerHTML = sortedScores.map(([type, score]) => {
+                const percent = (score / 45) * 100;
+                return `
+                    <div class="flex items-center gap-3">
+                        <div class="type-badge type-${type} w-8 h-8 text-sm text-white">${type}</div>
+                        <div class="flex-1">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>${typeInfo[type].name}</span>
+                                <span class="text-warm-gray">${score}/45</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-fill type-${type}" style="width: ${percent}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // 리포트 초기화
+            document.getElementById('reportLoading').classList.add('hidden');
+            document.getElementById('reportContent').classList.add('hidden');
+            document.getElementById('generateReportBtn').classList.remove('hidden');
+
+            // 기존 리포트가 있으면 표시
+            if (currentResult.aiReport) {
+                document.getElementById('reportText').innerHTML = marked.parse(currentResult.aiReport);
+                document.getElementById('reportContent').classList.remove('hidden');
+                document.getElementById('generateReportBtn').innerHTML = '<i class="fa-solid fa-refresh mr-2"></i> 다시 생성';
+            }
+
+            modal.classList.add('active');
+        }
+
+        // 모달 닫기
+        function closeModal(e) {
+            if (e.target === e.currentTarget) {
+                closeResultModal();
+            }
+        }
+
+        function closeResultModal() {
+            document.getElementById('resultModal').classList.remove('active');
+            currentResult = null;
+        }
+
+        // AI 리포트 생성
+        async function generateReport() {
+            if (!currentResult) return;
+
+            const loadingEl = document.getElementById('reportLoading');
+            const contentEl = document.getElementById('reportContent');
+            const btn = document.getElementById('generateReportBtn');
+
+            btn.classList.add('hidden');
+            loadingEl.classList.remove('hidden');
+            contentEl.classList.add('hidden');
+
+            try {
+                const response = await fetch('/api/enneagram-report', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        scores: currentResult.scores,
+                        userName: currentResult.userName,
+                        userAge: currentResult.userAge,
+                        userGender: currentResult.userGender
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.report) {
+                    // 마크다운 렌더링
+                    document.getElementById('reportText').innerHTML = marked.parse(data.report);
+                    contentEl.classList.remove('hidden');
+
+                    // Firebase에 리포트 저장
+                    await db.collection('enneagramResults').doc(currentResult.id).update({
+                        aiReport: data.report,
+                        reportGeneratedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    currentResult.aiReport = data.report;
+                } else {
+                    throw new Error(data.error || '리포트 생성 실패');
+                }
+
+            } catch (error) {
+                console.error('리포트 생성 실패:', error);
+                alert('리포트 생성에 실패했습니다: ' + error.message);
+            } finally {
+                loadingEl.classList.add('hidden');
+                btn.classList.remove('hidden');
+                btn.innerHTML = '<i class="fa-solid fa-refresh mr-2"></i> 다시 생성';
+            }
+        }
+
+        // 리포트 인쇄
+        function printReport() {
+            window.print();
+        }
+
+        // 리포트 복사
+        function copyReport() {
+            const reportText = document.getElementById('reportText').innerText;
+            navigator.clipboard.writeText(reportText).then(() => {
+                alert('리포트가 클립보드에 복사되었습니다.');
+            });
+        }
+
+        // 유틸리티 함수
+        function formatDate(date) {
+            return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+        }
+
+        function formatTime(date) {
+            return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        }
+
+        // 페이지 로드 시 세션 확인
+        checkSession();
+
+        // ESC 키로 모달 닫기
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeResultModal();
+            }
+        });
+    </script>
+</body>
+
+</html>
