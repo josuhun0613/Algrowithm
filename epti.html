@@ -168,18 +168,13 @@
             inset: -4px;
             border-radius: 50%;
             border: 1px solid transparent;
-            transition: all 0.3s;
+            /* 트랜지션 제거 - 선택 상태 잔상 문제 해결 */
         }
 
         .score-option.selected::after {
             border-color: rgba(201, 162, 39, 0.3);
         }
 
-        /* 트랜지션 비활성화 클래스 */
-        .score-option.no-transition,
-        .score-option.no-transition::after {
-            transition: none !important;
-        }
 
         /* Question Transition - Fade In/Out */
         .question-container {
@@ -751,6 +746,7 @@
         // 문항 표시 (페이드 효과 포함)
         function showQuestion(index, withFade = false) {
             const container = document.getElementById('questionContainer');
+            const buttons = document.querySelectorAll('.score-option');
 
             const updateContent = () => {
                 currentQuestion = index;
@@ -770,11 +766,6 @@
 
                 // Question Text
                 document.getElementById('questionText').textContent = questions[index];
-
-                // 버튼 상태 초기화 - 모든 선택 해제
-                document.querySelectorAll('.score-option').forEach(btn => {
-                    btn.classList.remove('selected');
-                });
 
                 // 이전 답변이 있으면 표시
                 if (answers[index] !== null) {
@@ -797,33 +788,37 @@
             };
 
             if (withFade) {
-                // 트랜지션 비활성화 클래스 추가 후 선택 상태 제거
-                const buttons = document.querySelectorAll('.score-option');
+                // 1. 모든 버튼의 selected 클래스와 인라인 스타일 완전 초기화
                 buttons.forEach(btn => {
-                    btn.classList.add('no-transition');
-                    btn.classList.remove('selected');
+                    btn.classList.remove('selected', 'no-transition');
+                    // 인라인 스타일로 강제 초기화
+                    btn.style.cssText = '';
                 });
 
-                // 강제 리플로우로 스타일 즉시 적용
-                void document.body.offsetHeight;
+                // 2. 강제 리플로우
+                void container.offsetWidth;
 
-                // 페이드아웃
+                // 3. 페이드아웃
                 container.classList.remove('question-fade-in');
                 container.classList.add('question-fade-out');
 
                 setTimeout(() => {
-                    updateContent();
-
-                    // 트랜지션 클래스 제거 (다음 선택 시 애니메이션 적용되도록)
+                    // 4. 다시 한번 모든 버튼 초기화 (혹시 모를 상태 유지 방지)
                     buttons.forEach(btn => {
-                        btn.classList.remove('no-transition');
+                        btn.classList.remove('selected');
                     });
 
-                    // 페이드인
+                    updateContent();
+
+                    // 5. 페이드인
                     container.classList.remove('question-fade-out');
                     container.classList.add('question-fade-in');
                 }, 150);
             } else {
+                // 페이드 없이 표시할 때도 먼저 초기화
+                buttons.forEach(btn => {
+                    btn.classList.remove('selected');
+                });
                 updateContent();
             }
         }
