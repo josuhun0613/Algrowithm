@@ -175,6 +175,12 @@
             border-color: rgba(201, 162, 39, 0.3);
         }
 
+        /* 트랜지션 비활성화 클래스 */
+        .score-option.no-transition,
+        .score-option.no-transition::after {
+            transition: none !important;
+        }
+
         /* Question Transition - Fade In/Out */
         .question-container {
             transition: opacity 0.3s ease;
@@ -791,24 +797,15 @@
             };
 
             if (withFade) {
-                // 먼저 선택 상태 초기화 (트랜지션 없이 즉시 리셋)
-                document.querySelectorAll('.score-option').forEach(btn => {
-                    btn.style.transition = 'none';
+                // 트랜지션 비활성화 클래스 추가 후 선택 상태 제거
+                const buttons = document.querySelectorAll('.score-option');
+                buttons.forEach(btn => {
+                    btn.classList.add('no-transition');
                     btn.classList.remove('selected');
-                    // 스타일 강제 리셋
-                    btn.style.borderColor = '';
-                    btn.style.background = '';
-                    btn.style.color = '';
-                    btn.style.transform = '';
-                    btn.style.boxShadow = '';
                 });
 
-                // 다음 프레임에서 트랜지션 복원
-                requestAnimationFrame(() => {
-                    document.querySelectorAll('.score-option').forEach(btn => {
-                        btn.style.transition = '';
-                    });
-                });
+                // 강제 리플로우로 스타일 즉시 적용
+                void document.body.offsetHeight;
 
                 // 페이드아웃
                 container.classList.remove('question-fade-in');
@@ -816,6 +813,12 @@
 
                 setTimeout(() => {
                     updateContent();
+
+                    // 트랜지션 클래스 제거 (다음 선택 시 애니메이션 적용되도록)
+                    buttons.forEach(btn => {
+                        btn.classList.remove('no-transition');
+                    });
+
                     // 페이드인
                     container.classList.remove('question-fade-out');
                     container.classList.add('question-fade-in');
