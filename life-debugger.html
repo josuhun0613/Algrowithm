@@ -44,6 +44,9 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    <!-- html2canvas for image export -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
     <!-- Google Fonts -->
     <link rel="stylesheet" as="style" crossorigin
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
@@ -416,16 +419,84 @@ ${messages.map(m => `${m.role === 'user' ? '사용자' : 'AI'}: ${m.content}`).j
         }
 
         async function handleShare() {
-            const text = `🔍 5 Why 분석 결과\n\n📌 표면적 고민: ${state.result.surfaceProblem}\n\n🌱 진짜 원인: ${state.result.rootCause}\n\n💡 통찰: ${state.result.insight}`;
+            const text = `🔍 5 Why 분석 결과\n\n🌊 표면적 문제: ${state.result.surfaceProblem}\n\n🌱 근본 원인: ${state.result.rootCause}\n\n💡 원인 뒤집기: ${state.result.insight}\n\n📎 라이프 디버거 | algrowithm.org/life-debugger.html`;
 
             if (navigator.share) {
                 try {
-                    await navigator.share({ text });
+                    await navigator.share({ text, title: '5 Why 분석 결과' });
                 } catch (err) {}
             } else {
                 navigator.clipboard.writeText(text);
-                alert('결과가 클립보드에 복사되었습니다.');
+                showToast('클립보드에 복사되었습니다');
             }
+        }
+
+        // 텍스트 복사
+        function handleCopyText() {
+            const text = `🔍 5 Why 분석 결과
+
+🌊 표면적 문제
+${state.result.surfaceProblem}
+
+🌱 근본 원인
+${state.result.rootCause}
+
+💡 원인 뒤집기
+${state.result.insight}
+
+━━━━━━━━━━━━━━━
+라이프 디버거 | algrowithm.org`;
+
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('텍스트가 복사되었습니다');
+            });
+        }
+
+        // 이미지 저장
+        async function handleSaveImage() {
+            const captureArea = document.getElementById('captureArea');
+            if (!captureArea) return;
+
+            showToast('이미지 생성 중...');
+
+            try {
+                const canvas = await html2canvas(captureArea, {
+                    backgroundColor: '#0d101a',
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                });
+
+                // 다운로드
+                const link = document.createElement('a');
+                link.download = '5why-분석결과.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+                showToast('이미지가 저장되었습니다');
+            } catch (err) {
+                console.error('Image save error:', err);
+                showToast('이미지 저장에 실패했습니다');
+            }
+        }
+
+        // 토스트 메시지
+        function showToast(message) {
+            // 기존 토스트 제거
+            const existingToast = document.getElementById('toast');
+            if (existingToast) existingToast.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'toast';
+            toast.className = 'fixed bottom-24 left-1/2 -translate-x-1/2 px-4 py-2 bg-midnight-700 text-white text-sm rounded-full shadow-lg z-50 fade-in';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
         }
 
         // ============== Render Functions ==============
@@ -612,90 +683,107 @@ ${messages.map(m => `${m.role === 'user' ? '사용자' : 'AI'}: ${m.content}`).j
 
         function renderResultScreen() {
             return `
-                <main class="min-h-screen p-6">
+                <main class="min-h-screen p-4 sm:p-6">
                     <div class="max-w-4xl mx-auto">
                         <!-- Header -->
-                        <header class="flex items-center justify-between mb-8">
+                        <header class="flex items-center justify-between mb-6 sm:mb-8">
                             <button onclick="handleReset()" class="flex items-center gap-2 text-midnight-400 hover:text-white transition-colors">
                                 <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                                <span>처음으로</span>
+                                <span class="hidden sm:inline">처음으로</span>
                             </button>
                             <div class="flex items-center gap-2 text-midnight-500">
-                                <i data-lucide="moon" class="w-5 h-5"></i>
-                                <span class="text-sm">심야의 상담소</span>
+                                <i data-lucide="brain" class="w-5 h-5"></i>
+                                <span class="text-sm">5 Why 분석</span>
                             </div>
                         </header>
 
-                        <!-- Result Card -->
-                        <div class="w-full max-w-2xl mx-auto fade-in">
-                            <!-- Header -->
-                            <div class="text-center mb-8">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-aurora-purple to-aurora-cyan mb-4">
-                                    <i data-lucide="target" class="w-8 h-8 text-white"></i>
+                        <!-- Result Card (캡처 영역) -->
+                        <div id="resultCard" class="w-full max-w-2xl mx-auto fade-in">
+                            <!-- 캡처용 카드 -->
+                            <div id="captureArea" class="bg-gradient-to-br from-midnight-900 via-midnight-800 to-midnight-900 rounded-3xl p-6 sm:p-8">
+                                <!-- Header -->
+                                <div class="text-center mb-6 sm:mb-8">
+                                    <div class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-aurora-purple to-aurora-cyan mb-3 sm:mb-4">
+                                        <i data-lucide="target" class="w-7 h-7 sm:w-8 sm:h-8 text-white"></i>
+                                    </div>
+                                    <h2 class="text-xl sm:text-2xl font-bold gradient-text mb-2">5 Why 분석 결과</h2>
+                                    <p class="text-midnight-400 text-sm">근본 원인을 찾았습니다</p>
                                 </div>
-                                <h2 class="text-2xl font-bold gradient-text mb-2">분석이 완료되었습니다</h2>
-                                <p class="text-midnight-400">당신의 고민을 깊이 들여다본 결과입니다</p>
+
+                                <!-- Result Cards -->
+                                <div class="space-y-3 sm:space-y-4">
+                                    <!-- Surface Problem -->
+                                    <div class="bg-midnight-800/50 rounded-2xl p-4 sm:p-5 border border-midnight-700/50">
+                                        <div class="flex items-start gap-3 sm:gap-4">
+                                            <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-aurora-blue/20 flex items-center justify-center">
+                                                <span class="text-lg sm:text-xl">🌊</span>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <h3 class="text-xs sm:text-sm font-medium text-aurora-blue mb-1 sm:mb-2">표면적 문제</h3>
+                                                <p class="text-midnight-200 text-sm sm:text-base leading-relaxed">${escapeHtml(state.result.surfaceProblem)}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Root Cause -->
+                                    <div class="bg-aurora-purple/10 rounded-2xl p-4 sm:p-5 border border-aurora-purple/30">
+                                        <div class="flex items-start gap-3 sm:gap-4">
+                                            <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-aurora-purple/20 flex items-center justify-center">
+                                                <span class="text-lg sm:text-xl">🌱</span>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <h3 class="text-xs sm:text-sm font-medium text-aurora-purple mb-1 sm:mb-2">근본 원인</h3>
+                                                <p class="text-white text-sm sm:text-base leading-relaxed font-medium">${escapeHtml(state.result.rootCause)}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Insight -->
+                                    <div class="bg-midnight-800/50 rounded-2xl p-4 sm:p-5 border border-midnight-700/50">
+                                        <div class="flex items-start gap-3 sm:gap-4">
+                                            <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-aurora-cyan/20 flex items-center justify-center">
+                                                <span class="text-lg sm:text-xl">💡</span>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <h3 class="text-xs sm:text-sm font-medium text-aurora-cyan mb-1 sm:mb-2">원인 뒤집기</h3>
+                                                <p class="text-midnight-200 text-sm sm:text-base leading-relaxed">${escapeHtml(state.result.insight)}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Footer -->
+                                <div class="mt-6 pt-4 border-t border-midnight-700/50 text-center">
+                                    <p class="text-midnight-500 text-xs">라이프 디버거 | algrowithm.org</p>
+                                </div>
                             </div>
+                        </div>
 
-                            <!-- Result Cards -->
-                            <div class="space-y-4">
-                                <!-- Surface Problem -->
-                                <div class="glass rounded-2xl p-6 transition-all duration-300 hover:border-aurora-blue/30">
-                                    <div class="flex items-start gap-4">
-                                        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-aurora-blue/20 flex items-center justify-center">
-                                            <i data-lucide="heart" class="w-6 h-6 text-aurora-blue"></i>
-                                        </div>
-                                        <div>
-                                            <h3 class="text-sm font-medium text-aurora-blue mb-2">🌊 껍질 (표면적 고민)</h3>
-                                            <p class="text-midnight-200 leading-relaxed">${escapeHtml(state.result.surfaceProblem)}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Root Cause -->
-                                <div class="glass rounded-2xl p-6 border-aurora-purple/30 transition-all duration-300 hover:border-aurora-purple/50">
-                                    <div class="flex items-start gap-4">
-                                        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-aurora-purple/20 flex items-center justify-center">
-                                            <i data-lucide="target" class="w-6 h-6 text-aurora-purple"></i>
-                                        </div>
-                                        <div>
-                                            <h3 class="text-sm font-medium text-aurora-purple mb-2">🌱 뿌리 (진짜 원인)</h3>
-                                            <p class="text-white leading-relaxed font-medium">${escapeHtml(state.result.rootCause)}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Insight -->
-                                <div class="glass rounded-2xl p-6 transition-all duration-300 hover:border-aurora-cyan/30">
-                                    <div class="flex items-start gap-4">
-                                        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-aurora-cyan/20 flex items-center justify-center">
-                                            <i data-lucide="lightbulb" class="w-6 h-6 text-aurora-cyan"></i>
-                                        </div>
-                                        <div>
-                                            <h3 class="text-sm font-medium text-aurora-cyan mb-2">💫 통찰</h3>
-                                            <p class="text-midnight-200 leading-relaxed italic">${escapeHtml(state.result.insight)}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Actions -->
-                            <div class="flex justify-center gap-4 mt-8">
-                                <button onclick="handleReset()" class="flex items-center gap-2 px-6 py-3 rounded-xl bg-midnight-800 text-midnight-300 hover:bg-midnight-700 hover:text-white transition-all duration-200">
-                                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-                                    <span>새로운 분석</span>
+                        <!-- Actions (캡처 영역 밖) -->
+                        <div class="w-full max-w-2xl mx-auto mt-6 sm:mt-8">
+                            <!-- 버튼 그리드 - 모바일 2x2, 데스크탑 4열 -->
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                                <button onclick="handleCopyText()" class="flex flex-col items-center gap-1.5 p-3 sm:p-4 rounded-xl bg-midnight-800/80 text-midnight-300 hover:bg-midnight-700 hover:text-white transition-all duration-200 border border-midnight-700/50">
+                                    <i data-lucide="copy" class="w-5 h-5"></i>
+                                    <span class="text-xs">텍스트 복사</span>
                                 </button>
-                                <button onclick="handleShare()" class="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-aurora-purple to-aurora-blue text-white hover:opacity-90 transition-all duration-200">
-                                    <i data-lucide="share-2" class="w-4 h-4"></i>
-                                    <span>결과 공유</span>
+                                <button onclick="handleSaveImage()" class="flex flex-col items-center gap-1.5 p-3 sm:p-4 rounded-xl bg-midnight-800/80 text-midnight-300 hover:bg-midnight-700 hover:text-white transition-all duration-200 border border-midnight-700/50">
+                                    <i data-lucide="image" class="w-5 h-5"></i>
+                                    <span class="text-xs">이미지 저장</span>
+                                </button>
+                                <button onclick="handleShare()" class="flex flex-col items-center gap-1.5 p-3 sm:p-4 rounded-xl bg-midnight-800/80 text-midnight-300 hover:bg-midnight-700 hover:text-white transition-all duration-200 border border-midnight-700/50">
+                                    <i data-lucide="share-2" class="w-5 h-5"></i>
+                                    <span class="text-xs">공유하기</span>
+                                </button>
+                                <button onclick="handleReset()" class="flex flex-col items-center gap-1.5 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-aurora-purple to-aurora-blue text-white hover:opacity-90 transition-all duration-200">
+                                    <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                                    <span class="text-xs">새로 시작</span>
                                 </button>
                             </div>
-
-                            <p class="text-center text-xs text-midnight-600 mt-6">이 결과는 로컬에 저장되었습니다.</p>
 
                             <!-- Back to main -->
-                            <div class="text-center mt-8">
-                                <a href="index.html" class="text-midnight-500 hover:text-midnight-300 text-sm flex items-center gap-2 justify-center transition-colors">
+                            <div class="text-center mt-6">
+                                <a href="index.html" class="text-midnight-500 hover:text-midnight-300 text-sm inline-flex items-center gap-2 transition-colors">
                                     <i data-lucide="home" class="w-4 h-4"></i>
                                     메인으로 돌아가기
                                 </a>
