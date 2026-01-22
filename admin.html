@@ -245,7 +245,12 @@
                             <i class="fa-solid fa-list text-gold mr-2"></i>
                             등록된 사진
                         </h2>
-                        <span id="photoReviewsCount" class="text-gray-500 text-sm">0개</span>
+                        <div class="flex items-center gap-3">
+                            <button onclick="normalizeCoverOrders()" class="text-xs px-3 py-1.5 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors">
+                                <i class="fa-solid fa-sort-numeric-up mr-1"></i>순서 정리
+                            </button>
+                            <span id="photoReviewsCount" class="text-gray-500 text-sm">0개</span>
+                        </div>
                     </div>
 
                     <p class="text-gray-400 text-xs mb-4">
@@ -913,6 +918,40 @@
             } catch (error) {
                 console.error('Save cover order error:', error);
                 alert('설정 변경 실패: ' + error.message);
+            }
+        }
+
+        // 표지 순서 정리 (중복 제거, 1부터 재정렬)
+        async function normalizeCoverOrders() {
+            try {
+                const snapshot = await db.collection('photoReviews').where('isCover', '==', true).get();
+
+                if (snapshot.empty) {
+                    alert('표지로 설정된 사진이 없습니다.');
+                    return;
+                }
+
+                // 현재 coverOrder 기준으로 정렬
+                const covers = [];
+                snapshot.forEach(doc => {
+                    covers.push({ id: doc.id, coverOrder: doc.data().coverOrder || 999 });
+                });
+                covers.sort((a, b) => a.coverOrder - b.coverOrder);
+
+                // 1부터 순차적으로 재할당
+                const batch = db.batch();
+                covers.forEach((cover, index) => {
+                    batch.update(db.collection('photoReviews').doc(cover.id), {
+                        coverOrder: index + 1
+                    });
+                });
+
+                await batch.commit();
+                loadPhotoReviews();
+                alert(`${covers.length}개 표지 사진 순서가 정리되었습니다. (1~${covers.length})`);
+            } catch (error) {
+                console.error('Normalize cover orders error:', error);
+                alert('순서 정리 실패: ' + error.message);
             }
         }
 
