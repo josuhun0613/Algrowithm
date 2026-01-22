@@ -876,18 +876,40 @@
         // 표지 순서 저장
         async function saveCoverOrder() {
             const docId = document.getElementById('coverOrderDocId').value;
-            const coverOrder = parseInt(document.getElementById('coverOrderValue').value) || 1;
+            const newOrder = parseInt(document.getElementById('coverOrderValue').value) || 1;
 
             try {
-                console.log('저장 중:', { docId, coverOrder });
-                await db.collection('photoReviews').doc(docId).update({
-                    isCover: true,
-                    coverOrder: coverOrder
+                // 현재 문서의 기존 순서 확인
+                const currentDoc = await db.collection('photoReviews').doc(docId).get();
+                const currentOrder = currentDoc.exists && currentDoc.data().isCover ? currentDoc.data().coverOrder : null;
+
+                // 기존 표지 사진들 중 순서 조정이 필요한 것들 찾기
+                const snapshot = await db.collection('photoReviews').where('isCover', '==', true).get();
+                const batch = db.batch();
+
+                snapshot.forEach(doc => {
+                    if (doc.id === docId) return; // 현재 문서는 건너뛰기
+
+                    const data = doc.data();
+                    const order = data.coverOrder || 999;
+
+                    // 새 순서 이상인 것들은 +1씩 밀어주기
+                    if (order >= newOrder) {
+                        batch.update(doc.ref, { coverOrder: order + 1 });
+                    }
                 });
-                console.log('저장 완료:', { docId, coverOrder });
+
+                // 현재 문서 업데이트
+                batch.update(db.collection('photoReviews').doc(docId), {
+                    isCover: true,
+                    coverOrder: newOrder
+                });
+
+                await batch.commit();
+
                 closeCoverOrderModal();
                 loadPhotoReviews();
-                alert(`표지 순서 ${coverOrder}번으로 설정되었습니다.`);
+                alert(`표지 순서 ${newOrder}번으로 설정되었습니다.`);
             } catch (error) {
                 console.error('Save cover order error:', error);
                 alert('설정 변경 실패: ' + error.message);
