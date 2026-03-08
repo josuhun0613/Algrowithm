@@ -7,7 +7,7 @@
 function getHeaderHTML(options = {}) {
     const {
         showStartButton = true,  // 시작하기 버튼 표시 여부
-        startButtonLink = 'workbook_1.html'  // 시작하기 버튼 링크
+        startButtonLink = '/workbooks/workbook_1.html'  // 시작하기 버튼 링크
     } = options;
 
     const startButton = showStartButton ? `
@@ -22,13 +22,13 @@ function getHeaderHTML(options = {}) {
     <nav class="fixed w-full z-50 header-blur transition-all duration-300" id="navbar">
         <div class="w-full px-[60px] py-3 flex justify-between items-center">
             <a href="/" class="flex items-center gap-3">
-                <img src="./assets/logo.svg" alt="Logo" class="w-10 h-10">
+                <img src="/assets/logo.svg" alt="Logo" class="w-10 h-10">
                 <span class="text-2xl font-serif font-bold tracking-tight">Algrowithm</span>
             </a>
 
             <div class="flex items-center gap-10">
                 <div class="hidden md:flex items-center gap-12 text-lg font-medium text-gray-700">
-                    <a href="about.html" class="hover:text-soft-gold transition-colors">About</a>
+                    <a href="/about.html" class="hover:text-soft-gold transition-colors">About</a>
 
                     <div class="dropdown">
                         <button class="hover:text-soft-gold transition-colors flex items-center gap-1">
@@ -36,38 +36,38 @@ function getHeaderHTML(options = {}) {
                             <i class="fa-solid fa-chevron-down text-[12px] ml-1"></i>
                         </button>
                         <div class="dropdown-menu">
-                            <a href="workbook_1.html" class="dropdown-item">
+                            <a href="/workbooks/workbook_1.html" class="dropdown-item">
                                 <span class="text-soft-gold font-bold mr-2">01</span> 내 안의 빌런을 찾아라
                             </a>
-                            <a href="workbook_2.html" class="dropdown-item">
+                            <a href="/workbooks/workbook_2.html" class="dropdown-item">
                                 <span class="text-soft-gold font-bold mr-2">02</span> 이미지 아이덴티티
                             </a>
-                            <a href="workbook_3.html" class="dropdown-item">
+                            <a href="/workbooks/workbook_3.html" class="dropdown-item">
                                 <span class="text-soft-gold font-bold mr-2">03</span> 커리어 브랜딩
                             </a>
-                            <a href="workbook_4.html" class="dropdown-item">
+                            <a href="/workbooks/workbook_4.html" class="dropdown-item">
                                 <span class="text-soft-gold font-bold mr-2">04</span> 내가 원하는 삶
                             </a>
                             <div class="border-t border-gray-100 my-2"></div>
-                            <a href="prompt-studio.html" class="dropdown-item">
+                            <a href="/tools/prompt-studio.html" class="dropdown-item">
                                 <i class="fa-solid fa-wand-magic-sparkles text-soft-gold mr-2"></i> 웹사이트 생성 프롬프트
                             </a>
-                            <a href="ebook-generator.html" class="dropdown-item">
+                            <a href="/tools/ebook-generator.html" class="dropdown-item">
                                 <i class="fa-solid fa-pen-fancy text-soft-gold mr-2"></i> E-book 프롬프트
                             </a>
-                            <a href="ebook-pdf-generator.html" class="dropdown-item">
+                            <a href="/tools/ebook-pdf-generator.html" class="dropdown-item">
                                 <i class="fa-solid fa-file-pdf text-soft-gold mr-2"></i> E-book PDF 생성
                             </a>
-                            <a href="image-studio.html" class="dropdown-item">
+                            <a href="/tools/image-studio.html" class="dropdown-item">
                                 <i class="fa-solid fa-image text-soft-gold mr-2"></i> AI 이미지 생성
                             </a>
-                            <a href="website-studio.html" class="dropdown-item">
+                            <a href="/tools/website-studio.html" class="dropdown-item">
                                 <i class="fa-solid fa-code text-soft-gold mr-2"></i> 웹사이트 스튜디오
                             </a>
                         </div>
                     </div>
 
-                    <a href="schedule.html" class="hover:text-soft-gold transition-colors">일정</a>
+                    <a href="/schedule.html" class="hover:text-soft-gold transition-colors">일정</a>
                 </div>
 
                 ${startButton}
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const autoInit = document.querySelector('[data-auto-header]');
     if (autoInit) {
         const showStartButton = autoInit.dataset.showStartButton !== 'false';
-        const startButtonLink = autoInit.dataset.startButtonLink || 'workbook_1.html';
+        const startButtonLink = autoInit.dataset.startButtonLink || '/workbooks/workbook_1.html';
         initHeader({ showStartButton, startButtonLink });
     }
 });

@@ -32,14 +32,14 @@ export default async function handler(req, res) {
     if (action === 'callback') {
         if (!code) {
             // 에러 페이지로 리다이렉트
-            return res.redirect('/website-studio.html?github_error=no_code');
+            return res.redirect('/tools/website-studio.html?github_error=no_code');
         }
 
         const clientId = process.env.GITHUB_CLIENT_ID;
         const clientSecret = process.env.GITHUB_CLIENT_SECRET;
 
         if (!clientId || !clientSecret) {
-            return res.redirect('/website-studio.html?github_error=server_config');
+            return res.redirect('/tools/website-studio.html?github_error=server_config');
         }
 
         try {
@@ -61,7 +61,7 @@ export default async function handler(req, res) {
 
             if (tokenData.error) {
                 console.error('GitHub token error:', tokenData);
-                return res.redirect('/website-studio.html?github_error=token_failed');
+                return res.redirect('/tools/website-studio.html?github_error=token_failed');
             }
 
             // 성공 시 토큰과 함께 리다이렉트 (URL fragment로 전달하여 서버 로그에 남지 않게)
@@ -69,7 +69,7 @@ export default async function handler(req, res) {
 
         } catch (error) {
             console.error('GitHub OAuth error:', error);
-            return res.redirect('/website-studio.html?github_error=server_error');
+            return res.redirect('/tools/website-studio.html?github_error=server_error');
         }
     }
 
