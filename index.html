@@ -529,23 +529,31 @@
         @media (max-width: 768px) {
             .hero-swiper .swiper-pagination {
                 top: 100px !important;
-                right: 20px !important;
+                right: 16px !important;
             }
             .hero-swiper .swiper-button-prev,
             .hero-swiper .swiper-button-next {
                 width: 44px;
                 height: 44px;
-                bottom: 100px;
+                bottom: 90px;
             }
             .hero-swiper .swiper-button-prev {
                 right: 74px;
             }
             .hero-swiper .swiper-button-next {
-                right: 30px;
+                right: 20px;
             }
             .hero-swiper .swiper-button-prev::after,
             .hero-swiper .swiper-button-next::after {
                 font-size: 12px;
+            }
+            .hero-title {
+                left: 20px;
+                bottom: 70px;
+                right: 20px;
+            }
+            .slide-counter {
+                display: none;
             }
         }
 
@@ -711,7 +719,17 @@
         @media (max-width: 768px) {
             .photo-review-card {
                 width: 220px;
-                height: 160px;
+                height: 180px;
+            }
+            /* 리뷰 마퀴: 터치 시 일시정지 */
+            .reviews-track,
+            .photo-reviews-track {
+                -webkit-overflow-scrolling: touch;
+            }
+            /* Quote 섹션 패딩 축소 */
+            #quote {
+                padding-top: 5rem;
+                padding-bottom: 5rem;
             }
         }
 
@@ -749,7 +767,7 @@
         <!-- Hero Title - Magazine Style -->
         <div class="hero-title">
             <p class="text-sm font-bold tracking-[0.3em] uppercase mb-4 opacity-80">Growth Algorithm</p>
-            <h1 class="text-5xl md:text-7xl font-serif font-bold leading-none mb-4">
+            <h1 class="text-4xl md:text-7xl font-serif font-bold leading-none mb-4">
                 Algrowithm
             </h1>
             <p class="text-lg md:text-xl font-light opacity-90 max-w-xl mb-6">
@@ -769,7 +787,7 @@
             <!-- Section Header -->
             <div class="mb-16 reveal-text">
                 <span class="text-soft-gold font-bold tracking-[0.2em] uppercase text-sm">Philosophy</span>
-                <h2 class="text-5xl md:text-6xl font-serif font-bold mt-4 leading-tight">
+                <h2 class="text-3xl sm:text-5xl md:text-6xl font-serif font-bold mt-4 leading-tight">
                     왜 '나'여야 하는가?
                 </h2>
                 <p class="text-xl text-gray-500 mt-6 max-w-3xl leading-relaxed">
@@ -815,7 +833,7 @@
             <!-- Section Header -->
             <div class="text-center mb-12 reveal-text">
                 <span class="text-soft-gold font-bold tracking-[0.2em] uppercase text-sm">AI Tools</span>
-                <h2 class="text-5xl md:text-6xl font-serif font-bold mt-4 mb-6">AI로 창작하다</h2>
+                <h2 class="text-3xl sm:text-5xl md:text-6xl font-serif font-bold mt-4 mb-6">AI로 창작하다</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
                     워크북에서 발견한 가치를 바탕으로 AI 도구를 활용해 나만의 콘텐츠를 만들어보세요.
                 </p>
@@ -858,7 +876,7 @@
     <section id="reviews" class="py-20 bg-white overflow-hidden">
         <div class="max-w-7xl mx-auto px-6 mb-12">
             <span class="text-soft-gold font-bold tracking-[0.2em] uppercase text-sm">Reviews</span>
-            <h2 class="text-5xl md:text-6xl font-serif font-bold mt-4">참가자 후기</h2>
+            <h2 class="text-3xl sm:text-5xl md:text-6xl font-serif font-bold mt-4">참가자 후기</h2>
             <p class="text-xl text-gray-500 mt-4">Algrowithm과 함께한 분들의 이야기</p>
         </div>
 
@@ -898,10 +916,10 @@
             <!-- Bottom right diamond -->
             <div class="absolute bottom-10 right-10 w-56 h-56 border border-soft-gold/20 rotate-45"></div>
             <div class="absolute bottom-14 right-14 w-48 h-48 border border-soft-gold/10 rotate-45"></div>
-            <!-- Center large diamond -->
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[28rem] h-[28rem] border border-soft-gold/15 rotate-45"></div>
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[24rem] h-[24rem] border border-white/10 rotate-45"></div>
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[20rem] h-[20rem] border border-soft-gold/10 rotate-45"></div>
+            <!-- Center large diamond (모바일 숨김) -->
+            <div class="hidden sm:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[28rem] h-[28rem] border border-soft-gold/15 rotate-45"></div>
+            <div class="hidden sm:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[24rem] h-[24rem] border border-white/10 rotate-45"></div>
+            <div class="hidden sm:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[20rem] h-[20rem] border border-soft-gold/10 rotate-45"></div>
             <!-- Additional accent diamonds -->
             <div class="absolute top-20 right-1/4 w-32 h-32 border border-white/15 rotate-45"></div>
             <div class="absolute bottom-1/4 left-20 w-24 h-24 border border-soft-gold/15 rotate-45"></div>
@@ -911,7 +929,7 @@
             <div class="mb-8">
                 <i class="fa-solid fa-quote-left text-soft-gold text-5xl opacity-50"></i>
             </div>
-            <h2 class="text-4xl md:text-6xl font-serif font-bold leading-tight mb-8">
+            <h2 class="text-2xl sm:text-4xl md:text-6xl font-serif font-bold leading-tight mb-8">
                 가장 개인적인 것이<br>
                 <span class="text-soft-gold">가장 창의적인 것이다.</span>
             </h2>
@@ -1229,9 +1247,9 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-text-dark py-24 text-white">
+    <footer class="bg-text-dark py-16 md:py-24 text-white">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="grid md:grid-cols-3 gap-16">
+            <div class="grid md:grid-cols-3 gap-10 md:gap-16">
                 <div>
                     <div class="flex items-center gap-4 mb-8">
                         <img src="./assets/logo.svg" alt="Logo" class="w-12 h-12 invert">

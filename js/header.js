@@ -3,16 +3,61 @@
  * 모든 페이지에서 동일한 헤더를 사용하기 위한 JavaScript 모듈
  */
 
+// 햄버거 메뉴 열기
+function openMobileMenu() {
+    const drawer = document.getElementById('mobileDrawer');
+    const overlay = document.getElementById('mobileDrawerOverlay');
+    const btn = document.getElementById('hamburgerBtn');
+
+    drawer.classList.remove('translate-x-full');
+    overlay.classList.remove('opacity-0', 'pointer-events-none');
+    overlay.classList.add('opacity-100');
+    document.body.style.overflow = 'hidden';
+
+    // 햄버거 → X 애니메이션
+    const lines = btn.querySelectorAll('.hamburger-line');
+    lines[0].style.transform = 'translateY(8px) rotate(45deg)';
+    lines[1].style.opacity = '0';
+    lines[2].style.transform = 'translateY(-8px) rotate(-45deg)';
+}
+
+// 햄버거 메뉴 닫기
+function closeMobileMenu() {
+    const drawer = document.getElementById('mobileDrawer');
+    const overlay = document.getElementById('mobileDrawerOverlay');
+    const btn = document.getElementById('hamburgerBtn');
+
+    drawer.classList.add('translate-x-full');
+    overlay.classList.add('opacity-0', 'pointer-events-none');
+    overlay.classList.remove('opacity-100');
+    document.body.style.overflow = '';
+
+    // X → 햄버거 복원
+    const lines = btn.querySelectorAll('.hamburger-line');
+    lines[0].style.transform = '';
+    lines[1].style.opacity = '';
+    lines[2].style.transform = '';
+}
+
+// 실습 아코디언 토글
+function toggleMobileAccordion() {
+    const content = document.getElementById('accordionContent');
+    const icon = document.getElementById('accordionIcon');
+
+    content.classList.toggle('hidden');
+    icon.style.transform = content.classList.contains('hidden') ? '' : 'rotate(180deg)';
+}
+
 // 헤더 HTML 생성 함수
 function getHeaderHTML(options = {}) {
     const {
-        showStartButton = true,  // 시작하기 버튼 표시 여부
-        startButtonLink = '/workbooks/workbook_1.html'  // 시작하기 버튼 링크
+        showStartButton = true,
+        startButtonLink = '/workbooks/workbook_1.html'
     } = options;
 
     const startButton = showStartButton ? `
         <a href="${startButtonLink}"
-            class="px-6 py-2.5 bg-text-dark text-white rounded-full text-sm font-bold hover:bg-soft-gold transition-all duration-300 shadow-lg flex items-center gap-2">
+            class="hidden md:flex px-6 py-2.5 bg-text-dark text-white rounded-full text-sm font-bold hover:bg-soft-gold transition-all duration-300 shadow-lg items-center gap-2">
             <i class="fa-solid fa-pen-nib"></i>
             <span>시작하기</span>
         </a>
@@ -20,13 +65,14 @@ function getHeaderHTML(options = {}) {
 
     return `
     <nav class="fixed w-full z-50 header-blur transition-all duration-300" id="navbar">
-        <div class="w-full px-[60px] py-3 flex justify-between items-center">
-            <a href="/" class="flex items-center gap-3">
-                <img src="/assets/logo.svg" alt="Logo" class="w-10 h-10">
-                <span class="text-2xl font-serif font-bold tracking-tight">Algrowithm</span>
+        <div class="w-full px-5 md:px-[60px] py-3 flex justify-between items-center">
+            <a href="/" class="flex items-center gap-2 md:gap-3">
+                <img src="/assets/logo.svg" alt="Logo" class="w-8 h-8 md:w-10 md:h-10">
+                <span class="text-xl md:text-2xl font-serif font-bold tracking-tight">Algrowithm</span>
             </a>
 
-            <div class="flex items-center gap-10">
+            <div class="flex items-center gap-3 md:gap-10">
+                <!-- 데스크탑 내비게이션 -->
                 <div class="hidden md:flex items-center gap-12 text-lg font-medium text-gray-700">
                     <a href="/about.html" class="hover:text-soft-gold transition-colors">About</a>
 
@@ -71,9 +117,113 @@ function getHeaderHTML(options = {}) {
                 </div>
 
                 ${startButton}
+
+                <!-- 햄버거 버튼 (모바일 전용) -->
+                <button id="hamburgerBtn" class="md:hidden w-11 h-11 flex flex-col justify-center items-center gap-[6px] focus:outline-none rounded-xl hover:bg-gray-100 transition-colors" aria-label="메뉴 열기">
+                    <span class="hamburger-line block w-6 h-[2px] bg-gray-800 transition-all duration-300 origin-center"></span>
+                    <span class="hamburger-line block w-6 h-[2px] bg-gray-800 transition-all duration-300 origin-center"></span>
+                    <span class="hamburger-line block w-6 h-[2px] bg-gray-800 transition-all duration-300 origin-center"></span>
+                </button>
             </div>
         </div>
     </nav>
+
+    <!-- 모바일 드로어 오버레이 -->
+    <div id="mobileDrawerOverlay"
+        class="fixed inset-0 bg-black/50 z-[90] opacity-0 pointer-events-none transition-opacity duration-300 md:hidden"
+        onclick="closeMobileMenu()">
+    </div>
+
+    <!-- 모바일 드로어 -->
+    <div id="mobileDrawer"
+        class="fixed top-0 right-0 h-full w-[280px] bg-white z-[100] transform translate-x-full transition-transform duration-300 ease-in-out md:hidden flex flex-col overflow-y-auto">
+
+        <!-- 드로어 헤더 -->
+        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
+            <div class="flex items-center gap-2">
+                <img src="/assets/logo.svg" alt="Logo" class="w-7 h-7">
+                <span class="font-serif font-bold text-base">Algrowithm</span>
+            </div>
+            <button onclick="closeMobileMenu()"
+                class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-times text-gray-500 text-sm"></i>
+            </button>
+        </div>
+
+        <!-- 드로어 링크 -->
+        <nav class="flex-1 px-3 py-4 space-y-0.5">
+            <a href="/about.html"
+                class="flex items-center px-4 py-3.5 rounded-xl text-gray-700 font-medium hover:bg-amber-50 hover:text-amber-600 transition-colors text-[15px]">
+                About
+            </a>
+
+            <!-- 실습 아코디언 -->
+            <div>
+                <button onclick="toggleMobileAccordion()"
+                    class="w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-gray-700 font-medium hover:bg-amber-50 hover:text-amber-600 transition-colors text-[15px]">
+                    <span>실습</span>
+                    <i id="accordionIcon" class="fa-solid fa-chevron-down text-xs text-gray-400 transition-transform duration-300"></i>
+                </button>
+                <div id="accordionContent" class="hidden mt-0.5 space-y-0.5">
+                    <a href="/workbooks/workbook_1.html"
+                        class="flex items-center gap-2.5 pl-8 pr-4 py-3 rounded-xl text-gray-600 hover:bg-amber-50 hover:text-amber-600 transition-colors text-sm">
+                        <span class="text-amber-500 font-bold text-xs shrink-0">01</span>
+                        <span>내 안의 빌런을 찾아라</span>
+                    </a>
+                    <a href="/workbooks/workbook_2.html"
+                        class="flex items-center gap-2.5 pl-8 pr-4 py-3 rounded-xl text-gray-600 hover:bg-amber-50 hover:text-amber-600 transition-colors text-sm">
+                        <span class="text-amber-500 font-bold text-xs shrink-0">02</span>
+                        <span>이미지 아이덴티티</span>
+                    </a>
+                    <a href="/workbooks/workbook_3.html"
+                        class="flex items-center gap-2.5 pl-8 pr-4 py-3 rounded-xl text-gray-600 hover:bg-amber-50 hover:text-amber-600 transition-colors text-sm">
+                        <span class="text-amber-500 font-bold text-xs shrink-0">03</span>
+                        <span>커리어 브랜딩</span>
+                    </a>
+                    <a href="/workbooks/workbook_4.html"
+                        class="flex items-center gap-2.5 pl-8 pr-4 py-3 rounded-xl text-gray-600 hover:bg-amber-50 hover:text-amber-600 transition-colors text-sm">
+                        <span class="text-amber-500 font-bold text-xs shrink-0">04</span>
+                        <span>내가 원하는 삶</span>
+                    </a>
+                    <div class="mx-4 my-1 border-t border-gray-100"></div>
+                    <a href="/tools/image-studio.html"
+                        class="flex items-center gap-2.5 pl-8 pr-4 py-3 rounded-xl text-gray-600 hover:bg-amber-50 hover:text-amber-600 transition-colors text-sm">
+                        <i class="fa-solid fa-image text-amber-400 w-3.5 shrink-0"></i>
+                        <span>AI 이미지 생성</span>
+                    </a>
+                    <a href="/tools/prompt-studio.html"
+                        class="flex items-center gap-2.5 pl-8 pr-4 py-3 rounded-xl text-gray-600 hover:bg-amber-50 hover:text-amber-600 transition-colors text-sm">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-400 w-3.5 shrink-0"></i>
+                        <span>웹사이트 생성 프롬프트</span>
+                    </a>
+                    <a href="/tools/ebook-generator.html"
+                        class="flex items-center gap-2.5 pl-8 pr-4 py-3 rounded-xl text-gray-600 hover:bg-amber-50 hover:text-amber-600 transition-colors text-sm">
+                        <i class="fa-solid fa-pen-fancy text-amber-400 w-3.5 shrink-0"></i>
+                        <span>E-book 프롬프트</span>
+                    </a>
+                    <a href="/tools/website-studio.html"
+                        class="flex items-center gap-2.5 pl-8 pr-4 py-3 rounded-xl text-gray-600 hover:bg-amber-50 hover:text-amber-600 transition-colors text-sm">
+                        <i class="fa-solid fa-code text-amber-400 w-3.5 shrink-0"></i>
+                        <span>웹사이트 스튜디오</span>
+                    </a>
+                </div>
+            </div>
+
+            <a href="/schedule.html"
+                class="flex items-center px-4 py-3.5 rounded-xl text-gray-700 font-medium hover:bg-amber-50 hover:text-amber-600 transition-colors text-[15px]">
+                일정
+            </a>
+        </nav>
+
+        <!-- 드로어 CTA -->
+        <div class="px-5 py-5 border-t border-gray-100 shrink-0">
+            <button
+                onclick="closeMobileMenu(); if(typeof openInquiryModal !== 'undefined') openInquiryModal();"
+                class="w-full py-4 bg-[#d4af37] text-white rounded-2xl font-bold text-[15px] hover:bg-yellow-600 active:scale-95 transition-all">
+                프로그램 문의하기 <i class="fa-solid fa-paper-plane ml-1.5 text-sm"></i>
+            </button>
+        </div>
+    </div>
     `;
 }
 
@@ -126,13 +276,11 @@ function getHeaderStyles() {
 
 // 헤더 삽입 함수
 function initHeader(options = {}) {
-    // 헤더를 삽입할 위치 찾기
     const headerPlaceholder = document.getElementById('header-placeholder');
 
     if (headerPlaceholder) {
         headerPlaceholder.innerHTML = getHeaderHTML(options);
     } else {
-        // placeholder가 없으면 body 맨 앞에 삽입
         document.body.insertAdjacentHTML('afterbegin', getHeaderHTML(options));
     }
 
@@ -143,6 +291,22 @@ function initHeader(options = {}) {
         styleElement.textContent = getHeaderStyles();
         document.head.appendChild(styleElement);
     }
+
+    // 햄버거 버튼 이벤트
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    if (hamburgerBtn) {
+        hamburgerBtn.addEventListener('click', openMobileMenu);
+    }
+
+    // ESC 키로 드로어 닫기
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const drawer = document.getElementById('mobileDrawer');
+            if (drawer && !drawer.classList.contains('translate-x-full')) {
+                closeMobileMenu();
+            }
+        }
+    });
 }
 
 // DOM 준비되면 자동 초기화 (data-auto-header 속성이 있는 경우)
@@ -157,5 +321,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 모듈 내보내기 (ES Module 지원 환경)
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { getHeaderHTML, getHeaderStyles, initHeader };
+    module.exports = { getHeaderHTML, getHeaderStyles, initHeader, openMobileMenu, closeMobileMenu, toggleMobileAccordion };
 }
