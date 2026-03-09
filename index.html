@@ -346,12 +346,14 @@
         /* 스크롤 스냅은 JS로 제어 - CSS snap 비활성화 */
         html {
             overflow-y: scroll;
+            overflow-x: hidden;
         }
 
         body {
             font-family: 'Pretendard', sans-serif;
             background-color: #ffffff;
             color: #1a1a1a;
+            overflow-x: hidden;
         }
 
         /* 각 섹션 기본 스타일 */
@@ -380,9 +382,9 @@
             padding-bottom: 5rem;
         }
 
-        /* Reviews 섹션 - overflow 허용 */
+        /* Reviews 섹션 - 가로 overflow 차단 */
         #reviews {
-            overflow: visible;
+            overflow-x: hidden;
         }
 
         /* Quote 섹션 */
