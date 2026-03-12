@@ -75,6 +75,7 @@ function getHeaderHTML(options = {}) {
                 <!-- 데스크탑 내비게이션 -->
                 <div class="hidden md:flex items-center gap-12 text-lg font-medium text-gray-700">
                     <a href="/about.html" class="hover:text-soft-gold transition-colors">About</a>
+                    <a href="/program.html" class="hover:text-soft-gold transition-colors">프로그램</a>
 
                     <div class="dropdown">
                         <button class="hover:text-soft-gold transition-colors flex items-center gap-1">
@@ -155,6 +156,12 @@ function getHeaderHTML(options = {}) {
             <a href="/about.html"
                 class="flex items-center px-4 py-3.5 rounded-xl text-gray-700 font-medium hover:bg-amber-50 hover:text-amber-600 transition-colors text-[15px]">
                 About
+            </a>
+
+            <a href="/program.html"
+                class="flex items-center px-4 py-3.5 rounded-xl text-gray-700 font-medium hover:bg-amber-50 hover:text-amber-600 transition-colors text-[15px]">
+                <i class="fa-solid fa-bookmark text-amber-400 mr-2 text-xs"></i>
+                프로그램
             </a>
 
             <!-- 실습 아코디언 -->

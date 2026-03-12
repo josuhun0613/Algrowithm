@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로그램 신청 | Algrowithm</title>
+    <meta name="description" content="Algrowithm 커리어 브랜딩 프로그램 신청 및 비밀유지 서약">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwindcss.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Pretendard', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Pretendard', sans-serif; background: #0B0F1A; color: #E2E8F0; letter-spacing: -0.01em; }
+        .gradient-text {
+            background: linear-gradient(135deg, #818CF8, #F59E0B);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .form-input {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: #E2E8F0;
+            font-size: 15px;
+            width: 100%;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        .form-input:focus {
+            border-color: rgba(129,140,248,0.5);
+            box-shadow: 0 0 0 3px rgba(129,140,248,0.1);
+        }
+        .form-input::placeholder { color: #475569; }
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394A3B8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+        }
+        .nda-box {
+            background: rgba(15,20,35,0.6);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 32px;
+        }
+        .nda-content {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 24px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .nda-content::-webkit-scrollbar { width: 6px; }
+        .nda-content::-webkit-scrollbar-track { background: transparent; }
+        .nda-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+        .submit-btn {
+            background: linear-gradient(135deg, #6366F1, #4F46E5);
+            box-shadow: 0 4px 24px rgba(99,102,241,0.3);
+            transition: all 0.3s;
+        }
+        .submit-btn:hover {
+            box-shadow: 0 8px 32px rgba(99,102,241,0.5);
+            transform: translateY(-2px);
+        }
+        .submit-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .checkbox-custom {
+            width: 22px; height: 22px; min-width: 22px;
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .checkbox-custom.checked {
+            background: #6366F1;
+            border-color: #6366F1;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="max-w-4xl mx-auto px-8 md:px-12 pt-10 pb-6">
+    <a href="./program.html" class="inline-flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
+        <i class="fa-solid fa-arrow-left text-sm"></i>
+        <img src="./assets/logo.svg" alt="Algrowithm" class="w-6 h-6 invert">
+        <span class="text-sm font-serif font-bold tracking-wider">Algrowithm</span>
+    </a>
+</header>
+
+
+<!-- ================================================================ -->
+<!-- INTRO                                                              -->
+<!-- ================================================================ -->
+<section class="max-w-4xl mx-auto px-8 md:px-12 pb-12">
+    <p class="text-xs tracking-[0.3em] uppercase text-indigo-400 font-bold mb-4">Program Application</p>
+    <h1 class="text-3xl md:text-4xl font-serif font-bold leading-[1.3] mb-4">
+        프로그램 신청
+    </h1>
+    <p class="text-base text-slate-400 leading-[1.9] max-w-2xl">
+        아래 정보를 기입해 주시면, 담당자가 확인 후 <strong class="text-slate-300">영업일 기준 1~2일 이내</strong>에 연락드립니다.<br>
+        본 프로그램의 교육 자료 및 커리큘럼은 지적재산권 보호 대상이므로,<br>
+        신청 시 <strong class="text-slate-300">비밀유지 서약</strong>에 동의해 주셔야 합니다.
+    </p>
+</section>
+
+
+<!-- ================================================================ -->
+<!-- APPLICATION FORM                                                   -->
+<!-- ================================================================ -->
+<section class="max-w-4xl mx-auto px-8 md:px-12 pb-16">
+    <form id="applyForm" onsubmit="handleSubmit(event)">
+
+        <!-- 기본 정보 -->
+        <div class="mb-12">
+            <h2 class="text-lg font-bold text-white mb-6 flex items-center gap-3">
+                <span class="w-7 h-7 rounded-full bg-indigo-500/20 text-indigo-400 text-xs font-bold flex items-center justify-center">1</span>
+                신청자 정보
+            </h2>
+            <div class="grid md:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">이름 <span class="text-rose-400">*</span></label>
+                    <input type="text" name="name" required placeholder="홍길동" class="form-input">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">소속 / 직함</label>
+                    <input type="text" name="org" placeholder="OO기업 · HRD팀 / 대학생 / 개인" class="form-input">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">이메일 <span class="text-rose-400">*</span></label>
+                    <input type="email" name="email" required placeholder="email@example.com" class="form-input">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">연락처 <span class="text-rose-400">*</span></label>
+                    <input type="tel" name="phone" required placeholder="010-0000-0000" class="form-input">
+                </div>
+            </div>
+        </div>
+
+        <!-- 프로그램 선택 -->
+        <div class="mb-12">
+            <h2 class="text-lg font-bold text-white mb-6 flex items-center gap-3">
+                <span class="w-7 h-7 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center">2</span>
+                프로그램 정보
+            </h2>
+            <div class="grid md:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">신청 유형 <span class="text-rose-400">*</span></label>
+                    <select name="type" required class="form-input form-select">
+                        <option value="" disabled selected>선택해 주세요</option>
+                        <option value="individual">개인 참여</option>
+                        <option value="b2b">기업 · 기관 단체 도입</option>
+                        <option value="workshop">1일 워크숍</option>
+                        <option value="consulting">맞춤 상담 요청</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">관심 프로그램</label>
+                    <select name="program" class="form-input form-select">
+                        <option value="" disabled selected>선택해 주세요</option>
+                        <option value="intensive">Intensive (10회)</option>
+                        <option value="standard">Standard (24회)</option>
+                        <option value="full">Full Journey (8개월)</option>
+                        <option value="custom">커스터마이징 희망</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm text-slate-400 mb-2">참여 인원 (단체 도입 시)</label>
+                    <input type="text" name="headcount" placeholder="예: 15명, 20~30명 예상" class="form-input">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm text-slate-400 mb-2">추가 요청사항</label>
+                    <textarea name="message" rows="4" placeholder="프로그램에 대해 궁금한 점이나, 특별히 원하시는 구성이 있다면 적어주세요." class="form-input" style="resize: vertical;"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- 비밀유지 서약 -->
+        <div class="mb-12">
+            <h2 class="text-lg font-bold text-white mb-6 flex items-center gap-3">
+                <span class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold flex items-center justify-center">3</span>
+                비밀유지 서약 (NDA)
+            </h2>
+
+            <div class="nda-box">
+                <div class="flex items-start gap-3 mb-6">
+                    <i class="fa-solid fa-shield-halved text-indigo-400 mt-0.5"></i>
+                    <p class="text-sm text-slate-400 leading-[1.8]">
+                        본 프로그램의 교육 자료, 커리큘럼 구성, 진단 도구 및 코칭 방법론은 Algrowithm의 지적재산으로,
+                        <strong class="text-slate-300">평생교육원 인가 교육과정 및 B2B 기업 교육 상품</strong>으로 운영됩니다.
+                        아래 비밀유지 서약 내용을 확인하고 동의해 주세요.
+                    </p>
+                </div>
+
+                <div class="nda-content text-sm text-slate-400 leading-[2.0] mb-6">
+                    <h3 class="text-white font-bold text-base mb-4">비밀유지 서약서</h3>
+                    <p class="mb-3 text-slate-500 text-xs">Algrowithm Confidentiality Agreement</p>
+
+                    <p class="mb-4">
+                        본인은 Algrowithm(이하 "회사")이 제공하는 커리어 브랜딩 프로그램(이하 "프로그램")에 참여함에 있어,
+                        다음 사항을 숙지하고 이에 동의합니다.
+                    </p>
+
+                    <p class="text-white font-bold mb-2">제1조 (비밀정보의 정의)</p>
+                    <p class="mb-4">
+                        "비밀정보"란 프로그램 참여 과정에서 취득하게 되는 다음의 정보를 포함하되 이에 한정되지 않습니다.<br>
+                        ① 교육 커리큘럼, 세션 구성, 회기별 교안 및 워크시트<br>
+                        ② 진단 도구의 구성, 해석 방법론, 코칭 프레임워크<br>
+                        ③ AI 기반 분석 모델 및 프롬프트 설계<br>
+                        ④ 사례 연구, 수강생 데이터, 결과 리포트<br>
+                        ⑤ 기타 회사가 비밀로 지정한 경영·기술 정보
+                    </p>
+
+                    <p class="text-white font-bold mb-2">제2조 (비밀유지 의무)</p>
+                    <p class="mb-4">
+                        ① 본인은 비밀정보를 프로그램 참여 목적 이외에 사용하지 않습니다.<br>
+                        ② 비밀정보를 제3자에게 공개, 누설, 전달하지 않습니다.<br>
+                        ③ 비밀정보를 복제, 촬영, 녹음, 캡처 등의 방법으로 무단 복제하지 않습니다.<br>
+                        ④ 소셜미디어, 블로그, 커뮤니티 등에 교육 자료의 구체적 내용을 게시하지 않습니다.
+                    </p>
+
+                    <p class="text-white font-bold mb-2">제3조 (의무의 기간)</p>
+                    <p class="mb-4">
+                        비밀유지 의무는 프로그램 종료 후에도 <strong class="text-slate-300">3년간</strong> 유효합니다.
+                    </p>
+
+                    <p class="text-white font-bold mb-2">제4조 (예외)</p>
+                    <p class="mb-4">
+                        다음 각 호에 해당하는 경우 비밀유지 의무가 적용되지 않습니다.<br>
+                        ① 회사가 서면으로 공개를 허가한 정보<br>
+                        ② 이미 공공에 알려진 정보 (본인의 공개 행위로 인한 경우 제외)<br>
+                        ③ 법령에 의해 공개가 의무화된 경우
+                    </p>
+
+                    <p class="text-white font-bold mb-2">제5조 (위반 시 책임)</p>
+                    <p class="mb-4">
+                        본 서약을 위반하여 회사에 손해가 발생한 경우, 민·형사상 책임을 질 수 있으며,
+                        회사는 위반자에 대해 손해배상을 청구할 수 있습니다.
+                    </p>
+
+                    <p class="text-white font-bold mb-2">제6조 (지적재산권)</p>
+                    <p class="mb-4">
+                        프로그램의 모든 교육 자료, 방법론, 커리큘럼 설계에 대한 지적재산권은 회사에 귀속되며,
+                        참여자는 이를 기반으로 유사한 교육 프로그램을 개발·운영하지 않을 것을 확약합니다.
+                    </p>
+
+                    <div class="mt-6 pt-4 border-t border-slate-800/50">
+                        <p class="text-xs text-slate-600">
+                            본 서약은 전자적 동의(체크박스 선택 및 서명 입력)로 서면 서약과 동일한 효력을 가집니다.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 동의 체크박스 -->
+                <div class="space-y-4">
+                    <label class="flex items-start gap-3 cursor-pointer group" onclick="toggleCheck(this)">
+                        <div class="checkbox-custom mt-0.5" id="nda-check">
+                            <i class="fa-solid fa-check text-white text-xs hidden"></i>
+                        </div>
+                        <span class="text-sm text-slate-300 leading-[1.7] group-hover:text-white transition-colors">
+                            상기 비밀유지 서약서의 내용을 모두 읽었으며, 이에 <strong>동의합니다.</strong> <span class="text-rose-400">*</span>
+                        </span>
+                    </label>
+
+                    <label class="flex items-start gap-3 cursor-pointer group" onclick="toggleCheck(this)">
+                        <div class="checkbox-custom mt-0.5" id="privacy-check">
+                            <i class="fa-solid fa-check text-white text-xs hidden"></i>
+                        </div>
+                        <span class="text-sm text-slate-300 leading-[1.7] group-hover:text-white transition-colors">
+                            개인정보 수집·이용에 동의합니다. (이름, 연락처, 이메일 — 프로그램 안내 목적) <span class="text-rose-400">*</span>
+                        </span>
+                    </label>
+                </div>
+
+                <!-- 서명 -->
+                <div class="mt-6 pt-6 border-t border-slate-800/30">
+                    <label class="block text-sm text-slate-400 mb-2">전자 서명 (본인 성명 입력) <span class="text-rose-400">*</span></label>
+                    <input type="text" name="signature" id="signature" required placeholder="홍길동" class="form-input max-w-xs" style="font-family: 'Playfair Display', 'Pretendard', serif; font-style: italic; font-size: 18px;">
+                    <p class="text-xs text-slate-600 mt-2">성명을 직접 입력하시면 서면 서명과 동일한 효력을 가집니다.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 제출 -->
+        <div class="text-center pb-8">
+            <button type="submit" id="submitBtn" disabled class="submit-btn inline-flex items-center justify-center gap-3 px-14 py-5 rounded-full text-white font-bold text-base">
+                <i class="fa-solid fa-paper-plane text-sm"></i>
+                신청서 제출
+            </button>
+            <p class="text-xs text-slate-600 mt-4">제출 후 영업일 기준 1~2일 이내 담당자가 연락드립니다.</p>
+        </div>
+
+    </form>
+</section>
+
+
+<!-- 제출 완료 화면 (숨김) -->
+<section id="successScreen" class="hidden max-w-4xl mx-auto px-8 md:px-12 py-20 text-center">
+    <div class="w-20 h-20 rounded-full bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center mx-auto mb-8">
+        <i class="fa-solid fa-check text-emerald-400 text-2xl"></i>
+    </div>
+    <h2 class="text-2xl md:text-3xl font-serif font-bold mb-4">신청이 완료되었습니다</h2>
+    <p class="text-base text-slate-400 leading-[1.9] mb-3">
+        입력하신 연락처로 담당자가 확인 후 연락드리겠습니다.
+    </p>
+    <p class="text-sm text-slate-500 mb-10">
+        비밀유지 서약 동의 내역은 기록되었습니다.
+    </p>
+    <a href="./program.html" class="inline-flex items-center gap-2 text-indigo-400 font-bold text-sm hover:text-indigo-300 transition-colors">
+        <i class="fa-solid fa-arrow-left text-xs"></i>
+        프로그램 소개로 돌아가기
+    </a>
+</section>
+
+
+<!-- Footer -->
+<footer class="max-w-4xl mx-auto px-8 md:px-12 pb-12 pt-8 border-t border-slate-800/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-3 text-sm text-slate-500">
+        <img src="./assets/logo.svg" alt="Algrowithm" class="w-5 h-5 invert opacity-40">
+        <span class="font-serif font-bold">Algrowithm</span>
+        <span class="text-slate-700">|</span>
+        <span>algrowithm@kakao.com</span>
+    </div>
+    <p class="text-xs text-slate-700">&copy; 2025 Algrowithm. All rights reserved.</p>
+</footer>
+
+
+<script>
+    // 체크박스 토글
+    function toggleCheck(label) {
+        const box = label.querySelector('.checkbox-custom');
+        const icon = box.querySelector('i');
+        box.classList.toggle('checked');
+        icon.classList.toggle('hidden');
+        validateForm();
+    }
+
+    // 폼 유효성 검사 — 두 체크박스 모두 동의 + 서명 입력 시 제출 활성화
+    function validateForm() {
+        const ndaChecked = document.getElementById('nda-check').classList.contains('checked');
+        const privacyChecked = document.getElementById('privacy-check').classList.contains('checked');
+        const signed = document.getElementById('signature').value.trim().length > 0;
+        document.getElementById('submitBtn').disabled = !(ndaChecked && privacyChecked && signed);
+    }
+
+    document.getElementById('signature').addEventListener('input', validateForm);
+
+    // 제출 처리
+    function handleSubmit(e) {
+        e.preventDefault();
+
+        const form = document.getElementById('applyForm');
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach((v, k) => { data[k] = v; });
+
+        // NDA 동의 시간 기록
+        data.nda_agreed_at = new Date().toISOString();
+        data.privacy_agreed_at = new Date().toISOString();
+
+        // 콘솔에 기록 (추후 API 연동)
+        console.log('📋 신청서 데이터:', data);
+
+        // mailto fallback — 실제 서버 연동 전까지
+        const subject = encodeURIComponent('[프로그램 신청] ' + data.name + ' / ' + (data.org || '개인'));
+        const body = encodeURIComponent(
+            '이름: ' + data.name + '\n' +
+            '소속: ' + (data.org || '-') + '\n' +
+            '이메일: ' + data.email + '\n' +
+            '연락처: ' + data.phone + '\n' +
+            '신청유형: ' + data.type + '\n' +
+            '프로그램: ' + (data.program || '-') + '\n' +
+            '인원: ' + (data.headcount || '-') + '\n' +
+            '요청사항: ' + (data.message || '-') + '\n\n' +
+            '--- 비밀유지 서약 동의 ---\n' +
+            'NDA 동의: ' + data.nda_agreed_at + '\n' +
+            '개인정보 동의: ' + data.privacy_agreed_at + '\n' +
+            '전자서명: ' + data.signature
+        );
+
+        // 이메일 전송
+        window.location.href = 'mailto:algrowithm@kakao.com?subject=' + subject + '&body=' + body;
+
+        // 성공 화면 표시
+        setTimeout(() => {
+            form.parentElement.classList.add('hidden');
+            document.getElementById('successScreen').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 500);
+    }
+</script>
+
+</body>
+</html>
