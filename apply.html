@@ -364,10 +364,11 @@
     document.getElementById('signature').addEventListener('input', validateForm);
 
     // 제출 처리
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
 
         const form = document.getElementById('applyForm');
+        const submitBtn = form.querySelector('button[type="submit"]');
         const formData = new FormData(form);
         const data = {};
         formData.forEach((v, k) => { data[k] = v; });
@@ -376,35 +377,34 @@
         data.nda_agreed_at = new Date().toISOString();
         data.privacy_agreed_at = new Date().toISOString();
 
-        // 콘솔에 기록 (추후 API 연동)
-        console.log('📋 신청서 데이터:', data);
+        // 버튼 로딩 상태
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-sm"></i> 접수 중...';
 
-        // mailto fallback — 실제 서버 연동 전까지
-        const subject = encodeURIComponent('[프로그램 신청] ' + data.name + ' / ' + (data.org || '개인'));
-        const body = encodeURIComponent(
-            '이름: ' + data.name + '\n' +
-            '소속: ' + (data.org || '-') + '\n' +
-            '이메일: ' + data.email + '\n' +
-            '연락처: ' + data.phone + '\n' +
-            '신청유형: ' + data.type + '\n' +
-            '프로그램: ' + (data.program || '-') + '\n' +
-            '인원: ' + (data.headcount || '-') + '\n' +
-            '요청사항: ' + (data.message || '-') + '\n\n' +
-            '--- 비밀유지 서약 동의 ---\n' +
-            'NDA 동의: ' + data.nda_agreed_at + '\n' +
-            '개인정보 동의: ' + data.privacy_agreed_at + '\n' +
-            '전자서명: ' + data.signature
-        );
+        try {
+            const res = await fetch('/api/apply', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
 
-        // 이메일 전송
-        window.location.href = 'mailto:algrowithm@kakao.com?subject=' + subject + '&body=' + body;
+            const result = await res.json();
 
-        // 성공 화면 표시
-        setTimeout(() => {
-            form.parentElement.classList.add('hidden');
-            document.getElementById('successScreen').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 500);
+            if (res.ok) {
+                form.parentElement.classList.add('hidden');
+                document.getElementById('successScreen').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                alert('접수 중 문제가 발생했습니다: ' + (result.error || '다시 시도해 주세요.'));
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        } catch (err) {
+            alert('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
     }
 </script>
 
