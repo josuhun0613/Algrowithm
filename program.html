@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>커리어 브랜딩 10회기 프로그램 | Algrowithm</title>
-    <meta name="description" content="Algrowithm 커리어 브랜딩 10회기 프로그램. MBTI, Holland, StrengthsFinder, 커리어앵커 등 전문 진단 도구와 퍼스널 브랜딩 전략으로 당신만의 커리어를 설계합니다.">
+    <title>커리어 브랜딩 프로그램 | Algrowithm</title>
+    <meta name="description" content="Algrowithm 커리어 브랜딩 프로그램. MBTI, Holland, StrengthsFinder, 커리어앵커 등 전문 진단 도구와 퍼스널 브랜딩 전략으로 당신만의 커리어를 설계합니다.">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwindcss.config = {
@@ -61,7 +61,7 @@
         }
         .t-tag {
             font-size: 11px; padding: 4px 10px; border-radius: 6px;
-            background: rgba(255,255,255,0.04); color: #94A3B8;
+            background: rgba(255,255,255,0.05); color: #CBD5E1;
             border: 1px solid rgba(255,255,255,0.07);
         }
         .benefit-card {
@@ -124,6 +124,51 @@
             font-size: 15px; line-height: 1.7;
         }
 
+        /* Leader hover card */
+        .leader-card {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .leader-card img {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .leader-card:hover img { transform: scale(1.08); }
+        .leader-card .leader-base {
+            position: absolute; inset: 0;
+            background: linear-gradient(0deg, rgba(11,15,26,0.95) 30%, rgba(11,15,26,0.5) 65%, rgba(11,15,26,0.15) 100%);
+            display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 24px;
+            transition: opacity 0.4s ease;
+        }
+        .leader-card:hover .leader-base { opacity: 0; }
+        .leader-card .leader-detail {
+            position: absolute; inset: 0;
+            background: rgba(11,15,26,0.93);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center;
+            padding: 28px 20px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .leader-card:hover .leader-detail { opacity: 1; }
+
+        /* Section divider — gradient line */
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(129,140,248,0.3) 50%, transparent 100%);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Phase left accent bar */
+        .phase-accent-indigo { border-left: 2px solid rgba(129,140,248,0.4); }
+        .phase-accent-amber { border-left: 2px solid rgba(245,158,11,0.4); }
+        .phase-accent-emerald { border-left: 2px solid rgba(16,185,129,0.4); }
+
         /* Metric card */
         .metric-card {
             background: rgba(255,255,255,0.03);
@@ -140,7 +185,17 @@
         }
     </style>
 </head>
-<body>
+<body class="relative overflow-x-hidden">
+
+<!-- Global glow orbs — absolute positioned across full page height -->
+<div class="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+    <div class="absolute top-[200px] -left-20 w-[600px] h-[600px] rounded-full bg-indigo-500/[0.12] blur-[180px]"></div>
+    <div class="absolute top-[900px] -right-32 w-[500px] h-[500px] rounded-full bg-amber-500/[0.09] blur-[160px]"></div>
+    <div class="absolute top-[1800px] -left-40 w-[550px] h-[550px] rounded-full bg-emerald-500/[0.09] blur-[160px]"></div>
+    <div class="absolute top-[2800px] right-[5%] w-[500px] h-[500px] rounded-full bg-indigo-400/[0.10] blur-[180px]"></div>
+    <div class="absolute top-[3800px] -left-20 w-[500px] h-[500px] rounded-full bg-amber-400/[0.07] blur-[150px]"></div>
+    <div class="absolute top-[4800px] right-[15%] w-[450px] h-[450px] rounded-full bg-emerald-400/[0.08] blur-[160px]"></div>
+</div>
 
 <!-- ================================================================ -->
 <!-- HERO                                                              -->
@@ -190,8 +245,8 @@
 </section>
 
 <!-- Trust bar -->
-<div class="border-y border-slate-800/60 bg-slate-900/30">
-    <div class="max-w-6xl mx-auto px-8 md:px-12 py-5 flex flex-wrap items-center justify-center gap-x-10 gap-y-3 text-sm text-slate-500">
+<div class="relative z-10 border-y border-slate-800/60 bg-slate-900/30">
+    <div class="max-w-6xl mx-auto px-8 md:px-12 py-5 flex flex-wrap items-center justify-center gap-x-10 gap-y-3 text-sm text-slate-400">
         <span class="flex items-center gap-2"><i class="fa-solid fa-graduation-cap text-indigo-500/50"></i> 고려대학교</span>
         <span class="flex items-center gap-2"><i class="fa-solid fa-graduation-cap text-indigo-500/50"></i> 연세대학교</span>
         <span class="flex items-center gap-2"><i class="fa-solid fa-building-columns text-indigo-500/50"></i> 공공기관 위탁교육</span>
@@ -214,9 +269,9 @@
         <div>
             <p class="text-xs tracking-[0.3em] uppercase text-indigo-400 font-bold mb-4">Lead Facilitator</p>
             <h2 class="text-2xl md:text-3xl font-serif font-bold mb-2">조수훈</h2>
-            <p class="text-base text-slate-400 mb-6">AI Architect · 커리어 브랜딩 전문가</p>
+            <p class="text-base text-slate-300 mb-6">AI Architect · 커리어 브랜딩 전문가</p>
 
-            <div class="space-y-4 text-[15px] text-slate-400 leading-[1.9] mb-8">
+            <div class="space-y-4 text-[15px] text-slate-300 leading-[1.9] mb-8">
                 <p>
                     IT 엔지니어 출신으로 AI 시스템을 설계하다, <strong class="text-slate-200">"기술보다 사람에 대한 이해가 먼저"</strong>라는 확신 아래 커리어 브랜딩 분야로 전환.
                     기술적 사고와 인문학적 통찰을 결합한 독자적 코칭 방법론을 개발했습니다.
@@ -251,7 +306,7 @@
             <h2 class="text-2xl md:text-3xl font-serif font-bold leading-[1.3] mb-6">
                 왜 스펙은 쌓이는데<br>커리어는 흔들릴까?
             </h2>
-            <div class="space-y-5 text-[15px] text-slate-400 leading-[1.9]">
+            <div class="space-y-5 text-[15px] text-slate-300 leading-[1.9]">
                 <p>
                     자격증, 어학점수, 프로젝트 경험 — 이력서는 점점 화려해지지만, 정작 <strong class="text-slate-200">"나는 왜 이 일을 하는가"</strong>에는 답하지 못합니다.
                 </p>
@@ -272,25 +327,141 @@
 
 
 <!-- ================================================================ -->
-<!-- ROADMAP                                                           -->
+<!-- LEADERS — 그들이 말하는 진짜 역량                                    -->
 <!-- ================================================================ -->
 <section class="max-w-6xl mx-auto px-8 md:px-12 pb-20 md:pb-28">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+
+        <!-- Jensen Huang -->
+        <div class="leader-card aspect-[3/4]">
+            <img src="./assets/program/jensen_huang.jpg" alt="Jensen Huang">
+            <div class="leader-base">
+                <span class="text-[10px] md:text-xs tracking-[0.15em] uppercase text-emerald-400 font-bold mb-2 block"><i class="fa-solid fa-microchip mr-1"></i> Jensen Huang</span>
+                <p class="text-sm md:text-base font-bold text-white leading-[1.5] mb-1" style="font-size: clamp(12px, 1.4vw, 16px);">"이제 프로그래밍 언어는<br>인간의 언어다."</p>
+                <p class="text-[10px] md:text-xs text-slate-500">NVIDIA CEO</p>
+            </div>
+            <div class="leader-detail">
+                <p class="text-[10px] md:text-xs tracking-[0.15em] uppercase text-emerald-400 font-bold mb-3"><i class="fa-solid fa-microchip mr-1"></i> Jensen Huang</p>
+                <p class="text-xs md:text-sm font-bold text-white leading-[1.8] mb-3">"이제 프로그래밍 언어는 인간의 언어다. 코딩이 아니라 도메인 전문성이 핵심이다."</p>
+                <p class="text-[11px] text-slate-300 leading-[1.8] mb-3">AI가 코드를 대신 쓰는 시대, 기술을 '아는 것'보다 그것을 '어디에 쓸지 아는 사람'이 살아남는다.</p>
+                <p class="text-[10px] text-slate-600">World Government Summit · 2024</p>
+            </div>
+        </div>
+
+        <!-- Satya Nadella -->
+        <div class="leader-card aspect-[3/4]">
+            <img src="./assets/program/satya_nadella.jpg" alt="Satya Nadella">
+            <div class="leader-base">
+                <span class="text-[10px] md:text-xs tracking-[0.15em] uppercase text-indigo-400 font-bold mb-2 block"><i class="fa-brands fa-microsoft mr-1"></i> Satya Nadella</span>
+                <p class="text-sm md:text-base font-bold text-white leading-[1.5] mb-1" style="font-size: clamp(12px, 1.4vw, 16px);">"AI 시대에 공감 능력이<br>IQ보다 중요하다."</p>
+                <p class="text-[10px] md:text-xs text-slate-500">Microsoft CEO</p>
+            </div>
+            <div class="leader-detail">
+                <p class="text-[10px] md:text-xs tracking-[0.15em] uppercase text-indigo-400 font-bold mb-3"><i class="fa-brands fa-microsoft mr-1"></i> Satya Nadella</p>
+                <p class="text-xs md:text-sm font-bold text-white leading-[1.8] mb-3">"공감 없는 지능은 낭비다. EQ가 IQ보다 중요해지는 시대."</p>
+                <p class="text-[11px] text-slate-300 leading-[1.8] mb-3">취임 첫해, 마셜 로젠버그의 <em>비폭력 대화</em>를 MS 임원 필독서로 지정한 이유가 여기 있다.</p>
+                <p class="text-[10px] text-slate-600"><em>Hit Refresh</em> · 2017</p>
+            </div>
+        </div>
+
+        <!-- Yuval Noah Harari -->
+        <div class="leader-card aspect-[3/4]">
+            <img src="./assets/program/yuval_harari.jpg" alt="Yuval Noah Harari">
+            <div class="leader-base">
+                <span class="text-[10px] md:text-xs tracking-[0.15em] uppercase text-amber-400 font-bold mb-2 block"><i class="fa-solid fa-book mr-1"></i> Yuval Harari</span>
+                <p class="text-sm md:text-base font-bold text-white leading-[1.5] mb-1" style="font-size: clamp(12px, 1.4vw, 16px);">"알고리즘보다 먼저<br>나 자신을 알아야 한다."</p>
+                <p class="text-[10px] md:text-xs text-slate-500">역사학자</p>
+            </div>
+            <div class="leader-detail">
+                <p class="text-[10px] md:text-xs tracking-[0.15em] uppercase text-amber-400 font-bold mb-3"><i class="fa-solid fa-book mr-1"></i> Yuval Harari</p>
+                <p class="text-xs md:text-sm font-bold text-white leading-[1.8] mb-3">"아마존과 정부보다 먼저 나 자신을 알아야 한다. 그래야 조종당하지 않는다."</p>
+                <p class="text-[11px] text-slate-300 leading-[1.8] mb-3">AI가 당신보다 당신을 더 잘 알게 되기 전에, 스스로를 이해하는 것이 21세기 최고의 무기다.</p>
+                <p class="text-[10px] text-slate-600"><em>21 Lessons for the 21st Century</em> · 2018</p>
+            </div>
+        </div>
+
+        <!-- Reid Hoffman -->
+        <div class="leader-card aspect-[3/4]">
+            <img src="./assets/program/reid_hoffman.jpg" alt="Reid Hoffman">
+            <div class="leader-base">
+                <span class="text-[10px] md:text-xs tracking-[0.15em] uppercase text-emerald-400 font-bold mb-2 block"><i class="fa-brands fa-linkedin mr-1"></i> Reid Hoffman</span>
+                <p class="text-sm md:text-base font-bold text-white leading-[1.5] mb-1" style="font-size: clamp(12px, 1.4vw, 16px);">"인간을 이해하는 것이<br>혁신의 기반이다."</p>
+                <p class="text-[10px] md:text-xs text-slate-500">LinkedIn 창업자</p>
+            </div>
+            <div class="leader-detail">
+                <p class="text-[10px] md:text-xs tracking-[0.15em] uppercase text-emerald-400 font-bold mb-3"><i class="fa-brands fa-linkedin mr-1"></i> Reid Hoffman</p>
+                <p class="text-xs md:text-sm font-bold text-white leading-[1.8] mb-3">"인간이 스스로를 어떻게 정의하는지 이해하면, 근본적인 수준의 혁신을 만들 수 있다."</p>
+                <p class="text-[11px] text-slate-300 leading-[1.8] mb-3">스탠포드·옥스포드에서 철학을 전공한 후 LinkedIn을 창업. 인문학이 실리콘밸리의 무기가 됐다.</p>
+                <p class="text-[10px] text-slate-600">Academy of Achievement Interview</p>
+            </div>
+        </div>
+
+    </div>
+    <p class="text-center text-sm text-slate-500 mt-6">AI 시대의 리더들이 공통적으로 말하는 것 — <strong class="text-slate-400">기술이 아니라, 자기 이해</strong></p>
+</section>
+
+
+<!-- ================================================================ -->
+<!-- SKILL vs INTERPRETATION — 역량의 재정의                             -->
+<!-- ================================================================ -->
+<section class="max-w-6xl mx-auto px-8 md:px-12 pb-20 md:pb-28">
+    <div class="grid md:grid-cols-2 gap-5 md:gap-6">
+
+        <!-- Left: 세상이 말하는 역량 -->
+        <div class="relative rounded-2xl overflow-hidden aspect-[4/5] md:aspect-[3/4]">
+            <img src="./assets/program/burnout.jpg" alt="스펙 중심의 한계" class="absolute inset-0 w-full h-full object-cover" style="filter: grayscale(0.5) brightness(0.4);">
+            <div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-center px-8 md:px-12">
+                <p class="text-xs tracking-[0.2em] uppercase text-slate-500 font-bold mb-6">세상이 말하는 역량</p>
+                <div class="space-y-3 text-base md:text-lg text-slate-300 leading-[1.8] mb-8">
+                    <p>자격증 몇 개, 어학점수 몇 점</p>
+                    <p>어느 회사, 어떤 직책</p>
+                    <p>어떤 기술 스택, 어떤 툴</p>
+                    <p>프로젝트 몇 건, 경력 몇 년</p>
+                </div>
+                <p class="text-lg md:text-xl text-slate-300 font-bold">스펙은 쌓이는데,<br>방향은 사라집니다.</p>
+            </div>
+        </div>
+
+        <!-- Right: 이 프로그램이 기르는 역량 -->
+        <div class="relative rounded-2xl overflow-hidden aspect-[4/5] md:aspect-[3/4]">
+            <img src="./assets/program/compass.jpg" alt="자기 이해 기반 역량" class="absolute inset-0 w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black/55 flex flex-col items-center justify-center text-center px-8 md:px-12">
+                <p class="text-xs tracking-[0.2em] uppercase text-indigo-400 font-bold mb-6">이 프로그램이 기르는 역량</p>
+                <div class="space-y-3 text-base md:text-lg text-slate-200 leading-[1.8] mb-8">
+                    <p><strong class="text-white">해석력</strong> — 경험을 의미로 바꾸는 힘</p>
+                    <p><strong class="text-white">자기 언어</strong> — 나를 설명하는 나만의 문장</p>
+                    <p><strong class="text-white">내면 설계</strong> — 흔들리지 않는 판단의 기준</p>
+                    <p><strong class="text-white">서사 구축</strong> — 과거·현재·미래를 잇는 나의 이야기</p>
+                </div>
+                <p class="text-lg md:text-xl text-indigo-300 font-bold">도구를 어디에 쓸지 아는 것이<br>진짜 역량입니다.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<div class="section-divider my-8"></div>
+
+<!-- ================================================================ -->
+<!-- ROADMAP                                                           -->
+<!-- ================================================================ -->
+<section class="relative max-w-6xl mx-auto px-8 md:px-12 pb-20 md:pb-28">
 
     <div class="mb-14">
         <p class="text-xs tracking-[0.3em] uppercase text-indigo-400 font-bold mb-3">Curriculum Roadmap</p>
-        <h2 class="text-2xl md:text-3xl font-serif font-bold mb-3">3단계 10회기 로드맵</h2>
-        <p class="text-base text-slate-500 leading-relaxed max-w-xl">
+        <h2 class="text-2xl md:text-3xl font-serif font-bold mb-3">3단계 전체 커리큘럼</h2>
+        <p class="text-base text-slate-400 leading-relaxed max-w-xl">
             글로벌 커리어 컨설팅 프레임워크에 동서양 고전 텍스트 워크를 결합.<br>
             진단 도구가 <strong class="text-slate-400">데이터(What)</strong>를 보여주고, 인문학이 <strong class="text-slate-400">방향(Why)</strong>을 잡아줍니다.
         </p>
     </div>
 
     <!-- PHASE 1 -->
-    <div class="phase-block p-7 md:p-10 mb-8">
+    <div class="phase-block p-7 md:p-10 mb-8 phase-accent-indigo">
         <div class="flex flex-wrap items-center gap-4 mb-8">
             <span class="text-xs font-bold tracking-[0.15em] uppercase px-4 py-2 rounded-lg bg-indigo-500/15 text-indigo-400 border border-indigo-500/20">Phase 1</span>
             <h3 class="text-lg md:text-xl font-bold text-white">DISCOVER — 나를 정밀하게 진단하다</h3>
-            <span class="text-sm text-slate-500 ml-auto hidden sm:block">Session 1–3</span>
+            <span class="text-sm text-slate-400 ml-auto hidden sm:block">Session 1–3</span>
         </div>
         <div class="grid md:grid-cols-3 gap-5">
             <div class="session-chip">
@@ -298,7 +469,7 @@
                     <span class="s-num bg-indigo-500/20 text-indigo-400">1</span>
                     <span class="text-[15px] font-bold text-white">커리어 GPS 진단</span>
                 </div>
-                <p class="text-sm text-slate-400 leading-[1.8] mb-4">성격유형과 직업흥미를 데이터로 측정하고, 현재 커리어 만족도를 객관적으로 진단합니다.</p>
+                <p class="text-sm text-slate-300 leading-[1.8] mb-4">성격유형과 직업흥미를 데이터로 측정하고, 현재 커리어 만족도를 객관적으로 진단합니다.</p>
                 <div class="flex flex-wrap gap-2"><span class="t-tag">MBTI</span><span class="t-tag">Holland 직업흥미</span><span class="t-tag">만족도 척도</span></div>
             </div>
             <div class="session-chip">
@@ -306,7 +477,7 @@
                     <span class="s-num bg-indigo-500/20 text-indigo-400">2</span>
                     <span class="text-[15px] font-bold text-white">강점 발견 워크숍</span>
                 </div>
-                <p class="text-sm text-slate-400 leading-[1.8] mb-4">핵심 강점을 발굴하고, 타인이 보는 나와의 차이를 분석합니다. 약점을 고유한 특성으로 리프레이밍합니다.</p>
+                <p class="text-sm text-slate-300 leading-[1.8] mb-4">핵심 강점을 발굴하고, 타인이 보는 나와의 차이를 분석합니다. 약점을 고유한 특성으로 리프레이밍합니다.</p>
                 <div class="flex flex-wrap gap-2"><span class="t-tag">StrengthsFinder</span><span class="t-tag">Johari Window</span><span class="t-tag">리프레이밍</span></div>
             </div>
             <div class="session-chip">
@@ -314,7 +485,7 @@
                     <span class="s-num bg-indigo-500/20 text-indigo-400">3</span>
                     <span class="text-[15px] font-bold text-white">핵심 가치관 탐색</span>
                 </div>
-                <p class="text-sm text-slate-400 leading-[1.8] mb-4">100개 가치 키워드에서 핵심 가치 3개를 선별하고, 고전 텍스트를 통해 그 가치의 뿌리를 확인합니다.</p>
+                <p class="text-sm text-slate-300 leading-[1.8] mb-4">100개 가치 키워드에서 핵심 가치 3개를 선별하고, 고전 텍스트를 통해 그 가치의 뿌리를 확인합니다.</p>
                 <div class="flex flex-wrap gap-2"><span class="t-tag">Schwartz 가치관 모델</span><span class="t-tag">가치 카드소팅</span><span class="t-tag text-amber-400/80 border-amber-500/20">고전 텍스트 워크</span></div>
             </div>
         </div>
@@ -326,11 +497,11 @@
     </div>
 
     <!-- PHASE 2 -->
-    <div class="phase-block p-7 md:p-10 mb-8">
+    <div class="phase-block p-7 md:p-10 mb-8 phase-accent-amber">
         <div class="flex flex-wrap items-center gap-4 mb-8">
             <span class="text-xs font-bold tracking-[0.15em] uppercase px-4 py-2 rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/20">Phase 2</span>
             <h3 class="text-lg md:text-xl font-bold text-white">DESIGN — 고전의 렌즈로 나를 재해석하다</h3>
-            <span class="text-sm text-slate-500 ml-auto hidden sm:block">Session 4–7</span>
+            <span class="text-sm text-slate-400 ml-auto hidden sm:block">Session 4–7</span>
         </div>
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
             <div class="session-chip">
@@ -338,7 +509,7 @@
                     <span class="s-num bg-amber-500/20 text-amber-400">4</span>
                     <span class="text-[15px] font-bold text-white">커리어 앵커 분석</span>
                 </div>
-                <p class="text-sm text-slate-400 leading-[1.8] mb-4">나를 특정 커리어에 붙잡아두는 근본 동기를 찾고 직무 적합성을 분석합니다.</p>
+                <p class="text-sm text-slate-300 leading-[1.8] mb-4">나를 특정 커리어에 붙잡아두는 근본 동기를 찾고 직무 적합성을 분석합니다.</p>
                 <div class="flex flex-wrap gap-2"><span class="t-tag">Schein 앵커 8유형</span><span class="t-tag">적합성 매트릭스</span></div>
             </div>
             <div class="session-chip">
@@ -346,7 +517,7 @@
                     <span class="s-num bg-amber-500/20 text-amber-400">5</span>
                     <span class="text-[15px] font-bold text-white">인생 서사 설계</span>
                 </div>
-                <p class="text-sm text-slate-400 leading-[1.8] mb-4">과거의 전환점·위기·성장을 연결하고, 인문학적 성찰을 통해 의미 있는 커리어 서사로 재구성합니다.</p>
+                <p class="text-sm text-slate-300 leading-[1.8] mb-4">과거의 전환점·위기·성장을 연결하고, 인문학적 성찰을 통해 의미 있는 커리어 서사로 재구성합니다.</p>
                 <div class="flex flex-wrap gap-2"><span class="t-tag">나래티브 상담</span><span class="t-tag">경험 맵핑</span><span class="t-tag text-amber-400/80 border-amber-500/20">인문학적 성찰</span></div>
             </div>
             <div class="session-chip">
@@ -354,7 +525,7 @@
                     <span class="s-num bg-amber-500/20 text-amber-400">6</span>
                     <span class="text-[15px] font-bold text-white">북극성 정의</span>
                 </div>
-                <p class="text-sm text-slate-400 leading-[1.8] mb-4">Ikigai 교차점에서 인생의 방향을 정의하고, 고전의 지혜를 내 언어로 재해석하며 미션 선언문을 작성합니다.</p>
+                <p class="text-sm text-slate-300 leading-[1.8] mb-4">Ikigai 교차점에서 인생의 방향을 정의하고, 고전의 지혜를 내 언어로 재해석하며 미션 선언문을 작성합니다.</p>
                 <div class="flex flex-wrap gap-2"><span class="t-tag">Ikigai</span><span class="t-tag">미션 선언문</span><span class="t-tag">비전 설계</span><span class="t-tag text-amber-400/80 border-amber-500/20">고전 텍스트 워크</span></div>
             </div>
             <div class="session-chip">
@@ -362,7 +533,7 @@
                     <span class="s-num bg-amber-500/20 text-amber-400">7</span>
                     <span class="text-[15px] font-bold text-white">브랜드 아이덴티티</span>
                 </div>
-                <p class="text-sm text-slate-400 leading-[1.8] mb-4">나만의 포지셔닝·핵심 키워드·30초 엘리베이터 피치를 완성합니다.</p>
+                <p class="text-sm text-slate-300 leading-[1.8] mb-4">나만의 포지셔닝·핵심 키워드·30초 엘리베이터 피치를 완성합니다.</p>
                 <div class="flex flex-wrap gap-2"><span class="t-tag">포지셔닝 맵</span><span class="t-tag">USP</span><span class="t-tag">엘리베이터 피치</span></div>
             </div>
         </div>
@@ -374,41 +545,42 @@
     </div>
 
     <!-- PHASE 3 -->
-    <div class="phase-block p-7 md:p-10">
+    <div class="phase-block p-7 md:p-10 phase-accent-emerald">
         <div class="flex flex-wrap items-center gap-4 mb-8">
             <span class="text-xs font-bold tracking-[0.15em] uppercase px-4 py-2 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">Phase 3</span>
-            <h3 class="text-lg md:text-xl font-bold text-white">REALIZE — 세상에 나를 증명하다</h3>
-            <span class="text-sm text-slate-500 ml-auto hidden sm:block">Session 8–10</span>
+            <h3 class="text-lg md:text-xl font-bold text-white">REALIZE — 나를 세상과 연결하다</h3>
+            <span class="text-sm text-slate-400 ml-auto hidden sm:block">Session 8–10</span>
         </div>
         <div class="grid md:grid-cols-3 gap-5">
             <div class="session-chip">
                 <div class="flex items-center gap-3 mb-4">
                     <span class="s-num bg-emerald-500/20 text-emerald-400">8</span>
-                    <span class="text-[15px] font-bold text-white">커리어 스토리텔링</span>
+                    <span class="text-[15px] font-bold text-white">나의 서사 완성</span>
                 </div>
-                <p class="text-sm text-slate-400 leading-[1.8] mb-4">면접·네트워킹에서 즉시 활용 가능한 성취 스토리 3편을 STAR 기법으로 구조화합니다.</p>
-                <div class="flex flex-wrap gap-2"><span class="t-tag">STAR 기법</span><span class="t-tag">성취 구조화</span><span class="t-tag">스토리뱅크</span><span class="t-tag text-amber-400/80 border-amber-500/20">서사적 정체성</span></div>
+                <p class="text-sm text-slate-300 leading-[1.8] mb-4">지금까지 발견한 가치·강점·서사를 하나의 이야기로 엮습니다. STAR 기법을 도구로 활용해 '내가 누구인지'를 온전히 말할 수 있는 서사를 완성합니다.</p>
+                <div class="flex flex-wrap gap-2"><span class="t-tag">자기 서사 통합</span><span class="t-tag">STAR 기법</span><span class="t-tag">정체성 선언</span><span class="t-tag text-amber-400/80 border-amber-500/20">서사적 정체성</span></div>
             </div>
             <div class="session-chip">
                 <div class="flex items-center gap-3 mb-4">
                     <span class="s-num bg-emerald-500/20 text-emerald-400">9</span>
-                    <span class="text-[15px] font-bold text-white">실전 브랜딩 전략</span>
+                    <span class="text-[15px] font-bold text-white">세상과의 접점 설계</span>
                 </div>
-                <p class="text-sm text-slate-400 leading-[1.8] mb-4">인문학 워크에서 정의한 핵심 가치와 미션을 이력서·LinkedIn의 브랜딩 언어로 전환하고, 1:1 맞춤 피드백을 진행합니다.</p>
-                <div class="flex flex-wrap gap-2"><span class="t-tag">이력서 리브랜딩</span><span class="t-tag">LinkedIn</span><span class="t-tag">1:1 피드백</span><span class="t-tag text-amber-400/80 border-amber-500/20">가치 → 언어 전환</span></div>
+                <p class="text-sm text-slate-300 leading-[1.8] mb-4">발견한 나를 세상에 어떻게 표현할 것인가 — 핵심 가치와 미션을 타인에게 전달하는 언어로 만듭니다. 이력서·LinkedIn은 그 표현의 도구입니다. 1:1 맞춤 피드백 포함.</p>
+                <div class="flex flex-wrap gap-2"><span class="t-tag">자기 표현 설계</span><span class="t-tag">브랜딩 언어화</span><span class="t-tag">1:1 피드백</span><span class="t-tag text-amber-400/80 border-amber-500/20">가치 → 언어 전환</span></div>
             </div>
             <div class="session-chip">
                 <div class="flex items-center gap-3 mb-4">
                     <span class="s-num bg-emerald-500/20 text-emerald-400">10</span>
-                    <span class="text-[15px] font-bold text-white">최종 발표 & 로드맵</span>
+                    <span class="text-[15px] font-bold text-white">선언과 출발</span>
                 </div>
-                <p class="text-sm text-slate-400 leading-[1.8] mb-4">'나의 커리어 브랜드'를 발표하고 동료 피드백을 받습니다. 90일 실행 계획으로 마무리합니다.</p>
-                <div class="flex flex-wrap gap-2"><span class="t-tag">브랜드 발표</span><span class="t-tag">동료 피드백</span><span class="t-tag">90일 플랜</span></div>
+                <p class="text-sm text-slate-300 leading-[1.8] mb-4">'내가 살고 싶은 삶'을 동료 앞에서 선언하고 피드백을 나눕니다. 90일간의 첫 번째 실험 계획을 세우며 새로운 여정을 시작합니다.</p>
+                <div class="flex flex-wrap gap-2"><span class="t-tag">삶의 선언</span><span class="t-tag">동료 피드백</span><span class="t-tag">90일 첫 실험</span></div>
             </div>
         </div>
     </div>
 </section>
 
+<div class="section-divider my-8"></div>
 
 <!-- ================================================================ -->
 <!-- WHY HUMANITIES — Visual Quote Section                             -->
@@ -418,19 +590,19 @@
     <div class="mb-14">
         <p class="text-xs tracking-[0.3em] uppercase text-indigo-400 font-bold mb-3">Why Humanities Matter</p>
         <h2 class="text-2xl md:text-3xl font-serif font-bold mb-4">왜 인문학인가</h2>
-        <p class="text-sm text-slate-500 mb-4">위 커리큘럼의 <span class="text-amber-400/80">고전 텍스트 워크</span> 세션에서 활용되는 인문학적 기반입니다.</p>
-        <p class="text-base text-slate-400 leading-[1.9] max-w-2xl mb-4">
+        <p class="text-sm text-slate-400 mb-4">위 커리큘럼의 <span class="text-amber-400/80">고전 텍스트 워크</span> 세션에서 활용되는 인문학적 기반입니다.</p>
+        <p class="text-base text-slate-300 leading-[1.9] max-w-2xl mb-4">
             이나모리 가즈오는 교세라를 경영하며 불교 철학을 적용했고,<br>
             손정의는 손자병법으로 투자 전략을 세웠습니다.<br>
             빌 게이츠는 매년 Think Week에서 인문학 서적을 탐독하고,<br>
             제프 베조스의 Day 1 문화는 소크라테스적 질문에서 영감을 받았습니다.
         </p>
-        <p class="text-base text-slate-400 leading-[1.9] max-w-2xl mb-6">
+        <p class="text-base text-slate-300 leading-[1.9] max-w-2xl mb-6">
             도널드 트럼프는 <em>손자병법</em>과 노먼 빈센트 필의 <em>적극적 사고방식</em>을 경영 철학의 토대로 삼았고,<br>
             일론 머스크는 아이작 아시모프의 SF와 철학 서적이 SpaceX·Tesla의 비전을 만들었다고 말합니다.<br>
             사티아 나델라는 취임 첫해, 마셜 로젠버그의 <em>비폭력 대화</em>를 마이크로소프트 임원 필독서로 지정했습니다.
         </p>
-        <p class="text-base text-slate-500 leading-relaxed max-w-2xl">
+        <p class="text-base text-slate-400 leading-relaxed max-w-2xl">
             세계적인 리더들이 인문학을 읽는 이유는 단순한 교양이 아닙니다.<br>
             <strong class="text-slate-300">의사결정의 뿌리가 되는 '자기 이해'를 깊게 하기 위해서</strong>입니다.<br>
             AI 시대일수록, 기술 너머의 해석하는 힘이 핵심 경쟁력이 됩니다.
@@ -567,7 +739,7 @@
         <h3 class="text-xl md:text-2xl font-serif font-bold mb-6">그래서, 여기서 인문학을 어떻게 쓰는가</h3>
 
         <div class="grid md:grid-cols-2 gap-8 md:gap-12">
-            <div class="space-y-5 text-[15px] text-slate-400 leading-[1.9]">
+            <div class="space-y-5 text-[15px] text-slate-300 leading-[1.9]">
                 <p>
                     우리는 고전 텍스트를 <strong class="text-slate-200">'읽는 것'에서 끝내지 않습니다.</strong><br>
                     동서양의 지혜 문헌 속 핵심 구절을 가져와, 참여자가 직접 자신의 삶과 연결하는 워크를 진행합니다.
@@ -579,7 +751,7 @@
                     를 스스로 질문하고, 동료와 토론하며, 자기만의 언어로 재정의합니다.
                 </p>
             </div>
-            <div class="space-y-5 text-[15px] text-slate-400 leading-[1.9]">
+            <div class="space-y-5 text-[15px] text-slate-300 leading-[1.9]">
                 <p>
                     이 과정이 강력한 이유는 — 진단 도구가 보여주는 <strong class="text-slate-200">데이터(What)</strong>에
                     인문학이 <strong class="text-slate-200">의미(Why)</strong>를 부여하기 때문입니다.
@@ -588,7 +760,7 @@
                     StrengthsFinder가 "당신의 강점은 전략성입니다"라고 알려준다면,<br>
                     고전 텍스트 워크는 <strong class="text-white">"그 전략성을 어디에 쓸 것인가"</strong>를 스스로 발견하게 합니다.
                 </p>
-                <p class="text-sm text-slate-600 mt-2">
+                <p class="text-sm text-slate-500 mt-2">
                     <i class="fa-solid fa-lock text-slate-700 mr-1"></i>
                     구체적인 텍스트 커리큘럼과 워크시트는 프로그램 참여 시 제공됩니다.
                 </p>
@@ -614,13 +786,14 @@
 <!-- ================================================================ -->
 <!-- PROGRAM SPECS                                                     -->
 <!-- ================================================================ -->
+<div class="bg-white/[0.02]">
 <section class="max-w-6xl mx-auto px-8 md:px-12 py-20 md:py-28">
     <div class="mb-12">
         <p class="text-xs tracking-[0.3em] uppercase text-emerald-400 font-bold mb-3">Program Options</p>
         <h2 class="text-2xl md:text-3xl font-serif font-bold mb-4">참여자에 맞춘 유연한 설계</h2>
-        <p class="text-base text-slate-500 leading-relaxed max-w-2xl">
+        <p class="text-base text-slate-400 leading-relaxed max-w-2xl">
             본 프로그램은 주 3회, 8개월 심화 과정을 기반으로 설계되었습니다.<br>
-            위 10회기 커리큘럼은 핵심 프레임워크를 집중 구성한 정규 과정이며,<br>
+            위 커리큘럼은 핵심 프레임워크를 집중 구성한 정규 과정이며,<br>
             참여자의 상황과 목표에 따라 최적의 프로그램을 추천합니다.
         </p>
     </div>
@@ -629,31 +802,31 @@
         <div class="phase-block p-7 text-center">
             <p class="text-xs tracking-[0.2em] uppercase text-amber-400 font-bold mb-3">Intensive</p>
             <p class="text-3xl font-serif font-bold text-white mb-2">10회</p>
-            <p class="text-sm text-slate-400 leading-[1.8]">핵심 프레임워크 집중<br>커리어 전환·진단이 급한 분</p>
-            <div class="mt-5 pt-5 border-t border-slate-800/60 text-sm text-slate-500">
+            <p class="text-sm text-slate-300 leading-[1.8]">핵심 프레임워크 집중<br>커리어 전환·진단이 급한 분</p>
+            <div class="mt-5 pt-5 border-t border-slate-800/60 text-sm text-slate-400">
                 <p>회당 2시간 · 8~20명</p>
             </div>
         </div>
         <div class="phase-block p-7 text-center">
             <p class="text-xs tracking-[0.2em] uppercase text-indigo-400 font-bold mb-3">Standard</p>
             <p class="text-3xl font-serif font-bold text-white mb-2">24회</p>
-            <p class="text-sm text-slate-400 leading-[1.8]">심화 진단 + 실전 적용<br>체계적 변화를 원하는 분</p>
-            <div class="mt-5 pt-5 border-t border-slate-800/60 text-sm text-slate-500">
+            <p class="text-sm text-slate-300 leading-[1.8]">심화 진단 + 실전 적용<br>체계적 변화를 원하는 분</p>
+            <div class="mt-5 pt-5 border-t border-slate-800/60 text-sm text-slate-400">
                 <p>주 1~2회 · 3~4개월</p>
             </div>
         </div>
         <div class="phase-block p-7 text-center">
             <p class="text-xs tracking-[0.2em] uppercase text-emerald-400 font-bold mb-3">Full Journey</p>
             <p class="text-3xl font-serif font-bold text-white mb-2">8개월</p>
-            <p class="text-sm text-slate-400 leading-[1.8]">주 3회 풀코스<br>근본적 정체성 재설계</p>
-            <div class="mt-5 pt-5 border-t border-slate-800/60 text-sm text-slate-500">
+            <p class="text-sm text-slate-300 leading-[1.8]">주 3회 풀코스<br>근본적 정체성 재설계</p>
+            <div class="mt-5 pt-5 border-t border-slate-800/60 text-sm text-slate-400">
                 <p>주 3회 · 8개월 · 1:1 병행</p>
             </div>
         </div>
     </div>
 
     <div class="text-center">
-        <p class="text-sm text-slate-500"><i class="fa-solid fa-sliders text-indigo-500/50 mr-2"></i>기업·기관 단체 도입 시 목적에 맞춘 <strong class="text-slate-300">커스터마이징</strong>이 가능합니다 (1일 워크숍, 리더십 특화 등)</p>
+        <p class="text-sm text-slate-400"><i class="fa-solid fa-sliders text-indigo-500/50 mr-2"></i>기업·기관 단체 도입 시 목적에 맞춘 <strong class="text-slate-300">커스터마이징</strong>이 가능합니다 (1일 워크숍, 리더십 특화 등)</p>
     </div>
 </section>
 
@@ -666,7 +839,7 @@
     <div class="mb-12">
         <p class="text-xs tracking-[0.3em] uppercase text-amber-400 font-bold mb-3">Program Benefits</p>
         <h2 class="text-2xl md:text-3xl font-serif font-bold mb-4">프로그램 성과와 산출물</h2>
-        <p class="text-base text-slate-500 leading-relaxed max-w-xl">
+        <p class="text-base text-slate-400 leading-relaxed max-w-xl">
             단순한 동기부여가 아닌, 측정 가능한 결과물과 전략 자산을 설계합니다.
         </p>
     </div>
@@ -677,22 +850,22 @@
         <div class="benefit-card p-7">
             <i class="fa-solid fa-microscope text-indigo-400 text-lg mb-4"></i>
             <h4 class="text-[15px] font-bold text-white mb-2">종합 커리어 진단 리포트</h4>
-            <p class="text-sm text-slate-400 leading-[1.8]">MBTI·Holland·StrengthsFinder·커리어앵커 등 6개 검사 통합 분석서</p>
+            <p class="text-sm text-slate-300 leading-[1.8]">MBTI·Holland·StrengthsFinder·커리어앵커 등 6개 검사 통합 분석서</p>
         </div>
         <div class="benefit-card p-7">
             <i class="fa-solid fa-compass text-amber-400 text-lg mb-4"></i>
             <h4 class="text-[15px] font-bold text-white mb-2">미션 선언문 & 비전맵</h4>
-            <p class="text-sm text-slate-400 leading-[1.8]">'왜 이 일을 하는가'에 대한 답과 5년·10년 커리어 비전 설계</p>
+            <p class="text-sm text-slate-300 leading-[1.8]">'왜 이 일을 하는가'에 대한 답과 5년·10년 커리어 비전 설계</p>
         </div>
         <div class="benefit-card p-7">
             <i class="fa-solid fa-bullhorn text-emerald-400 text-lg mb-4"></i>
             <h4 class="text-[15px] font-bold text-white mb-2">브랜드 전략 포트폴리오</h4>
-            <p class="text-sm text-slate-400 leading-[1.8]">포지셔닝·USP·엘리베이터 피치·STAR 스토리·이력서 리브랜딩</p>
+            <p class="text-sm text-slate-300 leading-[1.8]">포지셔닝·USP·엘리베이터 피치·STAR 스토리·이력서 리브랜딩</p>
         </div>
         <div class="benefit-card p-7">
             <i class="fa-solid fa-route text-rose-400 text-lg mb-4"></i>
             <h4 class="text-[15px] font-bold text-white mb-2">90일 실행 로드맵</h4>
-            <p class="text-sm text-slate-400 leading-[1.8]">주차별 액션플랜 + 수료 후 1회 사후 피드백 세션</p>
+            <p class="text-sm text-slate-300 leading-[1.8]">주차별 액션플랜 + 수료 후 1회 사후 피드백 세션</p>
         </div>
     </div>
 
@@ -702,21 +875,23 @@
         <div class="benefit-card p-7">
             <i class="fa-solid fa-heart-pulse text-indigo-400 text-lg mb-4"></i>
             <h4 class="text-[15px] font-bold text-white mb-2">직무 몰입도 향상</h4>
-            <p class="text-sm text-slate-400 leading-[1.8]">자기 이해가 깊어진 구성원은 현재 역할에서 의미를 찾고, 몰입도와 생산성이 올라갑니다.</p>
+            <p class="text-sm text-slate-300 leading-[1.8]">자기 이해가 깊어진 구성원은 현재 역할에서 의미를 찾고, 몰입도와 생산성이 올라갑니다.</p>
         </div>
         <div class="benefit-card p-7">
             <i class="fa-solid fa-people-arrows text-amber-400 text-lg mb-4"></i>
             <h4 class="text-[15px] font-bold text-white mb-2">내부 이동 & 리텐션</h4>
-            <p class="text-sm text-slate-400 leading-[1.8]">방향을 아는 구성원은 밖으로 나가지 않고 조직 안에서 적합한 자리를 찾습니다. 이직률 감소의 근본 해법.</p>
+            <p class="text-sm text-slate-300 leading-[1.8]">방향을 아는 구성원은 밖으로 나가지 않고 조직 안에서 적합한 자리를 찾습니다. 이직률 감소의 근본 해법.</p>
         </div>
         <div class="benefit-card p-7">
             <i class="fa-solid fa-seedling text-emerald-400 text-lg mb-4"></i>
             <h4 class="text-[15px] font-bold text-white mb-2">리더십 파이프라인</h4>
-            <p class="text-sm text-slate-400 leading-[1.8]">자기 서사를 가진 사람이 팀을 이끕니다. 차세대 리더에게 필요한 건 스킬이 아니라 정체성입니다.</p>
+            <p class="text-sm text-slate-300 leading-[1.8]">자기 서사를 가진 사람이 팀을 이끕니다. 차세대 리더에게 필요한 건 스킬이 아니라 정체성입니다.</p>
         </div>
     </div>
 </section>
+</div><!-- end bg band -->
 
+<div class="section-divider my-8"></div>
 
 <!-- ================================================================ -->
 <!-- BEFORE → AFTER CASE STUDY                                        -->
@@ -725,7 +900,7 @@
     <div class="mb-12">
         <p class="text-xs tracking-[0.3em] uppercase text-emerald-400 font-bold mb-3">Transformation</p>
         <h2 class="text-2xl md:text-3xl font-serif font-bold mb-4">프로그램 전과 후</h2>
-        <p class="text-base text-slate-500 leading-relaxed max-w-2xl">
+        <p class="text-base text-slate-400 leading-relaxed max-w-2xl">
             같은 스펙, 같은 환경. 달라진 건 단 하나 — <strong class="text-slate-300">자기 이해의 깊이</strong>입니다.
         </p>
     </div>
@@ -739,7 +914,7 @@
         <div class="grid md:grid-cols-2 gap-8">
             <div>
                 <p class="text-xs tracking-[0.2em] uppercase text-slate-600 font-bold mb-3">Before</p>
-                <div class="space-y-3 text-[15px] text-slate-400 leading-[1.8]">
+                <div class="space-y-3 text-[15px] text-slate-300 leading-[1.8]">
                     <p><span class="text-rose-400/70 mr-2">×</span> "저는 성실하고, 소통을 잘하고, 팀워크가 좋습니다"</p>
                     <p><span class="text-rose-400/70 mr-2">×</span> 대기업 5곳 서류 탈락 반복 — 자기소개서에 차별점 없음</p>
                     <p><span class="text-rose-400/70 mr-2">×</span> 마케팅·기획·인사 사이에서 직무 결정 못 함</p>
@@ -747,8 +922,8 @@
                 </div>
             </div>
             <div>
-                <p class="text-xs tracking-[0.2em] uppercase text-emerald-400 font-bold mb-3">After — 10회기 수료 후</p>
-                <div class="space-y-3 text-[15px] text-slate-400 leading-[1.8]">
+                <p class="text-xs tracking-[0.2em] uppercase text-emerald-400 font-bold mb-3">After — 프로그램 수료 후</p>
+                <div class="space-y-3 text-[15px] text-slate-300 leading-[1.8]">
                     <p><span class="text-emerald-400 mr-2">→</span> <strong class="text-slate-200">"저는 데이터로 사람의 행동을 해석하는 사람입니다"</strong></p>
                     <p><span class="text-emerald-400 mr-2">→</span> Holland 검사 결과 '탐구형+사회형' → CRM 마케팅으로 직무 확정</p>
                     <p><span class="text-emerald-400 mr-2">→</span> STAR 기반 성취 스토리 3편 + 미션 선언문 완성</p>
@@ -767,7 +942,7 @@
         <div class="grid md:grid-cols-2 gap-8">
             <div>
                 <p class="text-xs tracking-[0.2em] uppercase text-slate-600 font-bold mb-3">Before</p>
-                <div class="space-y-3 text-[15px] text-slate-400 leading-[1.8]">
+                <div class="space-y-3 text-[15px] text-slate-300 leading-[1.8]">
                     <p><span class="text-rose-400/70 mr-2">×</span> "월급 받으려고 출근하는 느낌, 의미를 모르겠다"</p>
                     <p><span class="text-rose-400/70 mr-2">×</span> 이직 준비 3번 — 매번 비슷한 직무, 비슷한 불만</p>
                     <p><span class="text-rose-400/70 mr-2">×</span> 리더 역할 제안 받았으나 자신감 부족으로 거절</p>
@@ -775,8 +950,8 @@
                 </div>
             </div>
             <div>
-                <p class="text-xs tracking-[0.2em] uppercase text-emerald-400 font-bold mb-3">After — 10회기 수료 후</p>
-                <div class="space-y-3 text-[15px] text-slate-400 leading-[1.8]">
+                <p class="text-xs tracking-[0.2em] uppercase text-emerald-400 font-bold mb-3">After — 프로그램 수료 후</p>
+                <div class="space-y-3 text-[15px] text-slate-300 leading-[1.8]">
                     <p><span class="text-emerald-400 mr-2">→</span> 커리어앵커 '기술/기능 역량' + 가치관 '성장' 확인</p>
                     <p><span class="text-emerald-400 mr-2">→</span> <strong class="text-slate-200">이직이 아니라 사내 Tech Lead 포지션으로 전환</strong></p>
                     <p><span class="text-emerald-400 mr-2">→</span> "코딩이 싫었던 게 아니라, 성장을 못 느꼈던 거였다"</p>
@@ -795,15 +970,15 @@
         <div class="grid md:grid-cols-2 gap-8">
             <div>
                 <p class="text-xs tracking-[0.2em] uppercase text-slate-600 font-bold mb-3">Before</p>
-                <div class="space-y-3 text-[15px] text-slate-400 leading-[1.8]">
+                <div class="space-y-3 text-[15px] text-slate-300 leading-[1.8]">
                     <p><span class="text-rose-400/70 mr-2">×</span> 팀원 3명 동시 퇴사 예고 — "여기서 성장할 수 있나요?"</p>
                     <p><span class="text-rose-400/70 mr-2">×</span> 1:1 면담해도 본심을 말하지 않는 분위기</p>
                     <p><span class="text-rose-400/70 mr-2">×</span> 복지가 아니라 '방향'이 없다는 게 진짜 문제</p>
                 </div>
             </div>
             <div>
-                <p class="text-xs tracking-[0.2em] uppercase text-emerald-400 font-bold mb-3">After — 10회기 단체 수료 후</p>
-                <div class="space-y-3 text-[15px] text-slate-400 leading-[1.8]">
+                <p class="text-xs tracking-[0.2em] uppercase text-emerald-400 font-bold mb-3">After — 단체 프로그램 수료 후</p>
+                <div class="space-y-3 text-[15px] text-slate-300 leading-[1.8]">
                     <p><span class="text-emerald-400 mr-2">→</span> 8명 전원 강점 프로파일 + 미션 선언문 보유</p>
                     <p><span class="text-emerald-400 mr-2">→</span> <strong class="text-slate-200">퇴사 예고 3명 중 2명 잔류 결정</strong> — 사내 역할 재배치</p>
                     <p><span class="text-emerald-400 mr-2">→</span> "처음으로 서로의 강점을 언어로 알게 됐다"</p>
@@ -813,7 +988,7 @@
         </div>
     </div>
 
-    <p class="text-xs text-slate-600 mt-6 text-center">
+    <p class="text-xs text-slate-500 mt-6 text-center">
         <i class="fa-solid fa-shield-halved mr-1"></i>
         참여자 개인정보 보호를 위해 세부 사항은 각색되었습니다. 실제 사례를 기반으로 구성되었습니다.
     </p>
@@ -823,7 +998,8 @@
 <!-- ================================================================ -->
 <!-- TESTIMONIALS                                                      -->
 <!-- ================================================================ -->
-<section class="max-w-6xl mx-auto px-8 md:px-12 pb-20 md:pb-28">
+<div class="bg-white/[0.02]">
+<section class="max-w-6xl mx-auto px-8 md:px-12 py-20 md:py-28">
     <div class="mb-12">
         <p class="text-xs tracking-[0.3em] uppercase text-emerald-400 font-bold mb-3">Voices</p>
         <h2 class="text-2xl md:text-3xl font-serif font-bold">참여자들의 이야기</h2>
@@ -833,69 +1009,28 @@
         <div class="phase-block p-7">
             <p class="text-lg font-serif text-slate-300 opacity-30 mb-3">"</p>
             <p class="text-[15px] text-slate-300 leading-[1.8] mb-5">
-                이력서를 수십 번 고쳤는데, 처음으로 <strong class="text-white">'왜 이 일을 해야 하는지'</strong>부터 정리한 건 이 프로그램이 처음이었어요. 면접에서 자신감이 완전히 달라졌습니다.
+                고전 텍스트 읽으면서 울었어요. 남들 앞에서 처음으로 <strong class="text-white">'내가 진짜 원하는 삶'</strong>을 말했는데, 그게 이렇게 어려운 일인 줄 몰랐습니다. 끝나고 한동안 여운이 남더라고요.
             </p>
-            <p class="text-sm text-slate-500">— 20대 후반 · 취업준비생</p>
+            <p class="text-sm text-slate-400">— 20대 후반 · 대학원생</p>
         </div>
         <div class="phase-block p-7">
             <p class="text-lg font-serif text-slate-300 opacity-30 mb-3">"</p>
             <p class="text-[15px] text-slate-300 leading-[1.8] mb-5">
-                7년차인데 매일 '이게 맞나' 싶었거든요. 커리어 앵커 분석하고 나서야 <strong class="text-white">내가 왜 불안했는지</strong> 이해했어요. 이직이 아니라 포지션 전환으로 해결됐습니다.
+                커리어 상담은 많이 받아봤는데 다 '이직할까 말까'에서 끝났거든요. 여기는 달랐어요. <strong class="text-white">내가 왜 이 일을 하고 있는지</strong>를 스스로 찾게 해줬습니다.
             </p>
-            <p class="text-sm text-slate-500">— 30대 초반 · IT기업 재직자</p>
+            <p class="text-sm text-slate-400">— 30대 초반 · 금융권 재직자</p>
         </div>
         <div class="phase-block p-7">
             <p class="text-lg font-serif text-slate-300 opacity-30 mb-3">"</p>
             <p class="text-[15px] text-slate-300 leading-[1.8] mb-5">
-                팀원들 번아웃이 심해서 도입했는데, <strong class="text-white">본인 강점을 언어화</strong>하니까 업무 태도가 바뀌더라고요. 1:1 상담 때 울먹이는 친구도 있었어요.
+                선언문 발표할 때 목소리가 떨렸는데, 끝나고 동료들이 박수 쳐줬어요. <strong class="text-white">누군가한테 '나'를 온전히 말한 건 처음</strong>이었습니다. 그날 이후로 뭔가 달라진 느낌이에요.
             </p>
-            <p class="text-sm text-slate-500">— 30대 중반 · 스타트업 팀 리더</p>
+            <p class="text-sm text-slate-400">— 30대 중반 · 교육업 종사자</p>
         </div>
     </div>
 </section>
+</div><!-- end bg band -->
 
-
-<!-- ================================================================ -->
-<!-- PROCESS — 도입 프로세스 (B2B)                                      -->
-<!-- ================================================================ -->
-<section class="max-w-6xl mx-auto px-8 md:px-12 pb-20 md:pb-28">
-    <div class="mb-12">
-        <p class="text-xs tracking-[0.3em] uppercase text-indigo-400 font-bold mb-3">How It Works</p>
-        <h2 class="text-2xl md:text-3xl font-serif font-bold mb-4">기업·기관 도입 프로세스</h2>
-        <p class="text-base text-slate-500 leading-relaxed max-w-2xl">
-            조직의 목표와 참여자 특성에 맞춰 설계합니다.<br>
-            사전 진단부터 사후 성과 리포트까지, 5단계로 체계적으로 운영됩니다.
-        </p>
-    </div>
-
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div class="metric-card">
-            <p class="text-2xl font-serif font-bold text-indigo-400 mb-3">01</p>
-            <p class="text-sm font-bold text-white mb-1">사전 미팅</p>
-            <p class="text-xs text-slate-500 leading-[1.6]">목표·대상·일정 협의</p>
-        </div>
-        <div class="metric-card">
-            <p class="text-2xl font-serif font-bold text-indigo-400 mb-3">02</p>
-            <p class="text-sm font-bold text-white mb-1">니즈 분석</p>
-            <p class="text-xs text-slate-500 leading-[1.6]">참여자 사전 진단</p>
-        </div>
-        <div class="metric-card">
-            <p class="text-2xl font-serif font-bold text-indigo-400 mb-3">03</p>
-            <p class="text-sm font-bold text-white mb-1">커리큘럼 설계</p>
-            <p class="text-xs text-slate-500 leading-[1.6]">맞춤 구성·일정 확정</p>
-        </div>
-        <div class="metric-card">
-            <p class="text-2xl font-serif font-bold text-indigo-400 mb-3">04</p>
-            <p class="text-sm font-bold text-white mb-1">프로그램 실행</p>
-            <p class="text-xs text-slate-500 leading-[1.6]">대면 세션 + 1:1 코칭</p>
-        </div>
-        <div class="metric-card">
-            <p class="text-2xl font-serif font-bold text-indigo-400 mb-3">05</p>
-            <p class="text-sm font-bold text-white mb-1">사후 리포트</p>
-            <p class="text-xs text-slate-500 leading-[1.6]">성과 분석·후속 제안</p>
-        </div>
-    </div>
-</section>
 
 
 <!-- ================================================================ -->
@@ -905,7 +1040,7 @@
     <div class="rounded-2xl p-12 md:p-16 text-center border border-slate-800 bg-gradient-to-b from-slate-900/50 to-transparent">
         <h3 class="text-xl md:text-2xl font-serif font-bold mb-3">당신만의 성장 알고리즘을 설계할 준비가 되셨습니까?</h3>
         <p class="text-base text-slate-400 mb-2">개인 참여 · 기업/기관 단체 도입 모두 가능합니다</p>
-        <p class="text-sm text-slate-600 mb-10">프로그램 상담을 통해 최적의 과정을 추천해드립니다</p>
+        <p class="text-sm text-slate-500 mb-10">프로그램 상담을 통해 최적의 과정을 추천해드립니다</p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="./apply.html" class="cta-primary inline-flex items-center justify-center gap-2.5 px-10 py-4.5 rounded-full text-white font-bold text-base">
                 <i class="fa-solid fa-paper-plane text-sm"></i>
@@ -921,7 +1056,7 @@
 
 <!-- Footer -->
 <footer class="max-w-6xl mx-auto px-8 md:px-12 pb-12 pt-8 border-t border-slate-800/50 flex flex-col sm:flex-row items-center justify-between gap-4">
-    <div class="flex items-center gap-3 text-sm text-slate-500">
+    <div class="flex items-center gap-3 text-sm text-slate-400">
         <img src="./assets/logo.svg" alt="Algrowithm" class="w-5 h-5 invert opacity-40">
         <span class="font-serif font-bold">Algrowithm</span>
         <span class="text-slate-700">|</span>
