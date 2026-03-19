@@ -1,4 +1,4 @@
-// Vercel Serverless Function — 프로그램 신청 접수 + Resend 이메일 알림
+// Vercel Serverless Function — 코칭 신청 접수 + Resend 이메일 알림
 // 환경변수: RESEND_API_KEY (Vercel Dashboard에서 설정)
 
 export default async function handler(req, res) {
@@ -33,7 +33,7 @@ export default async function handler(req, res) {
         const htmlContent = `
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; background: #f8fafc; padding: 32px; border-radius: 12px;">
                 <h1 style="color: #1e293b; font-size: 22px; margin-bottom: 24px; border-bottom: 2px solid #6366f1; padding-bottom: 12px;">
-                    📋 새로운 프로그램 신청
+                    📋 새로운 코칭 신청
                 </h1>
 
                 <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
@@ -58,7 +58,7 @@ export default async function handler(req, res) {
                         <td style="padding: 12px 8px; color: #1e293b;">${typeLabels[type] || type || '-'}</td>
                     </tr>
                     <tr style="border-bottom: 1px solid #e2e8f0;">
-                        <td style="padding: 12px 8px; color: #64748b;">관심 프로그램</td>
+                        <td style="padding: 12px 8px; color: #64748b;">관심 코칭 과정</td>
                         <td style="padding: 12px 8px; color: #1e293b;">${programLabels[program] || program || '-'}</td>
                     </tr>
                     ${headcount ? `<tr style="border-bottom: 1px solid #e2e8f0;">
@@ -74,7 +74,6 @@ export default async function handler(req, res) {
                 <div style="margin-top: 24px; padding: 16px; background: #f1f5f9; border-radius: 8px; font-size: 13px; color: #64748b;">
                     <p style="margin: 0;">✅ NDA 동의: ${nda_agreed_at || '-'}</p>
                     <p style="margin: 4px 0 0;">✅ 개인정보 동의: ${privacy_agreed_at || '-'}</p>
-                    <p style="margin: 4px 0 0;">✍️ 전자서명: ${signature || '-'}</p>
                 </div>
             </div>
         `;
@@ -86,9 +85,9 @@ export default async function handler(req, res) {
                 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`
             },
             body: JSON.stringify({
-                from: 'Algrowithm <onboarding@resend.dev>',
+                from: 'Algrowithm <noreply@algrowithm.org>',
                 to: 'josuhun0613@gmail.com',
-                subject: `[프로그램 신청] ${name} / ${typeLabels[type] || '기타'}`,
+                subject: `[코칭 신청] ${name} / ${typeLabels[type] || '기타'}`,
                 html: htmlContent
             })
         });

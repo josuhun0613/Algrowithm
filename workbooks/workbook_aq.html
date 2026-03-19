@@ -52,7 +52,7 @@
             border-right: 1px dashed #ccc;
         }
 
-        /* ===== 페이지 1: 표지 ===== */
+        /* ===== 표지 ===== */
         .cover-page {
             justify-content: center;
             align-items: center;
@@ -79,7 +79,7 @@
             font-size: 10pt;
             color: #666;
             font-style: italic;
-            margin-bottom: 48px;
+            margin-bottom: 36px;
         }
 
         .cover-page .info-field {
@@ -108,40 +108,27 @@
             color: #999;
         }
 
-        /* ===== 페이지 4: 뒷표지 ===== */
+        /* ===== 뒷표지 ===== */
         .back-page {
             padding: 10mm 12mm;
         }
 
-        .back-page .section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 16pt;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .back-page .section-subtitle {
-            font-size: 11pt;
-            color: #333;
-            margin-bottom: 16px;
-        }
-
         .checklist-box {
             border: 1.5px solid #000;
-            padding: 12px 16px;
+            padding: 14px 18px;
             margin-bottom: 16px;
         }
 
         .checklist-item {
             display: flex;
             align-items: flex-start;
-            margin: 8px 0;
-            font-size: 9.5pt;
+            margin: 10px 0;
+            font-size: 10pt;
         }
 
         .checkbox {
-            width: 14px;
-            height: 14px;
+            width: 15px;
+            height: 15px;
             border: 1.5px solid #000;
             margin-right: 10px;
             flex-shrink: 0;
@@ -152,11 +139,11 @@
             width: 100%;
             border-collapse: collapse;
             margin: 12px 0;
-            font-size: 9pt;
+            font-size: 9.5pt;
         }
 
         .result-table td {
-            padding: 6px 8px;
+            padding: 7px 10px;
             border: 1px solid #ccc;
         }
 
@@ -168,8 +155,8 @@
 
         .next-step-box {
             background: #f5f5f5;
-            padding: 14px;
-            margin-top: 12px;
+            padding: 16px;
+            margin-top: auto;
             text-align: center;
         }
 
@@ -204,7 +191,7 @@
         }
 
         /* ===== 실습 페이지 공통 ===== */
-        .source-page, .structure-page {
+        .work-page {
             padding: 6mm 10mm;
         }
 
@@ -229,76 +216,63 @@
         }
 
         .step-section {
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
 
         .step-title {
             font-size: 10pt;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             background: #000;
             color: #fff;
-            padding: 4px 10px;
+            padding: 4px 12px;
             display: inline-block;
         }
 
         .step-desc {
             font-size: 9pt;
             color: #333;
-            margin-bottom: 8px;
-        }
-
-        .input-row {
-            display: flex;
-            gap: 8px;
-            margin: 6px 0;
-            align-items: center;
-        }
-
-        .input-row label {
-            font-size: 9pt;
-            font-weight: 500;
-            min-width: 70px;
-        }
-
-        .input-row .input-line {
-            flex: 1;
-            border-bottom: 1px solid #000;
-            min-height: 18px;
+            margin-bottom: 6px;
         }
 
         .write-area {
             border: 1.5px solid #000;
-            min-height: 40px;
-            margin: 8px 0;
+            min-height: 44px;
+            margin: 6px 0;
             padding: 8px;
         }
 
-        .write-area.large {
-            min-height: 32px;
+        .write-area.tall {
+            min-height: 56px;
         }
 
-        .formula-box {
-            background: #f0f0f0;
-            padding: 10px 14px;
-            margin: 8px 0;
-            font-size: 9pt;
+        .tip-box {
+            background: #f5f5f0;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 6px 0;
+            font-size: 8.5pt;
+            color: #555;
             border-left: 3px solid #000;
         }
 
-        .example-box {
-            font-size: 8.5pt;
-            color: #555;
-            padding: 6px 0;
-            font-style: italic;
+        .tip-box strong {
+            color: #000;
         }
 
-        /* ===== 5Why 체인 ===== */
+        .example-text {
+            font-size: 8pt;
+            color: #888;
+            font-style: italic;
+            margin: 4px 0;
+        }
+
+        /* ===== 5-Why 체인 ===== */
         .why-chain {
             display: flex;
             flex-direction: column;
             gap: 0;
-            margin: 8px 0;
+            margin: 6px 0;
         }
 
         .why-row {
@@ -308,12 +282,12 @@
         }
 
         .why-num {
-            font-size: 8pt;
+            font-size: 8.5pt;
             font-weight: 700;
             color: #fff;
             background: #333;
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -321,10 +295,16 @@
             flex-shrink: 0;
         }
 
+        .why-label {
+            font-size: 9pt;
+            font-weight: 700;
+            min-width: 28px;
+        }
+
         .why-input {
             flex: 1;
             border-bottom: 1px solid #999;
-            min-height: 18px;
+            min-height: 22px;
             font-size: 9pt;
             padding: 2px 4px;
         }
@@ -333,94 +313,71 @@
             text-align: center;
             font-size: 10pt;
             color: #999;
-            padding: 1px 0;
-            margin-left: 10px;
+            padding: 2px 0;
+            margin-left: 12px;
         }
 
-        /* ===== 원인 뒤집기 ===== */
-        .flip-section {
+        .why-hint {
+            font-size: 7.5pt;
+            color: #bbb;
+        }
+
+        /* ===== 질문 뒤집기 ===== */
+        .flip-box {
             border: 1.5px solid #000;
-            padding: 10px 14px;
+            padding: 12px 14px;
             margin: 8px 0;
-        }
-
-        .flip-header {
-            font-size: 9.5pt;
-            font-weight: 700;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .flip-badge {
-            font-size: 8pt;
-            padding: 2px 8px;
-            border-radius: 10px;
-            color: #fff;
-            font-weight: 500;
-        }
-
-        .flip-badge.possible {
-            background: #2563eb;
-        }
-
-        .flip-badge.impossible {
-            background: #dc2626;
         }
 
         .flip-row {
             display: flex;
             gap: 8px;
-            margin: 6px 0;
-            align-items: flex-start;
+            margin: 8px 0;
+            align-items: center;
         }
 
         .flip-label {
-            font-size: 8.5pt;
-            font-weight: 500;
-            min-width: 55px;
-            color: #555;
-            padding-top: 2px;
+            font-size: 9pt;
+            font-weight: 600;
+            min-width: 80px;
         }
 
         .flip-input {
             flex: 1;
             border-bottom: 1px solid #999;
-            min-height: 18px;
-            font-size: 9pt;
+            min-height: 22px;
         }
 
-        /* ===== 액션 플랜 ===== */
+        /* ===== 액션 ===== */
         .action-box {
             border: 1.5px solid #000;
-            padding: 12px 14px;
+            padding: 14px 16px;
             margin-top: auto;
         }
 
         .action-box .action-title {
-            font-size: 10pt;
+            font-size: 10.5pt;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .action-row {
             display: flex;
             gap: 8px;
-            margin: 5px 0;
+            margin: 8px 0;
             align-items: center;
         }
 
         .action-row label {
-            font-size: 8.5pt;
-            min-width: 75px;
+            font-size: 9pt;
+            min-width: 90px;
             font-weight: 500;
         }
 
         .action-row .action-line {
             flex: 1;
             border-bottom: 1px solid #000;
-            min-height: 16px;
+            min-height: 20px;
         }
 
         /* 프린트 버튼 */
@@ -447,6 +404,25 @@
         .print-btn:hover {
             background: #333;
             transform: translateY(-2px);
+        }
+
+        /* ===== 워밍업 박스 ===== */
+        .warmup-box {
+            margin-top: 32px;
+            text-align: left;
+            width: 260px;
+        }
+
+        .warmup-box .warmup-label {
+            font-size: 9pt;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .warmup-box .warmup-line {
+            border-bottom: 1px solid #000;
+            min-height: 24px;
+            width: 100%;
         }
 
         /* ===== 인쇄 최적화 ===== */
@@ -509,48 +485,48 @@
         <div class="half-page left back-page">
             <div class="page-header" style="border-bottom: 2px solid #000; padding-bottom: 6px; margin-bottom: 14px;">
                 <span class="eng-title" style="font-family: 'Playfair Display', serif; font-size: 18pt;">SELF-CHECK</span>
-                <span class="kor-title" style="font-size: 10pt; color: #333;">시스템 점검</span>
+                <span class="kor-title" style="font-size: 10pt; color: #333;">돌아보기</span>
             </div>
 
-            <p style="font-size: 9pt; color: #555; margin-bottom: 12px;">작성한 워크지를 돌아보며 솔직하게 체크해보세요.</p>
+            <p style="font-size: 9.5pt; color: #555; margin-bottom: 14px;">작성한 워크지를 돌아보며 솔직하게 체크해보세요.</p>
 
             <div class="checklist-box">
                 <div class="checklist-item">
                     <div class="checkbox"></div>
-                    <span>이상적 결과(목표)를 구체적으로 정의했다</span>
+                    <span>사소하지만 구체적인 고민을 하나 골랐다</span>
                 </div>
                 <div class="checklist-item">
                     <div class="checkbox"></div>
-                    <span>문제의 해상도를 높여 선명한 문장으로 디컴파일했다</span>
+                    <span>"왜?"를 3번 이상 파고들어 봤다</span>
                 </div>
                 <div class="checklist-item">
                     <div class="checkbox"></div>
-                    <span>나에게 맞는 도구(돋보기/카메라)를 선택해 분석했다</span>
+                    <span>감정이 아닌 행동으로 원인을 적었다</span>
                 </div>
                 <div class="checklist-item">
                     <div class="checkbox"></div>
-                    <span>질문의 앵글을 전환하여 리프레이밍했다</span>
+                    <span>뿌리 원인에서 질문을 다르게 던져봤다</span>
                 </div>
                 <div class="checklist-item">
                     <div class="checkbox"></div>
-                    <span>인생 패치노트에 실행 알고리즘을 확정했다</span>
+                    <span>내일부터 할 수 있는 한 가지를 정했다</span>
                 </div>
             </div>
 
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-                <span style="font-size: 9pt; font-weight: 500;">체크 개수:</span>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
+                <span style="font-size: 9.5pt; font-weight: 500;">체크 개수:</span>
                 <span style="border-bottom: 1px solid #000; width: 30px; display: inline-block;"></span>
-                <span style="font-size: 9pt;">/ 5개</span>
+                <span style="font-size: 9.5pt;">/ 5개</span>
             </div>
 
             <table class="result-table">
                 <tr>
                     <td>5개</td>
-                    <td>패치 완료! 바로 배포(실행)하세요</td>
+                    <td>완벽해요! 내일 바로 실행에 옮기세요</td>
                 </tr>
                 <tr>
                     <td>3-4개</td>
-                    <td>거의 다 왔어요. 빈 칸을 채워보세요</td>
+                    <td>거의 다 왔어요. 빈칸을 채워보세요</td>
                 </tr>
                 <tr>
                     <td>0-2개</td>
@@ -559,7 +535,7 @@
             </table>
 
             <div class="next-step-box">
-                <p style="font-size: 9pt; color: #666; margin-bottom: 8px;">문제는 벗겨낼수록 쉬워집니다.<br>혼자 어렵다면, 함께 풀어봅시다.</p>
+                <p style="font-size: 9pt; color: #666; margin-bottom: 8px;">문제는 쪼갤수록 쉬워집니다.<br>혼자 어렵다면, 함께 풀어봅시다.</p>
                 <div class="title">AI 성장 알고리즘 코칭</div>
                 <div class="features">
                     AQ 진단 · 심층 분석 · 맞춤 성장 로드맵
@@ -571,7 +547,6 @@
 
         <!-- 1페이지: 표지 -->
         <div class="half-page cover-page" style="position: relative;">
-            <!-- 로고 -->
             <div style="position: absolute; top: 12mm; right: 12mm; display: flex; align-items: center; gap: 6px;">
                 <img src="../assets/logo.svg" alt="AIgrowithm" style="width: 28px; height: 28px;">
                 <span style="font-size: 9pt; font-weight: 700; letter-spacing: 1px; color: #333;">AIgrowithm</span>
@@ -581,19 +556,20 @@
                 <div class="sub-title">나만의 성장 알고리즘 완성</div>
                 <div class="tagline">"문제는 쪼갤수록 쉬워진다. 더 해볼까?"</div>
 
-                <div style="margin-top: 40px;">
+                <div style="margin-top: 28px;">
                     <div class="info-field">
                         <label>Name</label>
-                        <span class="line"></span>
-                    </div>
-                    <div class="info-field">
-                        <label>Birth</label>
                         <span class="line"></span>
                     </div>
                     <div class="info-field">
                         <label>Date</label>
                         <span class="line"></span>
                     </div>
+                </div>
+
+                <div class="warmup-box">
+                    <p class="warmup-label">요즘 나를 가장 찝찝하게 하는 것 한 줄:</p>
+                    <div class="warmup-line"></div>
                 </div>
             </div>
             <div class="footer">[AI] Another I · AQ Development Workshop</div>
@@ -605,151 +581,137 @@
     <div class="print-page" style="position: relative;">
         <span style="position: absolute; bottom: 8mm; left: 12mm; font-size: 8.5pt; color: #999;">&copy; 2026 AIgrowithm. All rights reserved.</span>
 
-        <!-- 2페이지: STEP 1~3 -->
-        <div class="half-page left source-page">
+        <!-- 2페이지: STEP 1 고민 구체화 + STEP 2 5-Why -->
+        <div class="half-page left work-page">
             <div class="page-header">
-                <span class="eng-title">ANALYZE</span>
-                <span class="kor-title">시스템 분석</span>
+                <span class="eng-title">DIG</span>
+                <span class="kor-title">파고들기</span>
             </div>
 
-            <!-- STEP 1 -->
+            <!-- STEP 1: 고민 구체화 -->
             <div class="step-section">
-                <div class="step-title">STEP 1. 목표 설정</div>
-                <p class="step-desc">거창한 목표보다 사소한 일상에 집중하세요 (일상, 직장, 자기개발 등)</p>
-                <div style="background: #f9f9f9; padding: 5px 10px; margin-bottom: 4px; border-radius: 4px;">
-                    <p style="font-size: 7.5pt; color: #666; font-style: italic;">
-                        예) "왜 아침에 일어나는 것이 힘들까?" / "왜 특정 업무만 잡으면 집중력이 떨어질까?"
-                    </p>
+                <div class="step-title">STEP 1. 내 고민을 구체적으로 적기</div>
+                <p class="step-desc">거창한 인생 목표 말고, 일상 속 작은 고민을 하나만 골라보세요.</p>
+
+                <div class="tip-box">
+                    <strong>작성 공식:</strong> "나는 ______을(를) ______한다 / 못 한다 / 안 한다"<br>
+                    <span style="color: #c00;">X</span> 의지가 부족하다, 자신감이 없다 (감정)<br>
+                    <span style="color: #2563eb;">O</span> 알람을 끄고 다시 눕는다, 보고서 시작까지 2시간이 걸린다 (행동)
                 </div>
-                <div class="write-area" style="min-height: 28px;"></div>
+
+                <p class="example-text">예) "나는 퇴근 후 운동을 가겠다고 매일 다짐하지만, 실제로 가는 날이 한 달에 2번뿐이다"</p>
+                <div class="write-area" style="min-height: 30px;"></div>
             </div>
 
-            <!-- STEP 2: 도구 선택 -->
-            <div class="step-section">
-                <div class="step-title">STEP 2. 도구 선택</div>
-                <p class="step-desc">하나를 골라 체크하세요. 선택한 도구의 영역만 작성합니다.</p>
+            <!-- STEP 2: 5-Why -->
+            <div class="step-section" style="flex: 1; display: flex; flex-direction: column;">
+                <div class="step-title">STEP 2. "왜?" 를 반복해서 뿌리 찾기</div>
+                <p class="step-desc">위에 적은 고민에서 출발해, "왜 그럴까?"를 계속 파고드세요.</p>
 
-                <div style="display: flex; gap: 12px; margin: 6px 0 10px;">
-                    <div style="flex: 1; border: 2px solid #000; padding: 8px 10px;">
-                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
-                            <div class="checkbox" style="width: 14px; height: 14px;"></div>
-                            <span style="font-size: 9.5pt; font-weight: 700;">A. 돋보기 (수직적 사고)</span>
-                        </div>
-                        <p style="font-size: 8pt; color: #555;">"왜?" 를 파고들어 뿌리 원인 발견<br>→ 아래 5-Why 작성</p>
-                    </div>
-                    <div style="flex: 1; border: 2px solid #000; padding: 8px 10px;">
-                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
-                            <div class="checkbox" style="width: 14px; height: 14px;"></div>
-                            <span style="font-size: 9.5pt; font-weight: 700;">B. 카메라 (수평적 사고)</span>
-                        </div>
-                        <p style="font-size: 8pt; color: #555;">"어떻게 다르게?" 로 관점 전환<br>→ 오른쪽 페이지 작성</p>
-                    </div>
+                <div class="tip-box" style="margin-bottom: 8px;">
+                    <strong>규칙:</strong> "왜?"는 <strong>동사·명사</strong>에 던지세요. 형용사에 던지면 거기서 끝납니다.<br>
+                    <span style="color: #c00;">X</span> "퇴근 후 운동을 안 간다" → 왜? → "<u>귀찮으니까</u>" (형용사 — 막다른 길)<br>
+                    <span style="color: #2563eb;">O</span> "퇴근 후 운동을 안 간다" → 왜? → "<u>집에 먼저 들른다</u>" (동사) → 왜? → "<u>옷을 갈아입으려고</u>" → 왜 미리 안 챙기지? → ...
                 </div>
-            </div>
 
-            <!-- A: 돋보기 5-Why -->
-            <div class="step-section">
-                <div style="background: #000; color: #fff; padding: 3px 10px; display: inline-block; font-size: 9pt; font-weight: 700; margin-bottom: 6px;">A. 돋보기 — 5-Why</div>
-                <p style="font-size: 8pt; color: #666; margin-bottom: 6px; font-style: italic;">감정(형용사) X → 사실(동사) O &nbsp;|&nbsp; "나는 [ &nbsp; ]를 [ &nbsp; ]한다(안 한다)" 패턴으로 적으세요</p>
-
-                <div class="why-chain">
+                <div class="why-chain" style="flex: 1;">
                     <div class="why-row">
                         <div class="why-num">1</div>
-                        <span style="font-size: 8.5pt; font-weight: 700; margin-right: 4px;">왜?</span>
-                        <div class="why-input"><span style="font-size: 7pt; color: #bbb;">나는 [ &nbsp; ]를 [ &nbsp; ]한다(안 한다)</span></div>
+                        <span class="why-label">왜?</span>
+                        <div class="why-input"><span class="why-hint">STEP 1의 고민, 왜 그럴까?</span></div>
                     </div>
                     <div class="why-arrow">↓</div>
                     <div class="why-row">
                         <div class="why-num">2</div>
-                        <span style="font-size: 8.5pt; font-weight: 700; margin-right: 4px;">왜?</span>
-                        <div class="why-input"></div>
+                        <span class="why-label">왜?</span>
+                        <div class="why-input"><span class="why-hint">위의 답, 그건 또 왜?</span></div>
                     </div>
                     <div class="why-arrow">↓</div>
                     <div class="why-row">
                         <div class="why-num">3</div>
-                        <span style="font-size: 8.5pt; font-weight: 700; margin-right: 4px;">왜?</span>
+                        <span class="why-label">왜?</span>
                         <div class="why-input"></div>
                     </div>
                     <div class="why-arrow">↓</div>
                     <div class="why-row">
                         <div class="why-num">4</div>
-                        <span style="font-size: 8.5pt; font-weight: 700; margin-right: 4px;">왜?</span>
+                        <span class="why-label">왜?</span>
                         <div class="why-input"></div>
                     </div>
                     <div class="why-arrow">↓</div>
                     <div class="why-row">
                         <div class="why-num">5</div>
-                        <span style="font-size: 8.5pt; font-weight: 700; margin-right: 4px;">왜?</span>
+                        <span class="why-label">왜?</span>
                         <div class="why-input"></div>
                     </div>
                 </div>
 
-                <div style="background: #f9f9f9; padding: 5px 10px; margin-top: 6px; border-radius: 4px;">
-                    <p style="font-size: 7.5pt; color: #666; font-style: italic;">
-                        "하기 싫어서"(X) → "나는 노트북을 켜는 데까지 1시간이 걸린다"(O)
-                    </p>
+                <div style="border: 2.5px solid #000; padding: 8px 14px; margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 9.5pt; font-weight: 700;">뿌리 원인:</span>
+                    <div style="flex: 1; border-bottom: 1px solid #999; min-height: 22px;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 3페이지: 카메라 + 패치노트 -->
-        <div class="half-page structure-page">
+        <!-- 3페이지: STEP 3 질문 뒤집기 + STEP 4 실행 -->
+        <div class="half-page work-page">
             <div class="page-header">
                 <span class="eng-title">REFRAME</span>
-                <span class="kor-title">관점 전환</span>
+                <span class="kor-title">다르게 묻기</span>
             </div>
 
-            <!-- B: 카메라 -->
+            <!-- STEP 3: 질문 뒤집기 -->
             <div class="step-section">
-                <div style="background: #000; color: #fff; padding: 3px 10px; display: inline-block; font-size: 9pt; font-weight: 700; margin-bottom: 6px;">B. 카메라 — How else</div>
-                <p style="font-size: 8pt; color: #666; margin-bottom: 6px; font-style: italic;">같은 상황을 다른 앵글로 바라봅니다. 질문 자체를 바꿔보세요.</p>
+                <div class="step-title">STEP 3. 같은 문제, 다르게 묻기</div>
+                <p class="step-desc">뿌리 원인을 찾았으면, 이번엔 질문의 방향을 바꿔보세요.</p>
 
-                <div style="border: 1.5px solid #000; padding: 10px 14px; margin: 6px 0;">
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                        <span style="font-size: 9pt; font-weight: 700; min-width: 80px;">기존 질문</span>
-                        <div style="flex: 1; border-bottom: 1px solid #999; min-height: 18px;"></div>
-                    </div>
-                    <div style="text-align: center; font-size: 14pt; color: #333; padding: 2px 0;">↓ Angle Change ↓</div>
-                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
-                        <span style="font-size: 9pt; font-weight: 700; min-width: 80px;">전환된 질문</span>
-                        <div style="flex: 1; border-bottom: 1px solid #999; min-height: 18px;"></div>
-                    </div>
+                <div class="tip-box">
+                    <strong>핵심:</strong> 감정(형용사)이 아니라 <strong>행동(동사)·대상(명사)</strong>을 바꿔서 묻기<br>
+                    <span style="color: #c00;">X</span> "왜 자신감이 <u>없</u>지?" → "어떻게 자신감을 <u>높이</u>지?" (감정만 뒤집음, 답이 안 나옴)<br>
+                    <span style="color: #2563eb;">O</span> "왜 자신감이 없지?" → "내가 가장 <u>몰입했던 경험</u>은 뭐지?" (대상·행동을 바꿈)<br>
+                    <span style="color: #2563eb;">O</span> "왜 안 붙지?" → "이 경험을 <u>어디에 쓸</u> 수 있지?" (방향을 바꿈)
                 </div>
 
-                <div style="background: #f9f9f9; padding: 5px 10px; border-radius: 4px;">
-                    <p style="font-size: 7.5pt; color: #666; font-style: italic;">
-                        예) "왜 안 붙지?" → "어디에 쓸까?" / "왜 자신감이 없지?" → "언제 가장 빛났지?"
-                    </p>
+                <div class="flip-box">
+                    <div class="flip-row">
+                        <span class="flip-label">뿌리 원인</span>
+                        <div class="flip-input"></div>
+                    </div>
+                    <div style="text-align: center; font-size: 14pt; color: #999; padding: 4px 0;">↓ 다르게 묻기 ↓</div>
+                    <div class="flip-row">
+                        <span class="flip-label">새로운 질문</span>
+                        <div class="flip-input"></div>
+                    </div>
                 </div>
             </div>
 
             <!-- 발견한 것 -->
             <div class="step-section">
-                <div style="border: 1.5px solid #000; padding: 10px 14px;">
-                    <span style="font-size: 9pt; font-weight: 700; display: block; margin-bottom: 6px;">분석/전환을 통해 발견한 것</span>
-                    <div style="border-bottom: 1px solid #999; min-height: 18px; margin-bottom: 6px;"></div>
-                    <div style="border-bottom: 1px solid #999; min-height: 18px;"></div>
+                <div style="border: 1.5px solid #000; padding: 12px 14px;">
+                    <span style="font-size: 9.5pt; font-weight: 700; display: block; margin-bottom: 8px;">이 과정을 통해 깨달은 것</span>
+                    <div style="border-bottom: 1px solid #999; min-height: 22px; margin-bottom: 8px;"></div>
+                    <div style="border-bottom: 1px solid #999; min-height: 22px;"></div>
                 </div>
             </div>
 
-            <!-- STEP 3: 인생 패치노트 -->
+            <!-- STEP 4: 나의 변화 계획 -->
             <div class="action-box" style="margin-top: auto;">
-                <div class="action-title">STEP 3. 인생 패치노트</div>
-                <p style="font-size: 8pt; color: #555; margin-bottom: 8px; font-style: italic;">전환된 관점으로 도출된 최종 실행 알고리즘을 확정하세요</p>
+                <div class="action-title">STEP 4. 나의 변화 계획</div>
+                <p style="font-size: 8.5pt; color: #555; margin-bottom: 10px;">크게 바꾸려 하지 마세요. 내일 당장 할 수 있는 작은 것 하나면 충분합니다.</p>
                 <div class="action-row">
-                    <label>발견한 버그</label>
+                    <label>반복되는 걸림돌</label>
                     <div class="action-line"></div>
                 </div>
                 <div class="action-row">
-                    <label>패치 내용</label>
+                    <label>바꿀 한 가지</label>
                     <div class="action-line"></div>
                 </div>
                 <div class="action-row">
-                    <label>오늘의 배포</label>
+                    <label>내일부터 할 것</label>
                     <div class="action-line"></div>
                 </div>
                 <div class="action-row">
-                    <label>다음 버전 목표</label>
+                    <label>한 달 뒤 나의 모습</label>
                     <div class="action-line"></div>
                 </div>
             </div>

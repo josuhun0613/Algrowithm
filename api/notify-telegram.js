@@ -1,5 +1,5 @@
 // Telegram 알림 API
-// 프로그램 참여 문의가 들어오면 Telegram으로 알림 전송
+// 코칭 참여 문의가 들어오면 Telegram으로 알림 전송
 
 export default async function handler(req, res) {
     // CORS 헤더 설정
@@ -29,14 +29,14 @@ export default async function handler(req, res) {
 
         // 알림 메시지 구성
         const now = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
-        const telegramMessage = `🔔 *새로운 프로그램 참여 문의*
+        const telegramMessage = `🔔 *새로운 코칭 참여 문의*
 
 📅 *접수 시간:* ${now}
 
 👤 *이름:* ${name || '미입력'}
 📱 *연락처:* ${phone || '미입력'}
 📧 *이메일:* ${email || '미입력'}
-📋 *프로그램:* ${program || '미선택'}
+📋 *코칭 과정:* ${program || '미선택'}
 
 💬 *문의 내용:*
 ${message || '(내용 없음)'}

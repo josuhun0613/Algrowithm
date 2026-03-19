@@ -75,7 +75,7 @@ function getHeaderHTML(options = {}) {
                 <!-- 데스크탑 내비게이션 -->
                 <div class="hidden md:flex items-center gap-12 text-lg font-medium text-gray-700">
                     <a href="/about.html" class="hover:text-soft-gold transition-colors">About</a>
-                    <a href="/program.html" class="hover:text-soft-gold transition-colors">프로그램</a>
+                    <a href="/program.html" class="hover:text-soft-gold transition-colors">코칭</a>
 
                     <div class="dropdown">
                         <button class="hover:text-soft-gold transition-colors flex items-center gap-1">
@@ -161,7 +161,7 @@ function getHeaderHTML(options = {}) {
             <a href="/program.html"
                 class="flex items-center px-4 py-3.5 rounded-xl text-gray-700 font-medium hover:bg-amber-50 hover:text-amber-600 transition-colors text-[15px]">
                 <i class="fa-solid fa-bookmark text-amber-400 mr-2 text-xs"></i>
-                프로그램
+                코칭
             </a>
 
             <!-- 실습 아코디언 -->
@@ -227,7 +227,7 @@ function getHeaderHTML(options = {}) {
             <button
                 onclick="closeMobileMenu(); if(typeof openInquiryModal !== 'undefined') openInquiryModal();"
                 class="w-full py-4 bg-[#d4af37] text-white rounded-2xl font-bold text-[15px] hover:bg-yellow-600 active:scale-95 transition-all">
-                프로그램 문의하기 <i class="fa-solid fa-paper-plane ml-1.5 text-sm"></i>
+                코칭 문의하기 <i class="fa-solid fa-paper-plane ml-1.5 text-sm"></i>
             </button>
         </div>
     </div>

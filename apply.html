@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>프로그램 신청 | Algrowithm</title>
-    <meta name="description" content="Algrowithm 커리어 브랜딩 프로그램 신청 및 비밀유지 서약">
+    <title>코칭 신청 | Algrowithm</title>
+    <meta name="description" content="Algrowithm 커리어 브랜딩 코칭 신청 및 비밀유지 서약">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwindcss.config = {
@@ -48,6 +48,10 @@
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394A3B8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 16px center;
+        }
+        .form-select option {
+            background: #1a1f2e;
+            color: #E2E8F0;
         }
         .nda-box {
             background: rgba(15,20,35,0.6);
@@ -113,11 +117,11 @@
 <section class="max-w-4xl mx-auto px-8 md:px-12 pb-12">
     <p class="text-xs tracking-[0.3em] uppercase text-indigo-400 font-bold mb-4">Program Application</p>
     <h1 class="text-3xl md:text-4xl font-serif font-bold leading-[1.3] mb-4">
-        프로그램 신청
+        코칭 신청
     </h1>
     <p class="text-base text-slate-400 leading-[1.9] max-w-2xl">
         아래 정보를 기입해 주시면, 담당자가 확인 후 <strong class="text-slate-300">영업일 기준 1~2일 이내</strong>에 연락드립니다.<br>
-        본 프로그램의 교육 자료 및 커리큘럼은 지적재산권 보호 대상이므로,<br>
+        본 코칭 과정의 교육 자료 및 커리큘럼은 지적재산권 보호 대상이므로,<br>
         신청 시 <strong class="text-slate-300">비밀유지 서약</strong>에 동의해 주셔야 합니다.
     </p>
 </section>
@@ -155,11 +159,11 @@
             </div>
         </div>
 
-        <!-- 프로그램 선택 -->
+        <!-- 과정 선택 -->
         <div class="mb-12">
             <h2 class="text-lg font-bold text-white mb-6 flex items-center gap-3">
                 <span class="w-7 h-7 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center">2</span>
-                프로그램 정보
+                코칭 과정 정보
             </h2>
             <div class="grid md:grid-cols-2 gap-5">
                 <div>
@@ -173,7 +177,7 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm text-slate-400 mb-2">관심 프로그램</label>
+                    <label class="block text-sm text-slate-400 mb-2">관심 코칭 과정</label>
                     <select name="program" class="form-input form-select">
                         <option value="" disabled selected>선택해 주세요</option>
                         <option value="intensive">Intensive (10회)</option>
@@ -188,7 +192,7 @@
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-sm text-slate-400 mb-2">추가 요청사항</label>
-                    <textarea name="message" rows="4" placeholder="프로그램에 대해 궁금한 점이나, 특별히 원하시는 구성이 있다면 적어주세요." class="form-input" style="resize: vertical;"></textarea>
+                    <textarea name="message" rows="4" placeholder="코칭에 대해 궁금한 점이나, 특별히 원하시는 구성이 있다면 적어주세요." class="form-input" style="resize: vertical;"></textarea>
                 </div>
             </div>
         </div>
@@ -204,7 +208,7 @@
                 <div class="flex items-start gap-3 mb-6">
                     <i class="fa-solid fa-shield-halved text-indigo-400 mt-0.5"></i>
                     <p class="text-sm text-slate-400 leading-[1.8]">
-                        본 프로그램의 교육 자료, 커리큘럼 구성, 진단 도구 및 코칭 방법론은 Algrowithm의 지적재산으로,
+                        본 코칭 과정의 교육 자료, 커리큘럼 구성, 진단 도구 및 코칭 방법론은 Algrowithm의 지적재산으로,
                         <strong class="text-slate-300">평생교육원 인가 교육과정 및 B2B 기업 교육 상품</strong>으로 운영됩니다.
                         아래 비밀유지 서약 내용을 확인하고 동의해 주세요.
                     </p>
@@ -264,7 +268,7 @@
 
                     <div class="mt-6 pt-4 border-t border-slate-800/50">
                         <p class="text-xs text-slate-600">
-                            본 서약은 전자적 동의(체크박스 선택 및 서명 입력)로 서면 서약과 동일한 효력을 가집니다.
+                            본 서약은 전자적 동의(체크박스 선택)로 서면 서약과 동일한 효력을 가집니다.
                         </p>
                     </div>
                 </div>
@@ -285,17 +289,11 @@
                             <i class="fa-solid fa-check text-white text-xs hidden"></i>
                         </div>
                         <span class="text-sm text-slate-300 leading-[1.7] group-hover:text-white transition-colors">
-                            개인정보 수집·이용에 동의합니다. (이름, 연락처, 이메일 — 프로그램 안내 목적) <span class="text-rose-400">*</span>
+                            개인정보 수집·이용에 동의합니다. (이름, 연락처, 이메일 — 코칭 안내 목적) <span class="text-rose-400">*</span>
                         </span>
                     </label>
                 </div>
 
-                <!-- 서명 -->
-                <div class="mt-6 pt-6 border-t border-slate-800/30">
-                    <label class="block text-sm text-slate-400 mb-2">전자 서명 (본인 성명 입력) <span class="text-rose-400">*</span></label>
-                    <input type="text" name="signature" id="signature" required placeholder="홍길동" class="form-input max-w-xs" style="font-family: 'Playfair Display', 'Pretendard', serif; font-style: italic; font-size: 18px;">
-                    <p class="text-xs text-slate-600 mt-2">성명을 직접 입력하시면 서면 서명과 동일한 효력을 가집니다.</p>
-                </div>
             </div>
         </div>
 
@@ -326,7 +324,7 @@
     </p>
     <a href="./program.html" class="inline-flex items-center gap-2 text-indigo-400 font-bold text-sm hover:text-indigo-300 transition-colors">
         <i class="fa-solid fa-arrow-left text-xs"></i>
-        프로그램 소개로 돌아가기
+        코칭 소개로 돌아가기
     </a>
 </section>
 
@@ -353,15 +351,12 @@
         validateForm();
     }
 
-    // 폼 유효성 검사 — 두 체크박스 모두 동의 + 서명 입력 시 제출 활성화
+    // 폼 유효성 검사 — 두 체크박스 모두 동의 시 제출 활성화
     function validateForm() {
         const ndaChecked = document.getElementById('nda-check').classList.contains('checked');
         const privacyChecked = document.getElementById('privacy-check').classList.contains('checked');
-        const signed = document.getElementById('signature').value.trim().length > 0;
-        document.getElementById('submitBtn').disabled = !(ndaChecked && privacyChecked && signed);
+        document.getElementById('submitBtn').disabled = !(ndaChecked && privacyChecked);
     }
-
-    document.getElementById('signature').addEventListener('input', validateForm);
 
     // 제출 처리
     async function handleSubmit(e) {
