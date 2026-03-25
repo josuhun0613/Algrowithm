@@ -114,6 +114,7 @@ function getHeaderHTML(options = {}) {
                         </div>
                     </div>
 
+                    <a href="/seminar.html" class="nav-text">세미나</a>
                     <a href="/schedule.html" class="nav-text">일정</a>
                 </div>
 
@@ -215,6 +216,12 @@ function getHeaderHTML(options = {}) {
                     </a>
                 </div>
             </div>
+
+            <a href="/seminar.html"
+                class="flex items-center px-4 py-3.5 rounded-xl text-gray-700 font-medium hover:bg-amber-50 hover:text-amber-600 transition-colors text-[15px]">
+                <i class="fa-solid fa-microphone text-amber-400 mr-2 text-xs"></i>
+                세미나
+            </a>
 
             <a href="/schedule.html"
                 class="flex items-center px-4 py-3.5 rounded-xl text-gray-700 font-medium hover:bg-amber-50 hover:text-amber-600 transition-colors text-[15px]">

@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>생각 로직 세미나 | Algrowithm</title>
+    <meta name="description" content="AI 시대, 상위 1% 인재의 '생각 로직' 공개 — Algrowithm 세미나">
+    <meta property="og:title" content="생각 로직 세미나 | Algrowithm">
+    <meta property="og:description" content="노력의 양이 아니라, 문제를 정의하는 해상도가 성과를 결정합니다.">
+    <meta property="og:type" content="event">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwindcss.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        mono: ['JetBrains Mono', 'monospace'],
+                        sans: ['Pretendard', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        'os-bg': '#06060B',
+                        'os-cyan': '#00F0FF',
+                        'os-amber': '#F59E0B',
+                        'os-green': '#22C55E',
+                        'soft-gold': '#d4af37',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+    // ═══════════════════════════════════════════
+    // 세미나 설정 — 날짜/장소 변경 시 여기만 수정
+    // ═══════════════════════════════════════════
+    const SEMINAR = {
+        title: "생각 로직",
+        subtitle: "AI 시대, 상위 1%가 문제를 정의하는 법",
+        date: "2026년 3월 21일 (토)",
+        time: "16:00 – 17:30",
+        location: "공덕 창업허브 1F",
+        locationSub: "G-TOWN",
+        address: "서울 마포구 백범로31길 21",
+        seats: 30,
+        price: "무료",
+        mapUrl: "https://map.kakao.com/link/map/공덕창업허브,37.5435,126.9519",
+    };
+    </script>
+
+    <style>
+        html { overflow-x: hidden; scroll-behavior: smooth; }
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background: #06060B;
+            color: #C8CCD4;
+            overflow-x: hidden;
+        }
+
+        /* 배경 그리드 */
+        .grid-overlay {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background-image:
+                linear-gradient(rgba(0,240,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,240,255,0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* 히어로 오버레이 */
+        .hero-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(0deg,
+                #06060B 0%,
+                rgba(6,6,11,0.85) 25%,
+                rgba(6,6,11,0.5) 55%,
+                rgba(6,6,11,0.7) 100%
+            );
+        }
+
+        /* 카드 */
+        .s-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 8px;
+            transition: all 0.4s ease;
+        }
+        .s-card:hover {
+            border-color: rgba(0,240,255,0.2);
+            background: rgba(255,255,255,0.04);
+            transform: translateY(-2px);
+        }
+
+        /* 섹션 라벨 */
+        .sec-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+            color: rgba(0,240,255,0.6);
+        }
+
+        /* 태그 */
+        .s-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px; padding: 4px 10px; border-radius: 3px;
+            background: rgba(0,240,255,0.05); color: rgba(0,240,255,0.7);
+            border: 1px solid rgba(0,240,255,0.1);
+        }
+
+        /* 스텝 넘버 */
+        .step-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 56px; font-weight: 700; line-height: 1;
+            color: rgba(0,240,255,0.08);
+            position: absolute; top: -8px; left: 16px;
+        }
+
+        /* 폼 인풋 */
+        .form-input {
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 6px;
+            padding: 14px 16px;
+            color: #e2e8f0;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            outline: none;
+        }
+        .form-input:focus {
+            border-color: rgba(0,240,255,0.4);
+        }
+        .form-input::placeholder { color: rgba(255,255,255,0.2); }
+
+        /* CTA 버튼 */
+        .cta-btn {
+            background: linear-gradient(135deg, #00F0FF 0%, #00c4d6 100%);
+            color: #06060B; font-weight: 700; border-radius: 6px;
+            transition: all 0.3s;
+        }
+        .cta-btn:hover {
+            box-shadow: 0 0 30px rgba(0,240,255,0.25);
+            transform: translateY(-1px);
+        }
+        .cta-btn:disabled {
+            opacity: 0.5; cursor: not-allowed; transform: none;
+            box-shadow: none;
+        }
+
+        /* 체크박스 커스텀 */
+        .custom-check {
+            width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.03);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .custom-check.checked {
+            background: rgba(0,240,255,0.15);
+            border-color: rgba(0,240,255,0.5);
+        }
+
+        /* 구분선 */
+        .section-divider {
+            border-top: 1px dashed rgba(255,255,255,0.06);
+            max-width: 120px; margin: 0 auto;
+        }
+
+        /* 프로필 이미지 */
+        .profile-ring {
+            position: relative;
+        }
+        .profile-ring::before {
+            content: '';
+            position: absolute; inset: -3px;
+            border-radius: 50%;
+            border: 2px solid rgba(0,240,255,0.2);
+        }
+
+        /* 페인포인트 아이콘 */
+        .pain-icon {
+            width: 48px; height: 48px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,240,255,0.05);
+            border: 1px solid rgba(0,240,255,0.1);
+            font-size: 20px; color: #00F0FF;
+        }
+
+        /* 성공 화면 */
+        .success-screen {
+            display: none;
+        }
+        .success-screen.active {
+            display: flex;
+        }
+
+        /* 로지스틱스 아이콘 */
+        .info-icon {
+            width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,240,255,0.06);
+            color: #00F0FF; font-size: 16px;
+        }
+
+        /* 스크롤 fade-in */
+        .fade-up {
+            opacity: 0; transform: translateY(30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .fade-up.visible {
+            opacity: 1; transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-overlay"></div>
+
+    <!-- 공통 헤더 -->
+    <div id="header-placeholder" data-auto-header data-show-start-button="false"></div>
+    <script src="/js/header.js"></script>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- HERO -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="relative min-h-[85vh] md:min-h-[90vh] flex items-end overflow-hidden">
+        <img src="./assets/program/seminar16.jpg" alt="Algrowithm 세미나" class="absolute inset-0 w-full h-full object-cover" style="filter: brightness(0.55);">
+        <div class="hero-overlay"></div>
+
+        <div class="relative z-10 w-full max-w-5xl mx-auto px-6 md:px-12 pb-16 md:pb-24 pt-32">
+            <!-- 뱃지 -->
+            <div class="flex flex-wrap items-center gap-3 mb-8">
+                <span class="s-tag" id="hero-date"></span>
+                <span class="s-tag" id="hero-location"></span>
+                <span class="s-tag" style="background: rgba(34,197,94,0.08); color: rgba(34,197,94,0.8); border-color: rgba(34,197,94,0.15);" id="hero-price"></span>
+            </div>
+
+            <!-- 타이틀 -->
+            <p class="sec-label mb-4">Algrowithm Seminar</p>
+            <h1 class="text-3xl sm:text-4xl md:text-[52px] font-bold text-white leading-[1.3] md:leading-[1.35] mb-6" id="hero-title"></h1>
+            <p class="text-base md:text-lg text-slate-400 leading-[1.9] max-w-xl mb-10">
+                노력의 양이 아니라, 문제를 정의하는 <strong class="text-slate-200">해상도</strong>가 성과를 결정합니다.
+            </p>
+
+            <!-- CTA -->
+            <a href="#registration" class="cta-btn inline-flex items-center gap-2 px-8 py-4 text-base">
+                지금 바로 신청하기
+                <i class="fa-solid fa-arrow-down text-sm"></i>
+            </a>
+        </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- PAIN POINTS -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="relative z-10 py-20 md:py-28">
+        <div class="max-w-5xl mx-auto px-6 md:px-12">
+            <p class="sec-label mb-4 fade-up">Pain Points</p>
+            <h2 class="text-2xl md:text-3xl font-bold text-white mb-4 leading-[1.5] fade-up">
+                혹시, 이런 생각 해본 적 있나요?
+            </h2>
+            <p class="text-slate-500 mb-14 fade-up">대부분의 사람들이 같은 고민을 안고 있습니다.</p>
+
+            <div class="grid md:grid-cols-3 gap-5">
+                <!-- Card 1 -->
+                <div class="s-card p-7 fade-up">
+                    <div class="pain-icon mb-5">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <h3 class="text-white font-bold text-lg mb-3 leading-snug">학점 4.5여도<br>불안한가요?</h3>
+                    <p class="text-sm text-slate-500 leading-[1.8]">
+                        스펙은 쌓이는데 방향은 모르겠고,<br>
+                        남들과 비교할수록 초조해지는 기분.
+                    </p>
+                </div>
+                <!-- Card 2 -->
+                <div class="s-card p-7 fade-up">
+                    <div class="pain-icon mb-5">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <h3 class="text-white font-bold text-lg mb-3 leading-snug">AI에게 대체될까<br>두려운가요?</h3>
+                    <p class="text-sm text-slate-500 leading-[1.8]">
+                        자동화 뉴스가 나올 때마다 흔들리는 내 커리어.<br>
+                        나만의 무기가 있어야 할 텐데.
+                    </p>
+                </div>
+                <!-- Card 3 -->
+                <div class="s-card p-7 fade-up">
+                    <div class="pain-icon mb-5">
+                        <i class="fa-solid fa-arrows-spin"></i>
+                    </div>
+                    <h3 class="text-white font-bold text-lg mb-3 leading-snug">열심히 하는데<br>제자리라면?</h3>
+                    <p class="text-sm text-slate-500 leading-[1.8]">
+                        노력은 배신하지 않는다는데,<br>
+                        방향이 틀리면 노력도 소용없습니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- HOST PROFILE -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="relative z-10 py-20 md:py-28">
+        <div class="max-w-5xl mx-auto px-6 md:px-12">
+            <p class="sec-label mb-4 fade-up">Speaker</p>
+            <h2 class="text-2xl md:text-3xl font-bold text-white mb-14 leading-[1.5] fade-up">누가 이야기하나요?</h2>
+
+            <div class="grid md:grid-cols-[240px_1fr] gap-10 md:gap-14 items-start fade-up">
+                <!-- Photo -->
+                <div class="flex justify-center md:justify-start">
+                    <div class="profile-ring">
+                        <img src="./assets/대표사진_1.jpg" alt="조수훈 대표" class="w-52 h-52 md:w-[240px] md:h-[240px] rounded-full object-cover" style="filter: grayscale(0.2) brightness(0.9);">
+                    </div>
+                </div>
+
+                <!-- Info -->
+                <div>
+                    <div class="flex flex-wrap items-center gap-3 mb-3">
+                        <span class="s-tag">AI Architect</span>
+                        <span class="s-tag">Career Engineer</span>
+                    </div>
+                    <h3 class="text-2xl md:text-3xl font-bold text-white mb-1">조수훈</h3>
+                    <p class="text-slate-500 text-sm mb-6">Algrowithm Founder & CEO</p>
+
+                    <div class="space-y-3 mb-8">
+                        <div class="flex items-start gap-3">
+                            <span class="text-os-cyan text-xs mt-1.5">▸</span>
+                            <p class="text-[15px] text-slate-300 leading-[1.7]">現) AI 교육 플랫폼 <strong class="text-white">Algrowithm</strong> 대표</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-os-cyan text-xs mt-1.5">▸</span>
+                            <p class="text-[15px] text-slate-300 leading-[1.7]">前) S은행 AI 자산 추계 프로젝트 총괄 (PL)</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-os-cyan text-xs mt-1.5">▸</span>
+                            <p class="text-[15px] text-slate-300 leading-[1.7]">서울시 협업 AI 컨설팅 챗봇 서비스 제작</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-os-cyan text-xs mt-1.5">▸</span>
+                            <p class="text-[15px] text-slate-300 leading-[1.7]">대기업 · 중소기업 AI 실무 강의 <strong class="text-white">50회+</strong></p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-os-cyan text-xs mt-1.5">▸</span>
+                            <p class="text-[15px] text-slate-300 leading-[1.7]">수도권 주요 대학 특강 · 공공기관 위탁교육</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-[11px] px-3 py-1.5 rounded bg-white/[0.04] text-slate-400 border border-white/[0.06]">MBTI 공인 해석</span>
+                        <span class="text-[11px] px-3 py-1.5 rounded bg-white/[0.04] text-slate-400 border border-white/[0.06]">AI 커리어 설계</span>
+                        <span class="text-[11px] px-3 py-1.5 rounded bg-white/[0.04] text-slate-400 border border-white/[0.06]">퍼스널 브랜딩</span>
+                        <span class="text-[11px] px-3 py-1.5 rounded bg-white/[0.04] text-slate-400 border border-white/[0.06]">나래티브 상담</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- CURRICULUM -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="relative z-10 py-20 md:py-28">
+        <div class="max-w-5xl mx-auto px-6 md:px-12">
+            <p class="sec-label mb-4 fade-up">Curriculum</p>
+            <h2 class="text-2xl md:text-3xl font-bold text-white mb-4 leading-[1.5] fade-up">90분, 세 가지를 가져갑니다</h2>
+            <p class="text-slate-500 mb-14 fade-up">단순한 강의가 아닌, 즉시 적용 가능한 사고 프레임워크.</p>
+
+            <div class="grid md:grid-cols-3 gap-5">
+                <!-- Step 1 -->
+                <div class="s-card p-8 relative overflow-hidden fade-up">
+                    <span class="step-num">01</span>
+                    <div class="relative z-10">
+                        <p class="font-mono text-[10px] text-os-cyan tracking-wider mb-4">STEP 01</p>
+                        <h3 class="text-white font-bold text-lg mb-3 leading-[1.5]">비밀 소스 코드</h3>
+                        <p class="text-sm text-slate-500 leading-[1.9]">
+                            똑같이 일해도 결과가 10배 차이 나는 사람들의 공통 패턴. 그 '소스 코드'를 공개합니다.
+                        </p>
+                    </div>
+                </div>
+                <!-- Step 2 -->
+                <div class="s-card p-8 relative overflow-hidden fade-up">
+                    <span class="step-num">02</span>
+                    <div class="relative z-10">
+                        <p class="font-mono text-[10px] text-os-cyan tracking-wider mb-4">STEP 02</p>
+                        <h3 class="text-white font-bold text-lg mb-3 leading-[1.5]">해상도를 높이는 기술</h3>
+                        <p class="text-sm text-slate-500 leading-[1.9]">
+                            엉킨 고민을 선명하게 분해하고, 명쾌한 정답을 찾아내는 문제 정의의 기술.
+                        </p>
+                    </div>
+                </div>
+                <!-- Step 3 -->
+                <div class="s-card p-8 relative overflow-hidden fade-up">
+                    <span class="step-num">03</span>
+                    <div class="relative z-10">
+                        <p class="font-mono text-[10px] text-os-cyan tracking-wider mb-4">STEP 03</p>
+                        <h3 class="text-white font-bold text-lg mb-3 leading-[1.5]">대체 불가능한 로직</h3>
+                        <p class="text-sm text-slate-500 leading-[1.9]">
+                            인문학 + 내 기질(OS)에 맞는 업무 로직을 구축하여 AI가 대체할 수 없는 나만의 무기를 만듭니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- LOGISTICS -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="relative z-10 py-20 md:py-28">
+        <div class="max-w-5xl mx-auto px-6 md:px-12">
+            <p class="sec-label mb-4 fade-up">Details</p>
+            <h2 class="text-2xl md:text-3xl font-bold text-white mb-14 leading-[1.5] fade-up">세미나 안내</h2>
+
+            <div class="grid md:grid-cols-2 gap-8 fade-up">
+                <!-- 정보 카드 -->
+                <div class="s-card p-8 md:p-10">
+                    <div class="space-y-6">
+                        <div class="flex items-start gap-4">
+                            <div class="info-icon"><i class="fa-regular fa-calendar"></i></div>
+                            <div>
+                                <p class="text-xs text-slate-500 mb-1">일시</p>
+                                <p class="text-white font-semibold" id="info-date"></p>
+                                <p class="text-slate-400 text-sm" id="info-time"></p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="info-icon"><i class="fa-solid fa-location-dot"></i></div>
+                            <div>
+                                <p class="text-xs text-slate-500 mb-1">장소</p>
+                                <p class="text-white font-semibold" id="info-location"></p>
+                                <p class="text-slate-400 text-sm" id="info-address"></p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="info-icon"><i class="fa-solid fa-users"></i></div>
+                            <div>
+                                <p class="text-xs text-slate-500 mb-1">정원</p>
+                                <p class="text-white font-semibold" id="info-seats"></p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="info-icon"><i class="fa-solid fa-tag"></i></div>
+                            <div>
+                                <p class="text-xs text-slate-500 mb-1">참가비</p>
+                                <p class="text-white font-semibold" id="info-price"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t border-white/[0.06]">
+                        <a id="info-map-link" target="_blank" rel="noopener"
+                            class="inline-flex items-center gap-2 text-os-cyan text-sm font-medium hover:underline">
+                            <i class="fa-solid fa-map-location-dot"></i>
+                            카카오맵에서 보기
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 세미나 사진 -->
+                <div class="s-card overflow-hidden">
+                    <img src="./assets/program/seminar5.jpg" alt="세미나 현장" class="w-full h-full object-cover min-h-[300px]" style="filter: brightness(0.8);">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- REGISTRATION FORM -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section id="registration" class="relative z-10 py-20 md:py-28">
+        <div class="max-w-5xl mx-auto px-6 md:px-12">
+            <div class="max-w-xl mx-auto">
+                <p class="sec-label mb-4 text-center fade-up">Registration</p>
+                <h2 class="text-2xl md:text-3xl font-bold text-white mb-3 text-center leading-[1.5] fade-up">세미나 신청</h2>
+                <p class="text-slate-500 text-center mb-12 fade-up">아래 정보를 입력하시면, 확인 후 안내 문자를 보내드립니다.</p>
+
+                <!-- 신청 폼 -->
+                <form id="seminarForm" class="s-card p-8 md:p-10 space-y-6 fade-up">
+                    <!-- 이름 -->
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">성함 <span class="text-red-400">*</span></label>
+                        <input type="text" name="name" required placeholder="홍길동" class="form-input">
+                    </div>
+
+                    <!-- 연락처 -->
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">연락처 <span class="text-red-400">*</span></label>
+                        <input type="tel" name="phone" required placeholder="010-0000-0000" class="form-input"
+                            pattern="^01[0-9]-?\d{3,4}-?\d{4}$">
+                    </div>
+
+                    <!-- 소속/직업 -->
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">소속/직업</label>
+                        <select name="occupation" class="form-input" style="appearance: none; cursor: pointer;">
+                            <option value="" disabled selected style="color: rgba(255,255,255,0.2);">선택해 주세요</option>
+                            <option value="student">대학생</option>
+                            <option value="jobseeker">취업준비생</option>
+                            <option value="worker">직장인</option>
+                            <option value="founder">창업자 / 프리랜서</option>
+                        </select>
+                    </div>
+
+                    <!-- 학교/회사명 -->
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">학교 / 회사명 <span class="text-slate-600 text-xs">(선택)</span></label>
+                        <input type="text" name="org" placeholder="예) 한국항공대학교" class="form-input">
+                    </div>
+
+                    <!-- 기대평 -->
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">세미나 기대평 <span class="text-slate-600 text-xs">(선택)</span></label>
+                        <textarea name="expectation" rows="3" placeholder="궁금한 점이나 기대하는 내용을 자유롭게 적어주세요." class="form-input" style="resize: none;"></textarea>
+                    </div>
+
+                    <!-- 유입 경로 (hidden) -->
+                    <input type="hidden" name="ref" id="refInput">
+
+                    <!-- 개인정보 동의 -->
+                    <div class="pt-2">
+                        <label class="flex items-start gap-3 cursor-pointer group" id="privacyLabel">
+                            <div class="custom-check mt-0.5" id="privacyCheck">
+                                <i class="fa-solid fa-check text-os-cyan text-[10px] hidden"></i>
+                            </div>
+                            <span class="text-sm text-slate-400 leading-[1.7] group-hover:text-slate-300 transition-colors">
+                                개인정보 수집 · 이용에 동의합니다. (이름, 연락처 — 세미나 안내 목적) <span class="text-red-400">*</span>
+                            </span>
+                        </label>
+                    </div>
+
+                    <!-- 제출 -->
+                    <button type="submit" id="submitBtn" class="cta-btn w-full py-4 text-base mt-4" disabled>
+                        신청하기
+                    </button>
+                </form>
+
+                <!-- 성공 화면 -->
+                <div id="successScreen" class="success-screen s-card p-10 md:p-14 flex-col items-center text-center">
+                    <div class="w-16 h-16 rounded-full bg-os-green/10 flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-check text-os-green text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">신청이 완료되었습니다!</h3>
+                    <p class="text-slate-400 text-sm leading-[1.8] mb-2">
+                        입력하신 연락처로 세미나 안내 문자를 보내드리겠습니다.
+                    </p>
+                    <p class="text-slate-500 text-xs" id="success-date"></p>
+                    <a href="/" class="inline-flex items-center gap-2 text-os-cyan font-medium text-sm mt-8 hover:underline">
+                        <i class="fa-solid fa-arrow-left text-xs"></i>
+                        메인으로 돌아가기
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- FOOTER -->
+    <!-- ═══════════════════════════════════════════ -->
+    <footer class="relative z-10 border-t border-white/[0.04] py-10">
+        <div class="max-w-5xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-xs text-slate-600">© 2026 Algrowithm. All rights reserved.</p>
+            <div class="flex items-center gap-6">
+                <a href="/about.html" class="text-xs text-slate-500 hover:text-slate-300 transition-colors">About</a>
+                <a href="/program.html" class="text-xs text-slate-500 hover:text-slate-300 transition-colors">코칭</a>
+                <a href="mailto:algrowithm@kakao.com" class="text-xs text-slate-500 hover:text-slate-300 transition-colors">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SCRIPTS -->
+    <!-- ═══════════════════════════════════════════ -->
+    <script>
+    // ── config → DOM 바인딩 ──
+    document.getElementById('hero-date').textContent = `📅 ${SEMINAR.date} ${SEMINAR.time}`;
+    document.getElementById('hero-location').textContent = `📍 ${SEMINAR.location} (${SEMINAR.locationSub})`;
+    document.getElementById('hero-price').textContent = `${SEMINAR.price}`;
+    document.getElementById('hero-title').innerHTML =
+        `AI 시대, 상위 1% 인재의<br><span class="text-os-cyan">'${SEMINAR.title}'</span> 공개`;
+
+    document.getElementById('info-date').textContent = SEMINAR.date;
+    document.getElementById('info-time').textContent = SEMINAR.time;
+    document.getElementById('info-location').textContent = `${SEMINAR.location} (${SEMINAR.locationSub})`;
+    document.getElementById('info-address').textContent = SEMINAR.address;
+    document.getElementById('info-seats').textContent = `선착순 ${SEMINAR.seats}명`;
+    document.getElementById('info-price').textContent = SEMINAR.price;
+    document.getElementById('info-map-link').href = SEMINAR.mapUrl;
+    document.getElementById('success-date').textContent = `${SEMINAR.date} ${SEMINAR.time} | ${SEMINAR.location}`;
+
+    // ── UTM/ref 파라미터 캡처 ──
+    const urlParams = new URLSearchParams(window.location.search);
+    const refValue = urlParams.get('ref') || urlParams.get('utm_source') || '';
+    document.getElementById('refInput').value = refValue;
+
+    // ── 개인정보 동의 체크박스 ──
+    const privacyCheck = document.getElementById('privacyCheck');
+    const submitBtn = document.getElementById('submitBtn');
+    let privacyAgreed = false;
+
+    document.getElementById('privacyLabel').addEventListener('click', (e) => {
+        e.preventDefault();
+        privacyAgreed = !privacyAgreed;
+        privacyCheck.classList.toggle('checked', privacyAgreed);
+        privacyCheck.querySelector('i').classList.toggle('hidden', !privacyAgreed);
+        submitBtn.disabled = !privacyAgreed;
+    });
+
+    // ── 폼 제출 ──
+    document.getElementById('seminarForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const form = e.target;
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach((v, k) => { data[k] = v; });
+
+        // 연락처 정규식 검증
+        const phoneRegex = /^01[0-9]-?\d{3,4}-?\d{4}$/;
+        if (!phoneRegex.test(data.phone)) {
+            alert('올바른 연락처를 입력해 주세요. (예: 010-1234-5678)');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = '신청 중...';
+
+        try {
+            const res = await fetch('/api/seminar-apply', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+
+            if (!res.ok) throw new Error('서버 오류');
+
+            // 성공
+            form.style.display = 'none';
+            document.getElementById('successScreen').classList.add('active');
+
+        } catch (err) {
+            alert('신청 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = '신청하기';
+        }
+    });
+
+    // ── 스크롤 fade-in 애니메이션 ──
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
