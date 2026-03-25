@@ -67,18 +67,18 @@ function getHeaderHTML(options = {}) {
     <nav class="fixed w-full z-50 header-blur transition-all duration-300" id="navbar">
         <div class="w-full px-5 md:px-[60px] py-3 flex justify-between items-center">
             <a href="/" class="flex items-center gap-2 md:gap-3">
-                <img src="/assets/logo.svg" alt="Logo" class="w-8 h-8 md:w-10 md:h-10">
-                <span class="text-xl md:text-2xl font-serif font-bold tracking-tight">Algrowithm</span>
+                <img src="/assets/logo.svg" alt="Logo" class="w-8 h-8 md:w-10 md:h-10 nav-logo transition-all duration-300">
+                <span class="text-xl md:text-2xl font-serif font-bold tracking-tight nav-text">Algrowithm</span>
             </a>
 
             <div class="flex items-center gap-3 md:gap-10">
                 <!-- 데스크탑 내비게이션 -->
-                <div class="hidden md:flex items-center gap-12 text-lg font-medium text-gray-700">
-                    <a href="/about.html" class="hover:text-soft-gold transition-colors">About</a>
-                    <a href="/program.html" class="hover:text-soft-gold transition-colors">코칭</a>
+                <div class="hidden md:flex items-center gap-12 text-lg font-medium">
+                    <a href="/about.html" class="nav-text">About</a>
+                    <a href="/program.html" class="nav-text">코칭</a>
 
                     <div class="dropdown">
-                        <button class="hover:text-soft-gold transition-colors flex items-center gap-1">
+                        <button class="nav-text flex items-center gap-1">
                             실습
                             <i class="fa-solid fa-chevron-down text-[12px] ml-1"></i>
                         </button>
@@ -114,7 +114,7 @@ function getHeaderHTML(options = {}) {
                         </div>
                     </div>
 
-                    <a href="/schedule.html" class="hover:text-soft-gold transition-colors">일정</a>
+                    <a href="/schedule.html" class="nav-text">일정</a>
                 </div>
 
                 ${startButton}
@@ -244,6 +244,22 @@ function getHeaderStyles() {
         -webkit-backdrop-filter: blur(20px);
     }
 
+    /* 다크 배경 감지 시 헤더 스타일 */
+    .header-blur.header-on-dark {
+        background: rgba(0, 0, 0, 0.15);
+    }
+
+    /* 헤더 텍스트 색상 전환 (기본: 다크 텍스트) */
+    #navbar .nav-text { color: #374151; transition: color 0.3s ease; }
+    #navbar .nav-text:hover { color: #d4af37; }
+    #navbar .hamburger-line { transition: background-color 0.3s ease, transform 0.3s ease; }
+
+    /* 다크 배경 위 헤더 (라이트 텍스트) */
+    #navbar.header-on-dark .nav-text { color: #e5e7eb; }
+    #navbar.header-on-dark .nav-text:hover { color: #d4af37; }
+    #navbar.header-on-dark .hamburger-line { background-color: #e5e7eb; }
+    #navbar.header-on-dark .nav-logo { filter: brightness(0) invert(1); }
+
     /* Dropdown */
     .dropdown { position: relative; }
     .dropdown-menu {
@@ -314,6 +330,82 @@ function initHeader(options = {}) {
             }
         }
     });
+
+    // 배경 밝기 감지 → 헤더 텍스트 색상 자동 전환
+    initHeaderBgDetection();
+}
+
+/**
+ * 헤더 아래 배경의 밝기를 감지하여 header-on-dark 클래스를 토글
+ * - 스크롤/리사이즈 시 재계산
+ * - elementFromPoint로 헤더 바로 아래 요소의 배경색을 추출
+ */
+function initHeaderBgDetection() {
+    const navbar = document.getElementById('navbar');
+    if (!navbar) return;
+
+    function getEffectiveBgColor(el) {
+        while (el && el !== document.documentElement) {
+            const bg = getComputedStyle(el).backgroundColor;
+            // rgba(0,0,0,0) 또는 transparent는 건너뜀
+            if (bg && bg !== 'transparent' && bg !== 'rgba(0, 0, 0, 0)') {
+                return bg;
+            }
+            el = el.parentElement;
+        }
+        // 최종 fallback: html/body 배경
+        return getComputedStyle(document.body).backgroundColor || 'rgb(255,255,255)';
+    }
+
+    function getLuminance(colorStr) {
+        const match = colorStr.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+        if (!match) return 255; // 파싱 실패 시 밝은 것으로 간주
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        // 상대 밝기 (perceived luminance)
+        return 0.299 * r + 0.587 * g + 0.114 * b;
+    }
+
+    function updateHeaderMode() {
+        const rect = navbar.getBoundingClientRect();
+        const sampleX = rect.left + rect.width / 2;
+        const sampleY = rect.bottom + 2; // 헤더 바로 아래 지점
+
+        // navbar를 잠시 숨겨서 아래 요소를 감지
+        navbar.style.pointerEvents = 'none';
+        navbar.style.visibility = 'hidden';
+        const elBelow = document.elementFromPoint(sampleX, sampleY);
+        navbar.style.visibility = '';
+        navbar.style.pointerEvents = '';
+
+        if (!elBelow) return;
+
+        const bgColor = getEffectiveBgColor(elBelow);
+        const luminance = getLuminance(bgColor);
+
+        // 밝기 128 이하 → 어두운 배경
+        if (luminance < 128) {
+            navbar.classList.add('header-on-dark');
+        } else {
+            navbar.classList.remove('header-on-dark');
+        }
+    }
+
+    // 초기 실행 + 스크롤/리사이즈 이벤트
+    updateHeaderMode();
+    let ticking = false;
+    function onScrollOrResize() {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                updateHeaderMode();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }
+    window.addEventListener('scroll', onScrollOrResize, { passive: true });
+    window.addEventListener('resize', onScrollOrResize, { passive: true });
 }
 
 // DOM 준비되면 자동 초기화 (data-auto-header 속성이 있는 경우)
