@@ -716,7 +716,7 @@ ${style.designGuide}
 
         // 서버 API 호출 (배포 환경용) - 다중 이미지 지원
         async function callServerApi(imagesBase64) {
-            const response = await fetch('/api/analyze', {
+            const response = await fetch('/api/ai', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

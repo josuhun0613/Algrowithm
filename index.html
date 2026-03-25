@@ -319,7 +319,7 @@
                 });
 
                 // Telegram 알림 전송 (백그라운드에서 실행, 실패해도 무시)
-                fetch('/api/notify-telegram', {
+                fetch('/api/notify', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, phone, email, program, message })

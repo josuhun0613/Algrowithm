@@ -1287,10 +1287,11 @@
                     return;
                 }
 
-                const response = await fetch('/api/generate-cover-image', {
+                const response = await fetch('/api/image', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
+                        type: 'cover',
                         title: title,
                         subtitle: document.getElementById('bookSubtitle').value.trim(),
                         hint: hint,
@@ -1509,10 +1510,10 @@
                     showToast('로컬 테스트 모드: 샘플 데이터로 생성되었습니다.');
                 } else {
                     // Call API
-                    const response = await fetch('/api/generate-ebook-pdf', {
+                    const response = await fetch('/api/ai', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(formData)
+                        body: JSON.stringify({ mode: 'generate-ebook-pdf', ...formData })
                     });
 
                     if (!response.ok) {

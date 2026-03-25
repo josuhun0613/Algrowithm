@@ -378,10 +378,10 @@
         submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-sm"></i> 접수 중...';
 
         try {
-            const res = await fetch('/api/apply', {
+            const res = await fetch('/api/notify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: JSON.stringify({ channel: 'email', ...data })
             });
 
             const result = await res.json();

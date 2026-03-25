@@ -905,7 +905,7 @@
                     requestBody.apiKey = apiKey;
                 }
 
-                const response = await fetch('/api/analyze', {
+                const response = await fetch('/api/ai', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(requestBody)
@@ -959,7 +959,7 @@
                     requestBody.apiKey = apiKey;
                 }
 
-                const response = await fetch('/api/generate-image', {
+                const response = await fetch('/api/image', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(requestBody)
@@ -1052,7 +1052,7 @@
                     requestBody.apiKey = apiKey;
                 }
 
-                const response = await fetch('/api/analyze', {
+                const response = await fetch('/api/ai', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(requestBody)
@@ -1105,7 +1105,7 @@
                     requestBody.apiKey = apiKey;
                 }
 
-                const response = await fetch('/api/generate-image', {
+                const response = await fetch('/api/image', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(requestBody)
@@ -1146,7 +1146,7 @@
             showToast('영상화 프롬프트 생성 중...', 'success');
 
             try {
-                const response = await fetch('/api/analyze', {
+                const response = await fetch('/api/ai', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1204,7 +1204,7 @@
 
             // 서버에 코드 검증 요청 (간단한 테스트 요청)
             try {
-                const response = await fetch('/api/generate-image', {
+                const response = await fetch('/api/image', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1367,7 +1367,7 @@
                     requestBody.apiKey = apiKey;
                 }
 
-                const response = await fetch('/api/generate-image', {
+                const response = await fetch('/api/image', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

@@ -1036,10 +1036,11 @@
             contentEl.classList.add('hidden');
 
             try {
-                const response = await fetch('/api/enneagram-report', {
+                const response = await fetch('/api/ai', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
+                        mode: 'enneagram-report',
                         scores: currentResult.scores,
                         userName: currentResult.userName,
                         userAge: currentResult.userAge,

@@ -1560,7 +1560,7 @@ console.log('Website loaded successfully!');`
             }
 
             try {
-                const response = await fetch('/api/generate-website', {
+                const response = await fetch('/api/website?action=generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ accessCode: code, testOnly: true })
@@ -1627,7 +1627,7 @@ JavaScript:
 ${codeFiles.js}
 \`\`\``;
 
-                const response = await fetch('/api/generate-website', {
+                const response = await fetch('/api/website?action=generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -2220,7 +2220,7 @@ h1 { margin-bottom: 16px; }`,
             }
 
             try {
-                const response = await fetch('/api/deploy-site?action=deploy', {
+                const response = await fetch('/api/website?action=deploy', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ accessCode: code, testOnly: true })
@@ -2228,7 +2228,7 @@ h1 { margin-bottom: 16px; }`,
 
                 // testOnly 파라미터가 없으므로, 사이트 이름 없이 보내면 에러가 남
                 // 대신 generate-image API의 testOnly 로직 활용
-                const testResponse = await fetch('/api/generate-image', {
+                const testResponse = await fetch('/api/image', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ accessCode: code, testOnly: true })
@@ -2280,7 +2280,7 @@ h1 { margin-bottom: 16px; }`,
                     htmlContent = bodyMatch[1];
                 }
 
-                const response = await fetch('/api/deploy-site?action=deploy', {
+                const response = await fetch('/api/website?action=deploy', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

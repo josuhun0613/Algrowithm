@@ -719,10 +719,11 @@
                 console.log('이미지 개수:', imageParts.length);
                 console.log('첫 번째 이미지 mimeType:', imageParts[0]?.inlineData?.mimeType);
 
-                const response = await fetch('/api/analyze-ebook', {
+                const response = await fetch('/api/ai', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
+                        mode: 'analyze-ebook',
                         images: imageParts.map(p => ({
                             data: p.inlineData.data,
                             mimeType: p.inlineData.mimeType
