@@ -641,7 +641,8 @@
         submitBtn.textContent = '신청 중...';
 
         try {
-            const res = await fetch('/api/seminar-apply', {
+            data.type = 'seminar';
+            const res = await fetch('/api/notify-telegram', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
