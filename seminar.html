@@ -54,6 +54,7 @@
 
     <style>
         html { overflow-x: hidden; scroll-behavior: smooth; }
+        h1, h2, h3, p { word-break: keep-all; }
         body {
             font-family: 'Pretendard', sans-serif;
             background: #0C0E16; color: #D1D5DB; overflow-x: hidden;
@@ -303,7 +304,7 @@
             <div class="md:max-w-[55%]">
                 <p class="font-mono text-xs tracking-[0.25em] text-brand/60 mb-5">ALGROWITHM LECTURE 2026</p>
 
-                <h1 class="text-4xl sm:text-5xl md:text-[64px] font-bold text-white leading-[1.25] mb-6 tracking-tight" id="hero-title"></h1>
+                <h1 class="text-4xl sm:text-5xl md:text-[64px] font-bold text-white leading-[1.25] mb-6 tracking-tight" id="hero-title" style="word-break: keep-all;"></h1>
 
                 <p class="text-lg md:text-xl text-slate-300/80 leading-[1.8] max-w-xl mb-10">
                     노력의 양이 아니라,<br>
@@ -820,7 +821,7 @@
     document.getElementById('hero-address').textContent = SEMINAR.address;
     document.getElementById('hero-price').textContent = SEMINAR.price;
     document.getElementById('hero-seats').textContent = `선착순 ${SEMINAR.seats}명`;
-    document.getElementById('hero-title').innerHTML = `AI 시대, 상위 1% 인재의<br><span class="text-brand">'${SEMINAR.title}'</span> 공개`;
+    document.getElementById('hero-title').innerHTML = `AI 시대,<br>상위 1% 인재의 <span class="text-brand">'${SEMINAR.title}'</span> 공개`;
 
     document.getElementById('info-date').textContent = SEMINAR.date;
     document.getElementById('info-time').textContent = SEMINAR.time;
