@@ -54,7 +54,15 @@
 
     <style>
         html { overflow-x: hidden; scroll-behavior: smooth; }
-        body { font-family: 'Pretendard', sans-serif; background: #07080E; color: #C8CCD4; overflow-x: hidden; }
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background: #07080E; color: #C8CCD4; overflow-x: hidden;
+            background-image:
+                radial-gradient(ellipse 80% 50% at 20% 20%, rgba(0,100,200,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(120,40,200,0.05) 0%, transparent 60%),
+                radial-gradient(ellipse 70% 50% at 50% 90%, rgba(0,240,255,0.04) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
 
         /* ── 그라데이션 배경들 ── */
         .grad-hero {
@@ -64,6 +72,19 @@
         .grad-blue { background: linear-gradient(180deg, transparent 0%, rgba(0,100,180,0.08) 50%, transparent 100%); }
         .grad-purple { background: linear-gradient(135deg, rgba(120,60,220,0.06) 0%, transparent 50%, rgba(0,240,255,0.04) 100%); }
         .grad-warm { background: linear-gradient(180deg, transparent 0%, rgba(245,158,11,0.05) 50%, transparent 100%); }
+
+        /* ── 커리큘럼 배경 이미지 ── */
+        .curriculum-bg {
+            position: relative;
+        }
+        .curriculum-bg::before {
+            content: '';
+            position: absolute; inset: 0; z-index: 0;
+            background:
+                url('./assets/seminar/세미나사진_3.jpg') center/cover no-repeat;
+            opacity: 0.04;
+            filter: blur(2px);
+        }
 
         /* ── 히어로 이미지 오버레이 ── */
         .hero-img-overlay {
@@ -182,6 +203,59 @@
         .tag-gold { background: rgba(212,175,55,0.08); color: #d4af37; border-color: rgba(212,175,55,0.15); }
         .tag-green { background: rgba(34,197,94,0.08); color: #22C55E; border-color: rgba(34,197,94,0.15); }
 
+        /* ── 히어로 정보 카드 (Class101 스타일 — 오른쪽 고정) ── */
+        .hero-info-card {
+            background: rgba(255,255,255,0.07);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 24px;
+            padding: 32px 28px;
+            width: 100%;
+        }
+        @media (min-width: 768px) {
+            .hero-info-card {
+                position: absolute;
+                right: 48px;
+                bottom: 80px;
+                width: 340px;
+            }
+        }
+        @media (min-width: 1024px) {
+            .hero-info-card { width: 380px; right: 60px; }
+        }
+        .hero-info-row {
+            display: flex; align-items: flex-start; gap: 14px;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .hero-info-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .hero-info-row:first-child { padding-top: 0; }
+        .hero-info-icon {
+            width: 40px; height: 40px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; flex-shrink: 0;
+        }
+        .hero-info-label { font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+        .hero-info-value { font-size: 16px; color: #ffffff; font-weight: 700; margin-top: 3px; line-height: 1.3; }
+        .hero-info-sub { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 400; margin-top: 2px; }
+
+        /* ── 스티키 하단 바 (Class101/패캠 스타일) ── */
+        .sticky-bottom-bar {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+            background: rgba(13,15,24,0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding: 14px 0;
+            transform: translateY(100%);
+            transition: transform 0.35s ease;
+        }
+        .sticky-bottom-bar.visible { transform: translateY(0); }
+        .sticky-info-chip {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 14px; color: rgba(255,255,255,0.8); font-weight: 600;
+        }
+        .sticky-info-chip i { color: #00F0FF; font-size: 13px; }
+
         /* ── 넘버 뱃지 ── */
         .num-badge {
             width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
@@ -205,29 +279,71 @@
         <img src="./assets/seminar/세미나사진_3.jpg" alt="세미나 현장" class="absolute inset-0 w-full h-full object-cover" style="filter: brightness(0.45);">
         <div class="hero-img-overlay absolute inset-0"></div>
 
-        <div class="relative z-10 w-full max-w-5xl mx-auto px-6 md:px-12 pt-28 pb-20 md:pb-28">
-            <div class="flex flex-wrap gap-3 mb-8">
-                <span class="tag" id="hero-date"></span>
-                <span class="tag" id="hero-location"></span>
-                <span class="tag-green tag" id="hero-price"></span>
+        <div class="relative z-10 w-full max-w-6xl mx-auto px-6 md:px-12 pt-28 pb-20 md:pb-28">
+            <div class="md:max-w-[55%]">
+                <p class="font-mono text-xs tracking-[0.25em] text-brand/60 mb-5">ALGROWITHM SEMINAR 2026</p>
+
+                <h1 class="text-4xl sm:text-5xl md:text-[64px] font-bold text-white leading-[1.25] mb-6 tracking-tight" id="hero-title"></h1>
+
+                <p class="text-lg md:text-xl text-slate-300/80 leading-[1.8] max-w-xl mb-10">
+                    노력의 양이 아니라,<br>
+                    문제를 정의하는 <strong class="text-white">해상도</strong>가 성과를 결정합니다.
+                </p>
+
+                <div class="flex flex-wrap gap-4 mb-10 md:mb-0">
+                    <a href="#registration" class="cta-btn inline-flex items-center gap-3 px-10 py-4 text-base">
+                        지금 바로 신청하기
+                        <i class="fa-solid fa-arrow-right text-sm"></i>
+                    </a>
+                    <a href="#curriculum" class="cta-btn-outline inline-flex items-center gap-2 px-8 py-4 text-sm">
+                        커리큘럼 보기
+                    </a>
+                </div>
             </div>
 
-            <p class="font-mono text-xs tracking-[0.25em] text-brand/60 mb-5">ALGROWITHM SEMINAR 2026</p>
-
-            <h1 class="text-4xl sm:text-5xl md:text-[64px] font-bold text-white leading-[1.25] mb-6 tracking-tight" id="hero-title"></h1>
-
-            <p class="text-lg md:text-xl text-slate-300/80 leading-[1.8] max-w-xl mb-12">
-                노력의 양이 아니라,<br>
-                문제를 정의하는 <strong class="text-white">해상도</strong>가 성과를 결정합니다.
-            </p>
-
-            <div class="flex flex-wrap gap-4">
-                <a href="#registration" class="cta-btn inline-flex items-center gap-3 px-10 py-4 text-base">
+            <!-- 오른쪽 정보 카드 (Class101 스타일) -->
+            <div class="hero-info-card">
+                <div class="hero-info-row">
+                    <div class="hero-info-icon" style="background: rgba(0,240,255,0.1); color: #00F0FF;">
+                        <i class="fa-regular fa-calendar"></i>
+                    </div>
+                    <div>
+                        <p class="hero-info-label">일시</p>
+                        <p class="hero-info-value" id="hero-date"></p>
+                        <p class="hero-info-sub" id="hero-time"></p>
+                    </div>
+                </div>
+                <div class="hero-info-row">
+                    <div class="hero-info-icon" style="background: rgba(0,240,255,0.1); color: #00F0FF;">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+                    <div>
+                        <p class="hero-info-label">장소</p>
+                        <p class="hero-info-value" id="hero-location"></p>
+                        <p class="hero-info-sub" id="hero-address"></p>
+                    </div>
+                </div>
+                <div class="hero-info-row">
+                    <div class="hero-info-icon" style="background: rgba(0,240,255,0.1); color: #00F0FF;">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <p class="hero-info-label">정원</p>
+                        <p class="hero-info-value" id="hero-seats"></p>
+                    </div>
+                </div>
+                <div class="hero-info-row" style="border-bottom: none;">
+                    <div class="hero-info-icon" style="background: rgba(34,197,94,0.1); color: #22C55E;">
+                        <i class="fa-solid fa-tag"></i>
+                    </div>
+                    <div>
+                        <p class="hero-info-label">참가비</p>
+                        <p class="hero-info-value" style="color: #22C55E; font-size: 20px;" id="hero-price"></p>
+                    </div>
+                </div>
+                <a href="#registration" class="cta-btn flex items-center justify-center gap-3 w-full py-4 text-base mt-6">
                     지금 바로 신청하기
                     <i class="fa-solid fa-arrow-right text-sm"></i>
-                </a>
-                <a href="#curriculum" class="cta-btn-outline inline-flex items-center gap-2 px-8 py-4 text-sm">
-                    커리큘럼 보기
                 </a>
             </div>
         </div>
@@ -311,7 +427,7 @@
     <!-- ════════════════════════════════════════════════════════ -->
     <!-- 사진 밴드 1 -->
     <!-- ════════════════════════════════════════════════════════ -->
-    <div class="photo-band h-[300px] md:h-[480px]">
+    <div class="photo-band h-[400px] md:h-[600px]">
         <img src="./assets/seminar/세미나사진_4.jpg" alt="강연장 전경" style="object-position: center 55%;">
         <div class="overlay"></div>
     </div>
@@ -395,7 +511,7 @@
     <!-- ════════════════════════════════════════════════════════ -->
     <!-- CURRICULUM — 3-Step -->
     <!-- ════════════════════════════════════════════════════════ -->
-    <section id="curriculum" class="relative z-10 py-24 md:py-32 grad-warm">
+    <section id="curriculum" class="relative z-10 py-24 md:py-32 grad-warm curriculum-bg overflow-hidden">
         <div class="max-w-5xl mx-auto px-6 md:px-12">
             <p class="font-mono text-[11px] tracking-[0.2em] text-brand/50 mb-4 fade-up">CURRICULUM</p>
             <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-[1.4] fade-up">
@@ -454,7 +570,7 @@
     <!-- ════════════════════════════════════════════════════════ -->
     <!-- 사진 밴드 2 -->
     <!-- ════════════════════════════════════════════════════════ -->
-    <div class="photo-band h-[300px] md:h-[480px]">
+    <div class="photo-band h-[400px] md:h-[600px]">
         <img src="./assets/seminar/세미나사진_8.jpg" alt="대형 강연장 전경" style="object-position: center 65%;">
         <div class="overlay"></div>
     </div>
@@ -496,7 +612,7 @@
                 </div>
 
                 <div class="glass-card overflow-hidden">
-                    <img src="./assets/seminar/세미나사진_2.jpg" alt="강의실" class="w-full h-full object-cover min-h-[320px]">
+                    <img src="./세미나/세미나사진_8.jpg" alt="강의실" class="w-full h-full object-cover min-h-[320px]">
                 </div>
             </div>
         </div>
@@ -509,10 +625,7 @@
     <section class="relative z-10 py-20 grad-blue">
         <div class="max-w-3xl mx-auto px-6 md:px-12 text-center fade-up">
             <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">선착순 <span class="text-brand" id="cta-seats"></span>명 마감</h2>
-            <p class="text-slate-400 mb-8">자리가 한정되어 있습니다. 지금 바로 신청하세요.</p>
-            <a href="#registration" class="cta-btn inline-flex items-center gap-3 px-10 py-4 text-base">
-                무료 신청하기 <i class="fa-solid fa-arrow-right text-sm"></i>
-            </a>
+            <p class="text-slate-400">자리가 한정되어 있습니다. 아래에서 바로 신청하세요.</p>
         </div>
     </section>
 
@@ -589,6 +702,26 @@
 
 
     <!-- ════════════════════════════════════════════════════════ -->
+    <!-- STICKY BOTTOM BAR (Class101/패캠 스타일) -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <div class="sticky-bottom-bar" id="stickyBar">
+        <div class="max-w-5xl mx-auto px-6 md:px-12 flex items-center justify-between gap-4">
+            <div class="hidden sm:flex items-center gap-6">
+                <span class="sticky-info-chip"><i class="fa-regular fa-calendar"></i> <span id="sticky-date"></span></span>
+                <span class="sticky-info-chip"><i class="fa-solid fa-location-dot"></i> <span id="sticky-location"></span></span>
+                <span class="sticky-info-chip" style="color: #22C55E;"><i class="fa-solid fa-tag" style="color: #22C55E;"></i> <span id="sticky-price"></span></span>
+            </div>
+            <div class="sm:hidden flex-1">
+                <span class="text-sm text-white font-bold" id="sticky-title-m"></span>
+            </div>
+            <a href="#registration" class="cta-btn flex items-center gap-2 px-8 py-3 text-sm whitespace-nowrap">
+                지금 신청하기 <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+        </div>
+    </div>
+
+
+    <!-- ════════════════════════════════════════════════════════ -->
     <!-- FOOTER -->
     <!-- ════════════════════════════════════════════════════════ -->
     <footer class="relative z-10 border-t border-white/[0.04] py-10">
@@ -608,9 +741,12 @@
     <!-- ════════════════════════════════════════════════════════ -->
     <script>
     // ── config → DOM ──
-    document.getElementById('hero-date').textContent = `📅 ${SEMINAR.date} ${SEMINAR.time}`;
-    document.getElementById('hero-location').textContent = `📍 ${SEMINAR.location} (${SEMINAR.locationSub})`;
+    document.getElementById('hero-date').textContent = SEMINAR.date;
+    document.getElementById('hero-time').textContent = SEMINAR.time;
+    document.getElementById('hero-location').textContent = `${SEMINAR.location} (${SEMINAR.locationSub})`;
+    document.getElementById('hero-address').textContent = SEMINAR.address;
     document.getElementById('hero-price').textContent = SEMINAR.price;
+    document.getElementById('hero-seats').textContent = `선착순 ${SEMINAR.seats}명`;
     document.getElementById('hero-title').innerHTML = `AI 시대, 상위 1% 인재의<br><span class="text-brand">'${SEMINAR.title}'</span> 공개`;
 
     document.getElementById('info-date').textContent = SEMINAR.date;
@@ -622,6 +758,12 @@
     document.getElementById('info-map-link').href = SEMINAR.mapUrl;
     document.getElementById('success-date').textContent = `${SEMINAR.date} ${SEMINAR.time} | ${SEMINAR.location}`;
     document.getElementById('cta-seats').textContent = SEMINAR.seats;
+
+    // ── 스티키 바 ──
+    document.getElementById('sticky-date').textContent = SEMINAR.date;
+    document.getElementById('sticky-location').textContent = SEMINAR.location;
+    document.getElementById('sticky-price').textContent = SEMINAR.price;
+    document.getElementById('sticky-title-m').textContent = `${SEMINAR.date} · ${SEMINAR.location}`;
 
     // ── UTM/ref ──
     const urlParams = new URLSearchParams(window.location.search);
@@ -677,6 +819,21 @@
         entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
     }, { threshold: 0.1 });
     document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // ── 스티키 바: 히어로 지나면 표시, 폼 영역이면 숨김 ──
+    const stickyBar = document.getElementById('stickyBar');
+    const regSection = document.getElementById('registration');
+    window.addEventListener('scroll', () => {
+        const scrollY = window.scrollY;
+        const heroH = window.innerHeight;
+        const regTop = regSection.offsetTop;
+        const regBottom = regTop + regSection.offsetHeight;
+        if (scrollY > heroH * 0.8 && (scrollY < regTop - 200 || scrollY > regBottom)) {
+            stickyBar.classList.add('visible');
+        } else {
+            stickyBar.classList.remove('visible');
+        }
+    });
     </script>
 </body>
 </html>
