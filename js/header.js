@@ -353,8 +353,17 @@ function initHeaderBgDetection() {
 
     function getEffectiveBgColor(el) {
         while (el && el !== document.documentElement) {
-            const bg = getComputedStyle(el).backgroundColor;
-            // rgba(0,0,0,0) 또는 transparent는 건너뜀
+            const style = getComputedStyle(el);
+            const bg = style.backgroundColor;
+            const bgImage = style.backgroundImage;
+
+            // 그라데이션이 있으면 첫 번째 색상 추출
+            if (bgImage && bgImage !== 'none') {
+                const gradientMatch = bgImage.match(/rgba?\(\d+,\s*\d+,\s*\d+/);
+                if (gradientMatch) return gradientMatch[0] + ')';
+            }
+
+            // 배경색이 투명이 아니면 반환
             if (bg && bg !== 'transparent' && bg !== 'rgba(0, 0, 0, 0)') {
                 return bg;
             }
