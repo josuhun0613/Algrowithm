@@ -719,26 +719,26 @@
                         <input type="tel" name="phone" required placeholder="010-0000-0000" class="form-input" pattern="^01[0-9]-?\d{3,4}-?\d{4}$">
                     </div>
                     <div>
-                        <label class="block text-sm text-slate-400 mb-2">소속/직업</label>
-                        <select name="occupation" class="form-input" style="appearance: none; cursor: pointer;">
+                        <label class="block text-sm text-slate-400 mb-2">소속/직업 <span class="text-red-400">*</span></label>
+                        <select name="occupation" required class="form-input" style="appearance: none; cursor: pointer;">
                             <option value="" disabled selected style="color: rgba(255,255,255,0.2);">선택해 주세요</option>
-                            <option value="student">대학생</option>
-                            <option value="jobseeker">취업준비생</option>
-                            <option value="worker">직장인</option>
-                            <option value="founder">창업자 / 프리랜서</option>
+                            <option value="student" style="color: #111; background: #fff;">대학생</option>
+                            <option value="jobseeker" style="color: #111; background: #fff;">취업준비생</option>
+                            <option value="worker" style="color: #111; background: #fff;">직장인</option>
+                            <option value="founder" style="color: #111; background: #fff;">창업자 / 프리랜서</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm text-slate-400 mb-2">학교 / 회사명 <span class="text-slate-600 text-xs">(선택)</span></label>
-                        <input type="text" name="org" placeholder="예) 연세대학교" class="form-input">
+                        <label class="block text-sm text-slate-400 mb-2">학교 / 회사명 <span class="text-red-400">*</span></label>
+                        <input type="text" name="org" required placeholder="예) 연세대학교" class="form-input">
                     </div>
                     <div>
-                        <label class="block text-sm text-slate-400 mb-2">사는 곳 <span class="text-slate-600 text-xs">(선택)</span></label>
-                        <input type="text" name="region" placeholder="예) 서울 마포구" class="form-input">
+                        <label class="block text-sm text-slate-400 mb-2">사는 곳 <span class="text-red-400">*</span></label>
+                        <input type="text" name="region" required placeholder="예) 서울 마포구" class="form-input">
                     </div>
                     <div>
-                        <label class="block text-sm text-slate-400 mb-2">강연 기대평 <span class="text-slate-600 text-xs">(선택)</span></label>
-                        <textarea name="expectation" rows="3" placeholder="궁금한 점이나 기대하는 내용을 자유롭게 적어주세요." class="form-input" style="resize: none;"></textarea>
+                        <label class="block text-sm text-slate-400 mb-2">강연 기대평 <span class="text-red-400">*</span></label>
+                        <textarea name="expectation" required rows="3" placeholder="궁금한 점이나 기대하는 내용을 자유롭게 적어주세요." class="form-input" style="resize: none;"></textarea>
                     </div>
                     <input type="hidden" name="ref" id="refInput">
 
@@ -837,6 +837,14 @@
     document.getElementById('sticky-location').textContent = SEMINAR.location;
     document.getElementById('sticky-price').textContent = SEMINAR.price;
     document.getElementById('sticky-title-m').textContent = `${SEMINAR.date} · ${SEMINAR.location}`;
+
+    // ── 연락처 하이픈 자동 추가 ──
+    document.querySelector('input[name="phone"]').addEventListener('input', (e) => {
+        let v = e.target.value.replace(/[^0-9]/g, '');
+        if (v.length > 3 && v.length <= 7) v = v.slice(0, 3) + '-' + v.slice(3);
+        else if (v.length > 7) v = v.slice(0, 3) + '-' + v.slice(3, 7) + '-' + v.slice(7, 11);
+        e.target.value = v;
+    });
 
     // ── UTM/ref ──
     const urlParams = new URLSearchParams(window.location.search);
