@@ -253,7 +253,7 @@ function getHeaderStyles() {
 
     /* 다크 배경 감지 시 헤더 스타일 */
     .header-blur.header-on-dark {
-        background: rgba(0, 0, 0, 0.15);
+        background: rgba(0, 0, 0, 0.25);
     }
 
     /* 헤더 텍스트 색상 전환 (기본: 다크 텍스트) */
@@ -262,10 +262,9 @@ function getHeaderStyles() {
     #navbar .hamburger-line { transition: background-color 0.3s ease, transform 0.3s ease; }
 
     /* 다크 배경 위 헤더 (라이트 텍스트) */
-    #navbar.header-on-dark .nav-text { color: #e5e7eb; }
+    #navbar.header-on-dark .nav-text { color: rgba(255,255,255,0.9); }
     #navbar.header-on-dark .nav-text:hover { color: #d4af37; }
-    #navbar.header-on-dark .hamburger-line { background-color: #e5e7eb; }
-    #navbar.header-on-dark .nav-logo { filter: brightness(0) invert(1); }
+    #navbar.header-on-dark .hamburger-line { background-color: rgba(255,255,255,0.9); }
 
     /* Dropdown */
     .dropdown { position: relative; }
