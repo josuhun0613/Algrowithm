@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>생각 로직 세미나 | Algrowithm</title>
-    <meta name="description" content="AI 시대, 상위 1% 인재의 '생각 로직' 공개 — Algrowithm 세미나">
-    <meta property="og:title" content="생각 로직 세미나 | Algrowithm">
+    <title>생각 로직 강연 | Algrowithm</title>
+    <meta name="description" content="AI 시대, 상위 1% 인재의 '생각 로직' 공개 — Algrowithm 강연">
+    <meta property="og:title" content="생각 로직 강연 | Algrowithm">
     <meta property="og:description" content="노력의 양이 아니라, 문제를 정의하는 해상도가 성과를 결정합니다.">
     <meta property="og:type" content="event">
 
@@ -47,7 +47,7 @@
         locationSub: "G-TOWN",
         address: "서울 마포구 백범로31길 21",
         seats: 30,
-        price: "무료",
+        price: "5,000원",
         mapUrl: "https://map.kakao.com/link/map/공덕창업허브,37.5435,126.9519",
     };
     </script>
@@ -56,11 +56,11 @@
         html { overflow-x: hidden; scroll-behavior: smooth; }
         body {
             font-family: 'Pretendard', sans-serif;
-            background: #07080E; color: #C8CCD4; overflow-x: hidden;
+            background: #0C0E16; color: #D1D5DB; overflow-x: hidden;
             background-image:
-                radial-gradient(ellipse 80% 50% at 20% 20%, rgba(0,100,200,0.06) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(120,40,200,0.05) 0%, transparent 60%),
-                radial-gradient(ellipse 70% 50% at 50% 90%, rgba(0,240,255,0.04) 0%, transparent 50%);
+                radial-gradient(ellipse 80% 50% at 20% 20%, rgba(0,100,200,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(120,40,200,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 70% 50% at 50% 90%, rgba(0,240,255,0.05) 0%, transparent 50%);
             background-attachment: fixed;
         }
 
@@ -106,32 +106,52 @@
 
         /* ── 카드 ── */
         .glass-card {
-            background: rgba(255,255,255,0.025);
-            border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.10);
             border-radius: 16px;
             backdrop-filter: blur(12px);
         }
-        .glass-card:hover { border-color: rgba(0,240,255,0.15); }
+        .glass-card:hover { border-color: rgba(0,240,255,0.2); }
 
         /* ── 스텝 카드 ── */
         .step-card {
             position: relative;
-            background: linear-gradient(145deg, rgba(0,240,255,0.03) 0%, rgba(255,255,255,0.015) 100%);
-            border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.10);
             border-radius: 20px;
             transition: all 0.4s ease;
+            overflow: hidden;
         }
         .step-card:hover {
-            border-color: rgba(0,240,255,0.2);
+            border-color: rgba(0,240,255,0.25);
             transform: translateY(-4px);
-            box-shadow: 0 20px 60px rgba(0,240,255,0.06);
+            box-shadow: 0 20px 60px rgba(0,240,255,0.08);
         }
-        .step-num {
-            font-family: 'Playfair Display', serif;
-            font-size: 80px; font-weight: 700; line-height: 1;
-            background: linear-gradient(180deg, rgba(0,240,255,0.15) 0%, rgba(0,240,255,0.02) 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        .step-img {
+            width: 100%; height: 200px; object-fit: cover;
+            border-radius: 16px 16px 0 0;
+            filter: brightness(0.7);
         }
+        @media (min-width: 768px) {
+            .step-img { height: 100%; border-radius: 16px 0 0 16px; position: absolute; left: 0; top: 0; width: 220px; }
+        }
+        .step-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+            color: #00F0FF;
+            background: rgba(0,240,255,0.08);
+            padding: 4px 12px; border-radius: 6px;
+            display: inline-block;
+        }
+
+        /* ── 후기 카드 ── */
+        .review-card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 16px; padding: 28px;
+            transition: all 0.3s;
+        }
+        .review-card:hover { border-color: rgba(0,240,255,0.2); transform: translateY(-2px); }
 
         /* ── 폼 ── */
         .form-input {
@@ -168,11 +188,11 @@
 
         /* ── 페인포인트 ── */
         .pain-card {
-            background: linear-gradient(145deg, rgba(255,50,80,0.04) 0%, rgba(255,255,255,0.02) 100%);
-            border: 1px solid rgba(255,255,255,0.06); border-radius: 16px;
+            background: linear-gradient(145deg, rgba(255,50,80,0.06) 0%, rgba(255,255,255,0.04) 100%);
+            border: 1px solid rgba(255,255,255,0.10); border-radius: 16px;
             transition: all 0.3s;
         }
-        .pain-card:hover { border-color: rgba(255,100,120,0.2); transform: translateY(-2px); }
+        .pain-card:hover { border-color: rgba(255,100,120,0.25); transform: translateY(-2px); }
 
         /* ── 사진 그리드 ── */
         .photo-grid img {
@@ -276,12 +296,12 @@
     <!-- HERO — 풀스크린 사진 + 그라데이션 오버레이 -->
     <!-- ════════════════════════════════════════════════════════ -->
     <section class="relative min-h-screen flex items-center overflow-hidden">
-        <img src="./assets/seminar/세미나사진_3.jpg" alt="세미나 현장" class="absolute inset-0 w-full h-full object-cover" style="filter: brightness(0.45);">
+        <img src="./assets/seminar/세미나사진_3.jpg" alt="강연 현장" class="absolute inset-0 w-full h-full object-cover" style="filter: brightness(0.45);">
         <div class="hero-img-overlay absolute inset-0"></div>
 
         <div class="relative z-10 w-full max-w-6xl mx-auto px-6 md:px-12 pt-28 pb-20 md:pb-28">
             <div class="md:max-w-[55%]">
-                <p class="font-mono text-xs tracking-[0.25em] text-brand/60 mb-5">ALGROWITHM SEMINAR 2026</p>
+                <p class="font-mono text-xs tracking-[0.25em] text-brand/60 mb-5">ALGROWITHM LECTURE 2026</p>
 
                 <h1 class="text-4xl sm:text-5xl md:text-[64px] font-bold text-white leading-[1.25] mb-6 tracking-tight" id="hero-title"></h1>
 
@@ -291,12 +311,8 @@
                 </p>
 
                 <div class="flex flex-wrap gap-4 mb-10 md:mb-0">
-                    <a href="#registration" class="cta-btn inline-flex items-center gap-3 px-10 py-4 text-base">
-                        지금 바로 신청하기
-                        <i class="fa-solid fa-arrow-right text-sm"></i>
-                    </a>
                     <a href="#curriculum" class="cta-btn-outline inline-flex items-center gap-2 px-8 py-4 text-sm">
-                        커리큘럼 보기
+                        커리큘럼 보기 <i class="fa-solid fa-chevron-down text-xs"></i>
                     </a>
                 </div>
             </div>
@@ -376,7 +392,60 @@
                 </div>
                 <div>
                     <p class="text-2xl md:text-3xl font-bold text-white">90<span class="text-brand">분</span></p>
-                    <p class="text-xs text-slate-500 mt-1">핵심 세미나</p>
+                    <p class="text-xs text-slate-500 mt-1">핵심 강연</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!-- REVIEWS — 참석자 후기 -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <section class="relative z-10 py-20 md:py-24">
+        <div class="max-w-5xl mx-auto px-6 md:px-12">
+            <p class="font-mono text-[11px] tracking-[0.2em] text-brand/50 mb-4 fade-up">REVIEWS</p>
+            <h2 class="text-2xl md:text-3xl font-bold text-white mb-12 leading-[1.4] fade-up">참석자들의 이야기</h2>
+
+            <div class="grid md:grid-cols-3 gap-5">
+                <div class="review-card fade-up">
+                    <div class="flex items-center gap-1 mb-4 text-yellow-400 text-sm">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-[15px] text-slate-300 leading-[1.9] mb-5">"막연한 고민이 정리되는 느낌이었어요. 문제를 쪼개서 보는 방법을 알게 되니까 오히려 마음이 편해졌습니다."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-brand text-xs font-bold">K</div>
+                        <div>
+                            <p class="text-sm text-white font-semibold">김○○</p>
+                            <p class="text-xs text-slate-500">대학생 · 경영학과</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-card fade-up">
+                    <div class="flex items-center gap-1 mb-4 text-yellow-400 text-sm">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-[15px] text-slate-300 leading-[1.9] mb-5">"AI한테 대체될까 불안했는데, 나만의 무기를 만드는 프레임을 배워서 오히려 자신감이 생겼습니다."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 text-xs font-bold">P</div>
+                        <div>
+                            <p class="text-sm text-white font-semibold">박○○</p>
+                            <p class="text-xs text-slate-500">취업준비생</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-card fade-up">
+                    <div class="flex items-center gap-1 mb-4 text-yellow-400 text-sm">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+                    </div>
+                    <p class="text-[15px] text-slate-300 leading-[1.9] mb-5">"3년차 직장인인데, 이직 고민이 선명해졌어요. 90분이 아까웠다는 게 아니라 더 듣고 싶었습니다."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-green-500/10 flex items-center justify-center text-green-400 text-xs font-bold">L</div>
+                        <div>
+                            <p class="text-sm text-white font-semibold">이○○</p>
+                            <p class="text-xs text-slate-500">직장인 · IT기업</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -519,13 +588,13 @@
             </h2>
             <p class="text-slate-500 text-base mb-16 max-w-lg fade-up">단순한 강의가 아닌, 즉시 적용 가능한 사고 프레임워크.</p>
 
-            <div class="space-y-6">
+            <div class="space-y-5">
                 <!-- Step 1 -->
-                <div class="step-card p-8 md:p-10 grid md:grid-cols-[100px_1fr] gap-6 md:gap-10 items-start fade-up">
-                    <div class="step-num">01</div>
-                    <div>
-                        <p class="font-mono text-[10px] text-brand tracking-wider mb-3">STEP 01 — SECRET SOURCE CODE</p>
-                        <h3 class="text-xl md:text-2xl font-bold text-white mb-4 leading-[1.5]">
+                <div class="step-card relative fade-up">
+                    <img src="https://images.unsplash.com/photo-1523875194681-bedd468c58bf?w=600&h=400&fit=crop" alt="전략적 사고" class="step-img">
+                    <div class="p-8 md:p-10 md:pl-[248px]">
+                        <span class="step-label mb-3">STEP 01</span>
+                        <h3 class="text-xl md:text-2xl font-bold text-white mb-4 leading-[1.5] mt-3">
                             똑같이 일해도 결과가 10배 차이 나는<br class="hidden md:block">
                             '비밀 소스 코드'
                         </h3>
@@ -535,11 +604,11 @@
                     </div>
                 </div>
                 <!-- Step 2 -->
-                <div class="step-card p-8 md:p-10 grid md:grid-cols-[100px_1fr] gap-6 md:gap-10 items-start fade-up">
-                    <div class="step-num">02</div>
-                    <div>
-                        <p class="font-mono text-[10px] text-brand tracking-wider mb-3">STEP 02 — HIGH RESOLUTION</p>
-                        <h3 class="text-xl md:text-2xl font-bold text-white mb-4 leading-[1.5]">
+                <div class="step-card relative fade-up">
+                    <img src="https://images.unsplash.com/photo-1490127252417-7c393f993ee4?w=600&h=400&fit=crop" alt="해상도 높이기" class="step-img">
+                    <div class="p-8 md:p-10 md:pl-[248px]">
+                        <span class="step-label mb-3">STEP 02</span>
+                        <h3 class="text-xl md:text-2xl font-bold text-white mb-4 leading-[1.5] mt-3">
                             엉킨 고민의 해상도를 높여<br class="hidden md:block">
                             명쾌한 정답을 찾는 기술
                         </h3>
@@ -549,11 +618,11 @@
                     </div>
                 </div>
                 <!-- Step 3 -->
-                <div class="step-card p-8 md:p-10 grid md:grid-cols-[100px_1fr] gap-6 md:gap-10 items-start fade-up">
-                    <div class="step-num">03</div>
-                    <div>
-                        <p class="font-mono text-[10px] text-brand tracking-wider mb-3">STEP 03 — IRREPLACEABLE LOGIC</p>
-                        <h3 class="text-xl md:text-2xl font-bold text-white mb-4 leading-[1.5]">
+                <div class="step-card relative fade-up">
+                    <img src="https://images.unsplash.com/photo-1567826722186-9ecdf689f122?w=600&h=400&fit=crop" alt="대체 불가능한 정체성" class="step-img">
+                    <div class="p-8 md:p-10 md:pl-[248px]">
+                        <span class="step-label mb-3">STEP 03</span>
+                        <h3 class="text-xl md:text-2xl font-bold text-white mb-4 leading-[1.5] mt-3">
                             인문학 + 내 기질(OS)에 맞는<br class="hidden md:block">
                             '대체 불가능한' 업무 로직 구축
                         </h3>
@@ -582,7 +651,7 @@
     <section class="relative z-10 py-24 md:py-32">
         <div class="max-w-5xl mx-auto px-6 md:px-12">
             <p class="font-mono text-[11px] tracking-[0.2em] text-brand/50 mb-4 fade-up">DETAILS</p>
-            <h2 class="text-3xl md:text-4xl font-bold text-white mb-16 leading-[1.4] fade-up">세미나 안내</h2>
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-16 leading-[1.4] fade-up">강연 안내</h2>
 
             <div class="grid md:grid-cols-2 gap-6 fade-up">
                 <div class="glass-card p-8 md:p-10">
@@ -637,7 +706,7 @@
         <div class="max-w-5xl mx-auto px-6 md:px-12">
             <div class="max-w-xl mx-auto">
                 <p class="font-mono text-[11px] tracking-[0.2em] text-brand/50 mb-4 text-center fade-up">REGISTRATION</p>
-                <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 text-center leading-[1.4] fade-up">세미나 신청</h2>
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 text-center leading-[1.4] fade-up">강연 신청</h2>
                 <p class="text-slate-500 text-center mb-12 fade-up">아래 정보를 입력하시면, 확인 후 안내 문자를 보내드립니다.</p>
 
                 <form id="seminarForm" class="glass-card p-8 md:p-10 space-y-5 fade-up">
@@ -664,7 +733,11 @@
                         <input type="text" name="org" placeholder="예) 한국항공대학교" class="form-input">
                     </div>
                     <div>
-                        <label class="block text-sm text-slate-400 mb-2">세미나 기대평 <span class="text-slate-600 text-xs">(선택)</span></label>
+                        <label class="block text-sm text-slate-400 mb-2">사는 곳 <span class="text-slate-600 text-xs">(선택)</span></label>
+                        <input type="text" name="region" placeholder="예) 서울 마포구" class="form-input">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">강연 기대평 <span class="text-slate-600 text-xs">(선택)</span></label>
                         <textarea name="expectation" rows="3" placeholder="궁금한 점이나 기대하는 내용을 자유롭게 적어주세요." class="form-input" style="resize: none;"></textarea>
                     </div>
                     <input type="hidden" name="ref" id="refInput">
@@ -675,7 +748,7 @@
                                 <i class="fa-solid fa-check text-brand text-[10px] hidden"></i>
                             </div>
                             <span class="text-sm text-slate-400 leading-[1.7] group-hover:text-slate-300 transition-colors">
-                                개인정보 수집 · 이용에 동의합니다. (이름, 연락처 — 세미나 안내 목적) <span class="text-red-400">*</span>
+                                개인정보 수집 · 이용에 동의합니다. (이름, 연락처 — 강연 안내 목적) <span class="text-red-400">*</span>
                             </span>
                         </label>
                     </div>
@@ -690,7 +763,7 @@
                         <i class="fa-solid fa-check text-green-400 text-2xl"></i>
                     </div>
                     <h3 class="text-xl font-bold text-white mb-3">신청이 완료되었습니다!</h3>
-                    <p class="text-slate-400 text-sm leading-[1.8] mb-2">입력하신 연락처로 세미나 안내 문자를 보내드리겠습니다.</p>
+                    <p class="text-slate-400 text-sm leading-[1.8] mb-2">입력하신 연락처로 강연 안내 문자를 보내드리겠습니다.</p>
                     <p class="text-slate-500 text-xs" id="success-date"></p>
                     <a href="/" class="inline-flex items-center gap-2 text-brand font-medium text-sm mt-8 hover:underline">
                         <i class="fa-solid fa-arrow-left text-xs"></i> 메인으로 돌아가기
