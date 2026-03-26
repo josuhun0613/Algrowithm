@@ -916,6 +916,111 @@
             stickyBar.classList.remove('visible');
         }
     });
+    // ── 관리자 편집 (트리플 클릭) ──
+    (function() {
+        const card = document.querySelector('.hero-info-card');
+        if (!card) return;
+        let clickCount = 0, clickTimer = null;
+        card.addEventListener('click', (e) => {
+            if (e.target.closest('a')) return;
+            clickCount++;
+            clearTimeout(clickTimer);
+            clickTimer = setTimeout(() => { clickCount = 0; }, 500);
+            if (clickCount >= 3) {
+                clickCount = 0;
+                openAdminModal();
+            }
+        });
+
+        function openAdminModal() {
+            if (document.getElementById('adminModal')) return;
+            const overlay = document.createElement('div');
+            overlay.id = 'adminModal';
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
+            overlay.innerHTML = `
+                <div style="background:#1a1d2e;border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:32px;width:90%;max-width:440px;color:#fff;font-family:Pretendard,sans-serif;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+                        <h3 style="font-size:18px;font-weight:700;">강연 정보 수정</h3>
+                        <button id="adminClose" style="background:none;border:none;color:#888;font-size:20px;cursor:pointer;">&times;</button>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:16px;">
+                        ${adminField('제목', 'a_title', SEMINAR.title)}
+                        ${adminField('날짜', 'a_date', SEMINAR.date)}
+                        ${adminField('시간', 'a_time', SEMINAR.time)}
+                        ${adminField('장소', 'a_location', SEMINAR.location)}
+                        ${adminField('장소(부제)', 'a_locationSub', SEMINAR.locationSub)}
+                        ${adminField('주소', 'a_address', SEMINAR.address)}
+                        ${adminField('정원', 'a_seats', SEMINAR.seats, 'number')}
+                        ${adminField('참가비', 'a_price', SEMINAR.price)}
+                        ${adminField('지도 URL', 'a_mapUrl', SEMINAR.mapUrl)}
+                    </div>
+                    <div style="display:flex;gap:10px;margin-top:24px;">
+                        <button id="adminApply" style="flex:1;padding:14px;background:linear-gradient(135deg,#00F0FF,#0090A0);border:none;border-radius:12px;color:#000;font-weight:700;font-size:15px;cursor:pointer;">적용</button>
+                        <button id="adminCopy" style="flex:1;padding:14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:#fff;font-weight:600;font-size:14px;cursor:pointer;">코드 복사</button>
+                    </div>
+                    <p id="adminMsg" style="text-align:center;margin-top:12px;font-size:13px;color:#22C55E;opacity:0;transition:opacity 0.3s;"></p>
+                </div>`;
+            document.body.appendChild(overlay);
+
+            document.getElementById('adminClose').onclick = () => overlay.remove();
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+
+            document.getElementById('adminApply').onclick = () => {
+                SEMINAR.title = document.getElementById('a_title').value;
+                SEMINAR.date = document.getElementById('a_date').value;
+                SEMINAR.time = document.getElementById('a_time').value;
+                SEMINAR.location = document.getElementById('a_location').value;
+                SEMINAR.locationSub = document.getElementById('a_locationSub').value;
+                SEMINAR.address = document.getElementById('a_address').value;
+                SEMINAR.seats = parseInt(document.getElementById('a_seats').value) || 15;
+                SEMINAR.price = document.getElementById('a_price').value;
+                SEMINAR.mapUrl = document.getElementById('a_mapUrl').value;
+                refreshDOM();
+                showMsg('페이지에 적용됨 (새로고침 시 초기화)');
+            };
+
+            document.getElementById('adminCopy').onclick = () => {
+                const code = `const SEMINAR = {\n    title: "${document.getElementById('a_title').value}",\n    date: "${document.getElementById('a_date').value}",\n    time: "${document.getElementById('a_time').value}",\n    location: "${document.getElementById('a_location').value}",\n    locationSub: "${document.getElementById('a_locationSub').value}",\n    address: "${document.getElementById('a_address').value}",\n    seats: ${document.getElementById('a_seats').value},\n    price: "${document.getElementById('a_price').value}",\n    mapUrl: "${document.getElementById('a_mapUrl').value}",\n};`;
+                navigator.clipboard.writeText(code).then(() => showMsg('클립보드에 복사됨!'));
+            };
+
+            function showMsg(t) {
+                const m = document.getElementById('adminMsg');
+                m.textContent = t; m.style.opacity = '1';
+                setTimeout(() => { m.style.opacity = '0'; }, 2500);
+            }
+        }
+
+        function adminField(label, id, value, type) {
+            return `<div>
+                <label style="font-size:12px;color:#888;margin-bottom:4px;display:block;">${label}</label>
+                <input id="${id}" type="${type || 'text'}" value="${value}" style="width:100%;padding:10px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#e2e8f0;font-size:14px;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='rgba(0,240,255,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
+            </div>`;
+        }
+
+        function refreshDOM() {
+            document.getElementById('hero-date').textContent = SEMINAR.date;
+            document.getElementById('hero-time').textContent = SEMINAR.time;
+            document.getElementById('hero-location').textContent = `${SEMINAR.location} (${SEMINAR.locationSub})`;
+            document.getElementById('hero-address').textContent = SEMINAR.address;
+            document.getElementById('hero-price').textContent = SEMINAR.price;
+            document.getElementById('hero-seats').textContent = `선착순 ${SEMINAR.seats}명`;
+            document.getElementById('hero-title').innerHTML = `AI 시대,<br>상위 1% 인재의 <span class="text-brand">'${SEMINAR.title}'</span> 공개`;
+            document.getElementById('info-date').textContent = SEMINAR.date;
+            document.getElementById('info-time').textContent = SEMINAR.time;
+            document.getElementById('info-location').textContent = `${SEMINAR.location} (${SEMINAR.locationSub})`;
+            document.getElementById('info-address').textContent = SEMINAR.address;
+            document.getElementById('info-seats').textContent = `선착순 ${SEMINAR.seats}명`;
+            document.getElementById('info-price').textContent = SEMINAR.price;
+            document.getElementById('info-map-link').href = SEMINAR.mapUrl;
+            document.getElementById('success-date').textContent = `${SEMINAR.date} ${SEMINAR.time} | ${SEMINAR.location}`;
+            document.getElementById('cta-seats').textContent = SEMINAR.seats;
+            document.getElementById('sticky-date').textContent = SEMINAR.date;
+            document.getElementById('sticky-location').textContent = SEMINAR.location;
+            document.getElementById('sticky-price').textContent = SEMINAR.price;
+            document.getElementById('sticky-title-m').textContent = `${SEMINAR.date} · ${SEMINAR.location}`;
+        }
+    })();
     </script>
 </body>
 </html>
