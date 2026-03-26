@@ -936,9 +936,9 @@
             if (document.getElementById('adminModal')) return;
             const overlay = document.createElement('div');
             overlay.id = 'adminModal';
-            overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);overflow-y:auto;padding:40px 16px;';
             overlay.innerHTML = `
-                <div style="background:#1a1d2e;border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:32px;width:90%;max-width:440px;color:#fff;font-family:Pretendard,sans-serif;">
+                <div style="background:#1a1d2e;border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:32px;width:90%;max-width:440px;color:#fff;font-family:Pretendard,sans-serif;margin:auto;flex-shrink:0;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
                         <h3 style="font-size:18px;font-weight:700;">강연 정보 수정</h3>
                         <button id="adminClose" style="background:none;border:none;color:#888;font-size:20px;cursor:pointer;">&times;</button>
