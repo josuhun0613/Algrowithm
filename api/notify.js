@@ -87,8 +87,46 @@ async function handleTelegram(req, res) {
 
         const result = await telegramResponse.json();
         if (!result.ok) return res.status(500).json({ error: 'Failed to send Telegram notification' });
+
+        // ── 강연 신청 시 확인 SMS 발송 ──
+        if (type === 'seminar' && req.body.phone) {
+            await sendSMS(req.body.phone, req.body.name);
+        }
+
         return res.status(200).json({ success: true });
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+// ─── Solapi SMS ───
+async function sendSMS(phone, name) {
+    try {
+        const API_KEY = process.env.SOLAPI_API_KEY;
+        const API_SECRET = process.env.SOLAPI_API_SECRET;
+        const FROM = process.env.SOLAPI_FROM;
+        if (!API_KEY || !API_SECRET || !FROM) return;
+
+        const date = new Date().toISOString();
+        const salt = Math.random().toString(36).slice(2);
+        const crypto = await import('crypto');
+        const signature = crypto.createHmac('sha256', API_SECRET)
+            .update(date + salt).digest('hex');
+
+        const cleanPhone = phone.replace(/-/g, '');
+        const text = `[Algrowithm] ${name}님, 강연 신청이 완료되었습니다.\n\n📅 3/28(토) 16:00\n📍 공덕 창업허브 1F (G-TOWN)\n\n문의: algrowithm@kakao.com`;
+
+        await fetch('https://api.solapi.com/messages/v4/send-many/detail', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `HMAC-SHA256 apiKey=${API_KEY}, date=${date}, salt=${salt}, signature=${signature}`,
+            },
+            body: JSON.stringify({
+                messages: [{ to: cleanPhone, from: FROM, text }]
+            }),
+        });
+    } catch (e) {
+        console.error('SMS send failed:', e);
     }
 }
