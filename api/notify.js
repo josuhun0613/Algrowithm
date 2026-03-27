@@ -1,5 +1,6 @@
-// 통합 알림 API — 이메일(Resend) + 텔레그램
+// 통합 알림 API — 이메일(Resend) + 텔레그램 + SMS
 // channel: 'email' | 'telegram' (기본)
+import crypto from 'crypto';
 
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -120,7 +121,6 @@ async function sendSMS(phone, name, seminarDate, seminarTime, seminarLocation) {
 
         const date = new Date().toISOString();
         const salt = Math.random().toString(36).slice(2);
-        const crypto = await import('crypto');
         const signature = crypto.createHmac('sha256', API_SECRET)
             .update(date + salt).digest('hex');
 
@@ -128,7 +128,7 @@ async function sendSMS(phone, name, seminarDate, seminarTime, seminarLocation) {
         const cleanFrom = FROM.replace(/-/g, '');
         const text = `[Algrowithm] ${name}님, 강연 신청이 완료되었습니다.\n\n📅 ${seminarDate || ''} ${seminarTime || ''}\n📍 ${seminarLocation || ''}\n\n문의: algrowithm@kakao.com`;
 
-        await fetch('https://api.solapi.com/messages/v4/send-many/detail', {
+        const smsRes = await fetch('https://api.solapi.com/messages/v4/send-many/detail', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -138,6 +138,8 @@ async function sendSMS(phone, name, seminarDate, seminarTime, seminarLocation) {
                 messages: [{ to: cleanPhone, from: cleanFrom, text }]
             }),
         });
+        const smsResult = await smsRes.json();
+        console.log('SMS result:', JSON.stringify(smsResult));
     } catch (e) {
         console.error('SMS send failed:', e);
     }
