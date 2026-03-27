@@ -35,6 +35,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script>
+        firebase.initializeApp({
+            apiKey: "AIzaSyBK37wEth9Hoz_q17Ca0Ulm1W-JNEyllIk",
+            authDomain: "algrowithm-feea0.firebaseapp.com",
+            projectId: "algrowithm-feea0",
+            storageBucket: "algrowithm-feea0.firebasestorage.app",
+            messagingSenderId: "665224680106",
+            appId: "1:665224680106:web:86a2d938ac636751e336d3"
+        });
+        const db = firebase.firestore();
+    </script>
+
     <script>
     // ═══════════════════════════════════════════
     // 세미나 설정 — 날짜/장소 변경 시 여기만 수정
@@ -890,12 +904,20 @@
             data.seminarDate = SEMINAR.date;
             data.seminarTime = SEMINAR.time;
             data.seminarLocation = `${SEMINAR.location} (${SEMINAR.locationSub})`;
-            const res = await fetch('/api/notify', {
+
+            // Firestore에 먼저 저장 (API 실패해도 데이터 보존)
+            await db.collection('lecture_rsvp').add({
+                ...data,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+
+            // 텔레그램 + SMS 알림 (실패해도 신청은 완료)
+            fetch('/api/notify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
-            });
-            if (!res.ok) throw new Error('서버 오류');
+            }).catch(() => {});
+
             form.style.display = 'none';
             document.getElementById('successScreen').classList.add('active');
         } catch (err) {
