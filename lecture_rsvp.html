@@ -921,7 +921,8 @@
             form.style.display = 'none';
             document.getElementById('successScreen').classList.add('active');
         } catch (err) {
-            alert('신청 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+            console.error('신청 오류:', err);
+            alert('신청 중 오류가 발생했습니다: ' + err.message);
             submitBtn.disabled = false;
             submitBtn.textContent = '신청하기';
         }
