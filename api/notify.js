@@ -86,7 +86,17 @@ async function handleTelegram(req, res) {
         });
 
         const result = await telegramResponse.json();
-        if (!result.ok) return res.status(500).json({ error: 'Failed to send Telegram notification' });
+        if (!result.ok) {
+            console.error('Telegram error:', JSON.stringify(result));
+            // Markdown 파싱 실패 시 일반 텍스트로 재시도
+            const retryResponse = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: targetChatId, text: telegramMessage.replace(/[*_`\[]/g, '') })
+            });
+            const retryResult = await retryResponse.json();
+            if (!retryResult.ok) return res.status(500).json({ error: 'Failed to send Telegram notification' });
+        }
 
         // ── 강연 신청 시 확인 SMS 발송 ──
         if (type === 'seminar' && req.body.phone) {
