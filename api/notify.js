@@ -100,11 +100,12 @@ async function handleTelegram(req, res) {
         }
 
         // ── 강연 신청 시 확인 SMS 발송 ──
+        let smsDebug = null;
         if (type === 'seminar' && req.body.phone) {
-            await sendSMS(req.body.phone, req.body.name, req.body.seminarDate, req.body.seminarTime, req.body.seminarLocation);
+            smsDebug = await sendSMS(req.body.phone, req.body.name, req.body.seminarDate, req.body.seminarTime, req.body.seminarLocation);
         }
 
-        return res.status(200).json({ success: true });
+        return res.status(200).json({ success: true, smsDebug });
     } catch (error) {
         console.error('Telegram handler error:', error);
         return res.status(500).json({ error: 'Internal server error' });
@@ -140,7 +141,9 @@ async function sendSMS(phone, name, seminarDate, seminarTime, seminarLocation) {
         });
         const smsResult = await smsRes.json();
         console.log('SMS result:', JSON.stringify(smsResult));
+        return { status: 'sent', result: smsResult };
     } catch (e) {
         console.error('SMS send failed:', e);
+        return { status: 'error', error: e.message };
     }
 }
