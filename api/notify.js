@@ -127,7 +127,7 @@ async function sendSMS(phone, name, seminarDate, seminarTime, seminarLocation) {
 
         const cleanPhone = phone.replace(/-/g, '');
         const cleanFrom = FROM.replace(/-/g, '');
-        const text = `[Algrowithm] ${name}님, 강연 신청이 완료되었습니다.\n\n📅 ${seminarDate || ''} ${seminarTime || ''}\n📍 ${seminarLocation || ''}\n\n문의: algrowithm@kakao.com`;
+        const text = `[Algrowithm] ${name}님, 강연 신청이 완료되었습니다.\n${seminarDate || ''} ${seminarTime || ''}\n${seminarLocation || ''}\n문의: algrowithm@kakao.com`;
 
         const smsRes = await fetch('https://api.solapi.com/messages/v4/send-many/detail', {
             method: 'POST',
