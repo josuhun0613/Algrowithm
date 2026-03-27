@@ -90,7 +90,7 @@ async function handleTelegram(req, res) {
 
         // ── 강연 신청 시 확인 SMS 발송 ──
         if (type === 'seminar' && req.body.phone) {
-            await sendSMS(req.body.phone, req.body.name);
+            await sendSMS(req.body.phone, req.body.name, req.body.seminarDate, req.body.seminarTime, req.body.seminarLocation);
         }
 
         return res.status(200).json({ success: true });
@@ -100,7 +100,7 @@ async function handleTelegram(req, res) {
 }
 
 // ─── Solapi SMS ───
-async function sendSMS(phone, name) {
+async function sendSMS(phone, name, seminarDate, seminarTime, seminarLocation) {
     try {
         const API_KEY = process.env.SOLAPI_API_KEY;
         const API_SECRET = process.env.SOLAPI_API_SECRET;
@@ -114,7 +114,7 @@ async function sendSMS(phone, name) {
             .update(date + salt).digest('hex');
 
         const cleanPhone = phone.replace(/-/g, '');
-        const text = `[Algrowithm] ${name}님, 강연 신청이 완료되었습니다.\n\n📅 3/28(토) 16:00\n📍 공덕 창업허브 1F (G-TOWN)\n\n문의: algrowithm@kakao.com`;
+        const text = `[Algrowithm] ${name}님, 강연 신청이 완료되었습니다.\n\n📅 ${seminarDate || ''} ${seminarTime || ''}\n📍 ${seminarLocation || ''}\n\n문의: algrowithm@kakao.com`;
 
         await fetch('https://api.solapi.com/messages/v4/send-many/detail', {
             method: 'POST',
