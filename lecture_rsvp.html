@@ -834,6 +834,12 @@
     <!-- SCRIPTS -->
     <!-- ════════════════════════════════════════════════════════ -->
     <script>
+    // ── localStorage 오버라이드 먼저 적용 ──
+    (function() {
+        const saved = localStorage.getItem('SEMINAR_OVERRIDE');
+        if (saved) { try { Object.assign(SEMINAR, JSON.parse(saved)); } catch(e) {} }
+    })();
+
     // ── config → DOM ──
     document.getElementById('hero-date').textContent = SEMINAR.date;
     document.getElementById('hero-time').textContent = SEMINAR.time;
@@ -950,16 +956,6 @@
     });
     // ── 관리자 편집 (트리플 클릭) ──
     (function() {
-        // localStorage에서 저장된 설정 불러오기
-        const saved = localStorage.getItem('SEMINAR_OVERRIDE');
-        if (saved) {
-            try {
-                const s = JSON.parse(saved);
-                Object.assign(SEMINAR, s);
-                refreshDOM();
-            } catch(e) {}
-        }
-
         const card = document.querySelector('.hero-info-card');
         if (!card) return;
         let clickCount = 0, clickTimer = null;
