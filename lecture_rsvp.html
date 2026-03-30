@@ -950,6 +950,16 @@
     });
     // ── 관리자 편집 (트리플 클릭) ──
     (function() {
+        // localStorage에서 저장된 설정 불러오기
+        const saved = localStorage.getItem('SEMINAR_OVERRIDE');
+        if (saved) {
+            try {
+                const s = JSON.parse(saved);
+                Object.assign(SEMINAR, s);
+                refreshDOM();
+            } catch(e) {}
+        }
+
         const card = document.querySelector('.hero-info-card');
         if (!card) return;
         let clickCount = 0, clickTimer = null;
@@ -964,8 +974,44 @@
             }
         });
 
+        // 날짜 → "2026년 4월 5일 (토)" 형식 변환
+        function dateToKorean(dateStr) {
+            const d = new Date(dateStr + 'T00:00:00');
+            const days = ['일','월','화','수','목','금','토'];
+            return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
+        }
+        // "2026년 3월 28일 (토)" → "2026-03-28" 변환
+        function koreanToDate(str) {
+            const m = str.match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/);
+            if (!m) return '';
+            return `${m[1]}-${String(m[2]).padStart(2,'0')}-${String(m[3]).padStart(2,'0')}`;
+        }
+
+        // 30분 단위 시간 옵션 생성
+        function timeOptions() {
+            const opts = [];
+            for (let h = 9; h <= 21; h++) {
+                for (let m = 0; m < 60; m += 30) {
+                    opts.push(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`);
+                }
+            }
+            return opts;
+        }
+
+        // 시간 범위 문자열에서 시작/종료 추출 "16:00 – 17:30" → ["16:00", "17:30"]
+        function parseTime(timeStr) {
+            const parts = timeStr.split(/\s*[–-]\s*/);
+            return [parts[0] || '16:00', parts[1] || '17:30'];
+        }
+
         function openAdminModal() {
             if (document.getElementById('adminModal')) return;
+            const [startTime, endTime] = parseTime(SEMINAR.time);
+            const currentDate = koreanToDate(SEMINAR.date);
+            const timeOpts = timeOptions();
+            const timeSelectStyle = 'width:100%;padding:10px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#e2e8f0;font-size:14px;outline:none;box-sizing:border-box;appearance:none;cursor:pointer;';
+            const inputStyle = 'width:100%;padding:10px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#e2e8f0;font-size:14px;outline:none;box-sizing:border-box;';
+
             const overlay = document.createElement('div');
             overlay.id = 'adminModal';
             overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);overflow-y:auto;padding:40px 16px;';
@@ -976,19 +1022,58 @@
                         <button id="adminClose" style="background:none;border:none;color:#888;font-size:20px;cursor:pointer;">&times;</button>
                     </div>
                     <div style="display:flex;flex-direction:column;gap:16px;">
-                        ${adminField('제목', 'a_title', SEMINAR.title)}
-                        ${adminField('날짜', 'a_date', SEMINAR.date)}
-                        ${adminField('시간', 'a_time', SEMINAR.time)}
-                        ${adminField('장소', 'a_location', SEMINAR.location)}
-                        ${adminField('장소(부제)', 'a_locationSub', SEMINAR.locationSub)}
-                        ${adminField('주소', 'a_address', SEMINAR.address)}
-                        ${adminField('정원', 'a_seats', SEMINAR.seats, 'number')}
-                        ${adminField('참가비', 'a_price', SEMINAR.price)}
-                        ${adminField('지도 URL', 'a_mapUrl', SEMINAR.mapUrl)}
+                        <div>
+                            <label style="font-size:12px;color:#888;margin-bottom:4px;display:block;">제목</label>
+                            <input id="a_title" type="text" value="${SEMINAR.title}" style="${inputStyle}">
+                        </div>
+                        <div>
+                            <label style="font-size:12px;color:#888;margin-bottom:4px;display:block;">날짜</label>
+                            <input id="a_date" type="date" value="${currentDate}" style="${inputStyle}cursor:pointer;" min="2026-01-01">
+                        </div>
+                        <div style="display:flex;gap:10px;">
+                            <div style="flex:1;">
+                                <label style="font-size:12px;color:#888;margin-bottom:4px;display:block;">시작 시간</label>
+                                <select id="a_startTime" style="${timeSelectStyle}">
+                                    ${timeOpts.map(t => `<option value="${t}" ${t===startTime?'selected':''} style="color:#111;background:#fff;">${t}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div style="flex:1;">
+                                <label style="font-size:12px;color:#888;margin-bottom:4px;display:block;">종료 시간</label>
+                                <select id="a_endTime" style="${timeSelectStyle}">
+                                    ${timeOpts.map(t => `<option value="${t}" ${t===endTime?'selected':''} style="color:#111;background:#fff;">${t}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label style="font-size:12px;color:#888;margin-bottom:4px;display:block;">장소</label>
+                            <input id="a_location" type="text" value="${SEMINAR.location}" style="${inputStyle}">
+                        </div>
+                        <div>
+                            <label style="font-size:12px;color:#888;margin-bottom:4px;display:block;">장소(부제)</label>
+                            <input id="a_locationSub" type="text" value="${SEMINAR.locationSub}" style="${inputStyle}">
+                        </div>
+                        <div>
+                            <label style="font-size:12px;color:#888;margin-bottom:4px;display:block;">주소</label>
+                            <input id="a_address" type="text" value="${SEMINAR.address}" style="${inputStyle}">
+                        </div>
+                        <div style="display:flex;gap:10px;">
+                            <div style="flex:1;">
+                                <label style="font-size:12px;color:#888;margin-bottom:4px;display:block;">정원</label>
+                                <input id="a_seats" type="number" value="${SEMINAR.seats}" style="${inputStyle}">
+                            </div>
+                            <div style="flex:1;">
+                                <label style="font-size:12px;color:#888;margin-bottom:4px;display:block;">참가비</label>
+                                <input id="a_price" type="text" value="${SEMINAR.price}" style="${inputStyle}">
+                            </div>
+                        </div>
+                        <div>
+                            <label style="font-size:12px;color:#888;margin-bottom:4px;display:block;">지도 URL</label>
+                            <input id="a_mapUrl" type="text" value="${SEMINAR.mapUrl}" style="${inputStyle}">
+                        </div>
                     </div>
                     <div style="display:flex;gap:10px;margin-top:24px;">
-                        <button id="adminApply" style="flex:1;padding:14px;background:linear-gradient(135deg,#00F0FF,#0090A0);border:none;border-radius:12px;color:#000;font-weight:700;font-size:15px;cursor:pointer;">적용</button>
-                        <button id="adminCopy" style="flex:1;padding:14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:#fff;font-weight:600;font-size:14px;cursor:pointer;">코드 복사</button>
+                        <button id="adminApply" style="flex:1;padding:14px;background:linear-gradient(135deg,#00F0FF,#0090A0);border:none;border-radius:12px;color:#000;font-weight:700;font-size:15px;cursor:pointer;">저장</button>
+                        <button id="adminReset" style="padding:14px 16px;background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.2);border-radius:12px;color:#ff5050;font-weight:600;font-size:13px;cursor:pointer;">초기화</button>
                     </div>
                     <p id="adminMsg" style="text-align:center;margin-top:12px;font-size:13px;color:#22C55E;opacity:0;transition:opacity 0.3s;"></p>
                 </div>`;
@@ -998,22 +1083,28 @@
             overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
 
             document.getElementById('adminApply').onclick = () => {
+                const dateVal = document.getElementById('a_date').value;
+                const startT = document.getElementById('a_startTime').value;
+                const endT = document.getElementById('a_endTime').value;
+
                 SEMINAR.title = document.getElementById('a_title').value;
-                SEMINAR.date = document.getElementById('a_date').value;
-                SEMINAR.time = document.getElementById('a_time').value;
+                SEMINAR.date = dateToKorean(dateVal);
+                SEMINAR.time = `${startT} – ${endT}`;
                 SEMINAR.location = document.getElementById('a_location').value;
                 SEMINAR.locationSub = document.getElementById('a_locationSub').value;
                 SEMINAR.address = document.getElementById('a_address').value;
                 SEMINAR.seats = parseInt(document.getElementById('a_seats').value) || 15;
                 SEMINAR.price = document.getElementById('a_price').value;
                 SEMINAR.mapUrl = document.getElementById('a_mapUrl').value;
+
+                localStorage.setItem('SEMINAR_OVERRIDE', JSON.stringify(SEMINAR));
                 refreshDOM();
-                showMsg('페이지에 적용됨 (새로고침 시 초기화)');
+                showMsg('저장 완료! 새로고침해도 유지됩니다.');
             };
 
-            document.getElementById('adminCopy').onclick = () => {
-                const code = `const SEMINAR = {\n    title: "${document.getElementById('a_title').value}",\n    date: "${document.getElementById('a_date').value}",\n    time: "${document.getElementById('a_time').value}",\n    location: "${document.getElementById('a_location').value}",\n    locationSub: "${document.getElementById('a_locationSub').value}",\n    address: "${document.getElementById('a_address').value}",\n    seats: ${document.getElementById('a_seats').value},\n    price: "${document.getElementById('a_price').value}",\n    mapUrl: "${document.getElementById('a_mapUrl').value}",\n};`;
-                navigator.clipboard.writeText(code).then(() => showMsg('클립보드에 복사됨!'));
+            document.getElementById('adminReset').onclick = () => {
+                localStorage.removeItem('SEMINAR_OVERRIDE');
+                showMsg('초기화됨. 새로고침하면 기본값으로 돌아갑니다.');
             };
 
             function showMsg(t) {
@@ -1021,13 +1112,6 @@
                 m.textContent = t; m.style.opacity = '1';
                 setTimeout(() => { m.style.opacity = '0'; }, 2500);
             }
-        }
-
-        function adminField(label, id, value, type) {
-            return `<div>
-                <label style="font-size:12px;color:#888;margin-bottom:4px;display:block;">${label}</label>
-                <input id="${id}" type="${type || 'text'}" value="${value}" style="width:100%;padding:10px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#e2e8f0;font-size:14px;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='rgba(0,240,255,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
-            </div>`;
         }
 
         function refreshDOM() {
