@@ -834,36 +834,40 @@
     <!-- SCRIPTS -->
     <!-- ════════════════════════════════════════════════════════ -->
     <script>
-    // ── localStorage 오버라이드 먼저 적용 ──
-    (function() {
-        const saved = localStorage.getItem('SEMINAR_OVERRIDE');
-        if (saved) { try { Object.assign(SEMINAR, JSON.parse(saved)); } catch(e) {} }
-    })();
+    // ── Firestore에서 설정 불러와서 적용 ──
+    function applyToDOM() {
+        document.getElementById('hero-date').textContent = SEMINAR.date;
+        document.getElementById('hero-time').textContent = SEMINAR.time;
+        document.getElementById('hero-location').textContent = `${SEMINAR.location} (${SEMINAR.locationSub})`;
+        document.getElementById('hero-address').textContent = SEMINAR.address;
+        document.getElementById('hero-price').textContent = SEMINAR.price;
+        document.getElementById('hero-seats').textContent = `선착순 ${SEMINAR.seats}명`;
+        document.getElementById('hero-title').innerHTML = `AI 시대, 상위 1% 인재의<br><span class="text-brand">'${SEMINAR.title}'</span> 공개`;
+        document.getElementById('info-date').textContent = SEMINAR.date;
+        document.getElementById('info-time').textContent = SEMINAR.time;
+        document.getElementById('info-location').textContent = `${SEMINAR.location} (${SEMINAR.locationSub})`;
+        document.getElementById('info-address').textContent = SEMINAR.address;
+        document.getElementById('info-seats').textContent = `선착순 ${SEMINAR.seats}명`;
+        document.getElementById('info-price').textContent = SEMINAR.price;
+        document.getElementById('info-map-link').href = SEMINAR.mapUrl;
+        document.getElementById('success-date').textContent = `${SEMINAR.date} ${SEMINAR.time} | ${SEMINAR.location}`;
+        document.getElementById('cta-seats').textContent = SEMINAR.seats;
+        document.getElementById('sticky-date').textContent = SEMINAR.date;
+        document.getElementById('sticky-location').textContent = SEMINAR.location;
+        document.getElementById('sticky-price').textContent = SEMINAR.price;
+        document.getElementById('sticky-title-m').textContent = `${SEMINAR.date} · ${SEMINAR.location}`;
+    }
 
-    // ── config → DOM ──
-    document.getElementById('hero-date').textContent = SEMINAR.date;
-    document.getElementById('hero-time').textContent = SEMINAR.time;
-    document.getElementById('hero-location').textContent = `${SEMINAR.location} (${SEMINAR.locationSub})`;
-    document.getElementById('hero-address').textContent = SEMINAR.address;
-    document.getElementById('hero-price').textContent = SEMINAR.price;
-    document.getElementById('hero-seats').textContent = `선착순 ${SEMINAR.seats}명`;
-    document.getElementById('hero-title').innerHTML = `AI 시대, 상위 1% 인재의<br><span class="text-brand">'${SEMINAR.title}'</span> 공개`;
+    // 기본값으로 먼저 렌더링
+    applyToDOM();
 
-    document.getElementById('info-date').textContent = SEMINAR.date;
-    document.getElementById('info-time').textContent = SEMINAR.time;
-    document.getElementById('info-location').textContent = `${SEMINAR.location} (${SEMINAR.locationSub})`;
-    document.getElementById('info-address').textContent = SEMINAR.address;
-    document.getElementById('info-seats').textContent = `선착순 ${SEMINAR.seats}명`;
-    document.getElementById('info-price').textContent = SEMINAR.price;
-    document.getElementById('info-map-link').href = SEMINAR.mapUrl;
-    document.getElementById('success-date').textContent = `${SEMINAR.date} ${SEMINAR.time} | ${SEMINAR.location}`;
-    document.getElementById('cta-seats').textContent = SEMINAR.seats;
-
-    // ── 스티키 바 ──
-    document.getElementById('sticky-date').textContent = SEMINAR.date;
-    document.getElementById('sticky-location').textContent = SEMINAR.location;
-    document.getElementById('sticky-price').textContent = SEMINAR.price;
-    document.getElementById('sticky-title-m').textContent = `${SEMINAR.date} · ${SEMINAR.location}`;
+    // Firestore에서 오버라이드 불러오기
+    db.collection('settings').doc('seminar').get().then(doc => {
+        if (doc.exists) {
+            Object.assign(SEMINAR, doc.data());
+            applyToDOM();
+        }
+    }).catch(() => {});
 
     // ── 연락처 하이픈 자동 추가 ──
     document.querySelector('input[name="phone"]').addEventListener('input', (e) => {
@@ -1086,14 +1090,29 @@
                 SEMINAR.price = document.getElementById('a_price').value;
                 SEMINAR.mapUrl = document.getElementById('a_mapUrl').value;
 
-                localStorage.setItem('SEMINAR_OVERRIDE', JSON.stringify(SEMINAR));
-                refreshDOM();
-                showMsg('저장 완료! 새로고침해도 유지됩니다.');
+                // Firestore에 저장 (모든 기기에서 반영)
+                db.collection('settings').doc('seminar').set({
+                    title: SEMINAR.title,
+                    date: SEMINAR.date,
+                    time: SEMINAR.time,
+                    location: SEMINAR.location,
+                    locationSub: SEMINAR.locationSub,
+                    address: SEMINAR.address,
+                    seats: SEMINAR.seats,
+                    price: SEMINAR.price,
+                    mapUrl: SEMINAR.mapUrl,
+                }).then(() => {
+                    showMsg('저장 완료! 모든 기기에서 반영됩니다.');
+                }).catch(e => {
+                    showMsg('저장 실패: ' + e.message);
+                });
+                applyToDOM();
             };
 
             document.getElementById('adminReset').onclick = () => {
-                localStorage.removeItem('SEMINAR_OVERRIDE');
-                showMsg('초기화됨. 새로고침하면 기본값으로 돌아갑니다.');
+                db.collection('settings').doc('seminar').delete().then(() => {
+                    showMsg('초기화됨. 새로고침하면 기본값으로 돌아갑니다.');
+                }).catch(e => showMsg('초기화 실패: ' + e.message));
             };
 
             function showMsg(t) {
@@ -1103,28 +1122,6 @@
             }
         }
 
-        function refreshDOM() {
-            document.getElementById('hero-date').textContent = SEMINAR.date;
-            document.getElementById('hero-time').textContent = SEMINAR.time;
-            document.getElementById('hero-location').textContent = `${SEMINAR.location} (${SEMINAR.locationSub})`;
-            document.getElementById('hero-address').textContent = SEMINAR.address;
-            document.getElementById('hero-price').textContent = SEMINAR.price;
-            document.getElementById('hero-seats').textContent = `선착순 ${SEMINAR.seats}명`;
-            document.getElementById('hero-title').innerHTML = `AI 시대, 상위 1% 인재의<br><span class="text-brand">'${SEMINAR.title}'</span> 공개`;
-            document.getElementById('info-date').textContent = SEMINAR.date;
-            document.getElementById('info-time').textContent = SEMINAR.time;
-            document.getElementById('info-location').textContent = `${SEMINAR.location} (${SEMINAR.locationSub})`;
-            document.getElementById('info-address').textContent = SEMINAR.address;
-            document.getElementById('info-seats').textContent = `선착순 ${SEMINAR.seats}명`;
-            document.getElementById('info-price').textContent = SEMINAR.price;
-            document.getElementById('info-map-link').href = SEMINAR.mapUrl;
-            document.getElementById('success-date').textContent = `${SEMINAR.date} ${SEMINAR.time} | ${SEMINAR.location}`;
-            document.getElementById('cta-seats').textContent = SEMINAR.seats;
-            document.getElementById('sticky-date').textContent = SEMINAR.date;
-            document.getElementById('sticky-location').textContent = SEMINAR.location;
-            document.getElementById('sticky-price').textContent = SEMINAR.price;
-            document.getElementById('sticky-title-m').textContent = `${SEMINAR.date} · ${SEMINAR.location}`;
-        }
     })();
     </script>
 </body>
