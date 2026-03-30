@@ -905,34 +905,26 @@
         submitBtn.disabled = true;
         submitBtn.textContent = '신청 중...';
 
-        try {
-            data.type = 'seminar';
-            data.seminarDate = SEMINAR.date;
-            data.seminarTime = SEMINAR.time;
-            data.seminarLocation = `${SEMINAR.location} (${SEMINAR.locationSub})`;
+        data.type = 'seminar';
+        data.seminarDate = SEMINAR.date;
+        data.seminarTime = SEMINAR.time;
+        data.seminarLocation = `${SEMINAR.location} (${SEMINAR.locationSub})`;
 
-            // Firestore에 먼저 저장 (API 실패해도 데이터 보존)
-            await db.collection('lecture_rsvp').add({
-                ...data,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            });
+        // Firestore 저장 (실패해도 진행)
+        db.collection('lecture_rsvp').add({
+            ...data,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        }).catch(e => console.warn('Firestore 저장 실패:', e));
 
-            // 텔레그램 + SMS 알림 (실패해도 신청은 완료)
-            console.log('SMS로 보내는 데이터:', { seminarDate: data.seminarDate, seminarTime: data.seminarTime, seminarLocation: data.seminarLocation });
-            fetch('/api/notify', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-            }).then(r => r.json()).then(d => console.log('API 응답:', d)).catch(() => {});
+        // 텔레그램 + SMS 알림 (실패해도 진행)
+        fetch('/api/notify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        }).catch(e => console.warn('알림 발송 실패:', e));
 
-            form.style.display = 'none';
-            document.getElementById('successScreen').classList.add('active');
-        } catch (err) {
-            console.error('신청 오류:', err);
-            alert('신청 중 오류가 발생했습니다: ' + err.message);
-            submitBtn.disabled = false;
-            submitBtn.textContent = '신청하기';
-        }
+        form.style.display = 'none';
+        document.getElementById('successScreen').classList.add('active');
     });
 
     // ── 스크롤 애니메이션 ──
