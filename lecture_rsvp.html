@@ -918,11 +918,12 @@
             });
 
             // 텔레그램 + SMS 알림 (실패해도 신청은 완료)
+            console.log('SMS로 보내는 데이터:', { seminarDate: data.seminarDate, seminarTime: data.seminarTime, seminarLocation: data.seminarLocation });
             fetch('/api/notify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
-            }).catch(() => {});
+            }).then(r => r.json()).then(d => console.log('API 응답:', d)).catch(() => {});
 
             form.style.display = 'none';
             document.getElementById('successScreen').classList.add('active');

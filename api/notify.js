@@ -105,7 +105,7 @@ async function handleTelegram(req, res) {
             smsDebug = await sendSMS(req.body.phone, req.body.name, req.body.seminarDate, req.body.seminarTime, req.body.seminarLocation);
         }
 
-        return res.status(200).json({ success: true, smsDebug });
+        return res.status(200).json({ success: true, smsDebug, receivedData: { seminarDate: req.body.seminarDate, seminarTime: req.body.seminarTime, seminarLocation: req.body.seminarLocation } });
     } catch (error) {
         console.error('Telegram handler error:', error);
         return res.status(500).json({ error: 'Internal server error' });
