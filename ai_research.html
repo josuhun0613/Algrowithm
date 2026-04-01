@@ -307,13 +307,21 @@
             position: absolute; inset: 0;
             background: linear-gradient(180deg,
                 rgba(250,251,255,0) 0%,
-                rgba(250,251,255,0.4) 30%,
-                rgba(250,251,255,0.85) 60%,
-                rgba(250,251,255,1) 100%);
+                rgba(250,251,255,0.3) 15%,
+                rgba(250,251,255,0.75) 35%,
+                rgba(250,251,255,0.95) 55%,
+                rgba(250,251,255,1) 70%);
             z-index: 2;
             display: flex; flex-direction: column;
-            align-items: center; justify-content: flex-end;
-            padding-bottom: 24px;
+            align-items: center; justify-content: center;
+            padding-top: 40px;
+        }
+
+        /* ── 경품 선택 카드 ── */
+        .prize-select-card input:checked + div {
+            border-color: #4F46E5;
+            background: #EEF2FF;
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
         }
         .teaser-lock {
             background: #fff; border-radius: 16px;
@@ -436,47 +444,8 @@
     <!-- SCREEN 3: INFO INPUT -->
     <!-- ═══════════════════════════════════════════ -->
     <div id="screen-info" class="screen">
-        <div class="min-h-[100dvh] px-6 py-10">
-            <div class="w-full max-w-lg mx-auto">
-
-                <!-- 경품 안내 -->
-                <div class="card p-6 md:p-8 mb-5 question-slide">
-                    <p class="text-center text-sm font-bold text-primary mb-5">참여자 추첨 경품</p>
-                    <div class="grid grid-cols-4 gap-3">
-                        <div class="text-center">
-                            <div class="w-14 h-14 rounded-2xl mx-auto mb-2 flex items-center justify-center" style="background: linear-gradient(135deg, #C7D2FE, #A5B4FC);">
-                                <i class="fa-solid fa-tablet-screen-button text-indigo-600 text-lg"></i>
-                            </div>
-                            <p class="text-[10px] font-bold text-indigo-500">1등</p>
-                            <p class="text-xs font-bold text-primary">iPad</p>
-                            <p class="text-[10px] text-gray-400">1명</p>
-                        </div>
-                        <div class="text-center">
-                            <div class="w-14 h-14 rounded-2xl mx-auto mb-2 flex items-center justify-center" style="background: linear-gradient(135deg, #A7F3D0, #6EE7B7);">
-                                <i class="fa-solid fa-mug-hot text-emerald-700 text-lg"></i>
-                            </div>
-                            <p class="text-[10px] font-bold text-emerald-500">2등</p>
-                            <p class="text-xs font-bold text-primary">스타벅스</p>
-                            <p class="text-[10px] text-gray-400">3명</p>
-                        </div>
-                        <div class="text-center">
-                            <div class="w-14 h-14 rounded-2xl mx-auto mb-2 flex items-center justify-center" style="background: linear-gradient(135deg, #DDD6FE, #C4B5FD);">
-                                <i class="fa-solid fa-user-tie text-violet-600 text-lg"></i>
-                            </div>
-                            <p class="text-[10px] font-bold text-violet-500">3등</p>
-                            <p class="text-xs font-bold text-primary">컨설팅</p>
-                            <p class="text-[10px] text-gray-400">5명</p>
-                        </div>
-                        <div class="text-center">
-                            <div class="w-14 h-14 rounded-2xl mx-auto mb-2 flex items-center justify-center" style="background: linear-gradient(135deg, #FED7AA, #FDBA74);">
-                                <i class="fa-solid fa-gift text-orange-600 text-lg"></i>
-                            </div>
-                            <p class="text-[10px] font-bold text-orange-500">4등</p>
-                            <p class="text-xs font-bold text-primary">CU 5천원</p>
-                            <p class="text-[10px] text-gray-400">10명</p>
-                        </div>
-                    </div>
-                </div>
+        <div class="min-h-[100dvh] flex items-center justify-center px-6 py-10">
+            <div class="w-full max-w-lg">
 
                 <div class="card p-7 md:p-10 question-slide">
                     <h3 class="text-xl font-bold text-primary mb-2">거의 다 왔어요!</h3>
@@ -562,102 +531,168 @@
                     <div class="w-16 h-16 rounded-full bg-indigo-50 flex items-center justify-center mx-auto mb-6">
                         <i class="fa-solid fa-chart-pie text-accent text-2xl"></i>
                     </div>
-
                     <p class="text-sm text-gray-400 mb-2">당신의 AI 커리어 전략 유형은</p>
                     <h2 class="text-2xl md:text-3xl font-bold text-primary mb-3" id="resultType"></h2>
                     <div class="flex justify-center mb-6" id="resultBadge"></div>
                     <p class="text-sm text-gray-500 leading-[2.0] max-w-md mx-auto" id="resultDesc"></p>
                 </div>
 
-                <!-- 공유 버튼 -->
-                <div class="flex gap-3 justify-center mb-6">
-                    <button onclick="shareResult()" class="share-btn">
-                        <i class="fa-solid fa-share-nodes"></i> 결과 공유하기
-                    </button>
-                    <button onclick="copyLink()" class="share-btn" id="copyBtn">
-                        <i class="fa-regular fa-copy"></i> 링크 복사
-                    </button>
-                </div>
-
-                <!-- 워크숍 CTA (상단) -->
-                <div class="cta-banner mb-6">
-                    <p class="text-sm opacity-80 mb-2">상세 분석 리포트 + 맞춤 커리어 전략을 받고 싶다면?</p>
-                    <p class="text-lg font-bold mb-4">AI 커리어 브랜딩 워크숍</p>
-                    <a href="/" class="inline-flex items-center gap-2 bg-white text-accent font-bold text-sm px-6 py-3 rounded-xl hover:shadow-lg transition-all">
-                        워크숍 신청하기 <i class="fa-solid fa-arrow-right text-xs"></i>
-                    </a>
-                </div>
-
-                <!-- 상세 분석 (감질맛 — 블러 + 그라데이션 가림) -->
+                <!-- 감질맛 상세 분석 (바로 이어서) -->
                 <div class="teaser-wrap mb-6">
                     <div class="teaser-content">
                         <div class="card p-7 md:p-10">
-                            <!-- 차트 (블러 처리됨) -->
                             <div class="text-left bg-gray-50 rounded-2xl p-6 mb-6">
                                 <p class="text-sm font-bold text-primary mb-5">나의 AI 커리어 역량 분석</p>
                                 <div class="space-y-4" id="chartBars"></div>
                             </div>
-
-                            <!-- 환경 요약 (블러 처리됨) -->
                             <div class="text-left bg-indigo-50/50 rounded-2xl p-6 mb-6">
                                 <p class="text-sm font-bold text-primary mb-4">응답자 환경 요약</p>
                                 <div class="grid grid-cols-2 gap-4" id="envSummary"></div>
                             </div>
-
-                            <!-- 추가 티저 컨텐츠 -->
                             <div class="text-left bg-gray-50 rounded-2xl p-6">
                                 <p class="text-sm font-bold text-primary mb-4">AI 추천 커리어 로드맵</p>
                                 <div class="space-y-3">
                                     <div class="flex items-center gap-3 bg-white rounded-xl p-4">
-                                        <div class="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0">
-                                            <span class="text-xs font-bold text-accent">1</span>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-semibold text-primary">핵심 역량 포지셔닝 전략</p>
-                                            <p class="text-xs text-gray-400">AI 기반 차별화 포인트 설계</p>
-                                        </div>
+                                        <div class="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0"><span class="text-xs font-bold text-accent">1</span></div>
+                                        <div><p class="text-sm font-semibold text-primary">핵심 역량 포지셔닝 전략</p><p class="text-xs text-gray-400">AI 기반 차별화 포인트 설계</p></div>
                                     </div>
                                     <div class="flex items-center gap-3 bg-white rounded-xl p-4">
-                                        <div class="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center shrink-0">
-                                            <span class="text-xs font-bold text-violet-600">2</span>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-semibold text-primary">맞춤형 브랜딩 액션플랜</p>
-                                            <p class="text-xs text-gray-400">30일 실행 로드맵 제공</p>
-                                        </div>
+                                        <div class="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center shrink-0"><span class="text-xs font-bold text-violet-600">2</span></div>
+                                        <div><p class="text-sm font-semibold text-primary">맞춤형 브랜딩 액션플랜</p><p class="text-xs text-gray-400">30일 실행 로드맵 제공</p></div>
                                     </div>
                                     <div class="flex items-center gap-3 bg-white rounded-xl p-4">
-                                        <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
-                                            <span class="text-xs font-bold text-emerald-600">3</span>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-semibold text-primary">포트폴리오 AI 자동 생성</p>
-                                            <p class="text-xs text-gray-400">나만의 커리어 페이지 제작</p>
-                                        </div>
+                                        <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0"><span class="text-xs font-bold text-emerald-600">3</span></div>
+                                        <div><p class="text-sm font-semibold text-primary">포트폴리오 AI 자동 생성</p><p class="text-xs text-gray-400">나만의 커리어 페이지 제작</p></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- 그라데이션 오버레이 + 잠금 CTA -->
+                    <!-- 그라데이션 + 잠금 메시지 (위쪽에 위치) -->
                     <div class="teaser-fade">
                         <div class="teaser-lock">
                             <i class="fa-solid fa-lock text-accent text-lg mb-2"></i>
-                            <p class="text-sm font-bold text-primary mb-1">상세 분석 결과 잠김</p>
-                            <p class="text-xs text-gray-400 mb-3">워크숍 참여 시 전체 리포트를 확인할 수 있어요</p>
-                            <a href="/" class="cta-btn inline-flex items-center gap-2 px-6 py-2.5 text-sm">
-                                워크숍 신청하기 <i class="fa-solid fa-arrow-right text-xs"></i>
-                            </a>
+                            <p class="text-sm font-bold text-primary mb-1">1:1 코칭 당첨자 전용 리포트</p>
+                            <p class="text-xs text-gray-400 leading-[1.7]">코칭권 당첨 시 전체 분석 리포트 +<br>맞춤 커리어 전략을 제공해 드립니다</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- 안내 -->
-                <div class="text-center py-4">
-                    <p class="text-xs text-gray-400 leading-[1.8] mb-4">
-                        경품 당첨 시 입력하신 연락처로 개별 안내드립니다.<br>감사합니다!
-                    </p>
+                <!-- 다음: 경품 선택으로 -->
+                <button onclick="goToScreen('screen-prize')" class="cta-btn w-full py-4 text-base flex items-center justify-center gap-2 mb-4">
+                    경품 응모하기 <i class="fa-solid fa-gift text-sm"></i>
+                </button>
+
+                <!-- 공유 버튼 -->
+                <div class="flex gap-3 justify-center mb-6">
+                    <button onclick="shareResult()" class="share-btn">
+                        <i class="fa-solid fa-share-nodes"></i> 공유하기
+                    </button>
+                    <button onclick="copyLink()" class="share-btn" id="copyBtn">
+                        <i class="fa-regular fa-copy"></i> 링크 복사
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SCREEN 5: 경품 선택 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="screen-prize" class="screen">
+        <div class="min-h-[100dvh] px-6 py-10">
+            <div class="w-full max-w-lg mx-auto">
+                <div class="card p-7 md:p-10 question-slide">
+                    <div class="text-center mb-8">
+                        <div class="w-14 h-14 rounded-full bg-amber-50 flex items-center justify-center mx-auto mb-4">
+                            <i class="fa-solid fa-gift text-amber-500 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-primary mb-2">원하는 경품을 선택하세요!</h3>
+                        <p class="text-sm text-gray-400">추첨을 통해 선택하신 경품을 드립니다</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-8" id="prizeGrid">
+                        <!-- iPad -->
+                        <label class="prize-select-card cursor-pointer" data-prize="iPad">
+                            <input type="radio" name="prize" value="iPad" class="hidden">
+                            <div class="rounded-2xl border-2 border-transparent p-4 text-center transition-all hover:border-indigo-200">
+                                <img src="/images/prizes/아이패드.jpg" alt="iPad" class="w-full h-28 object-contain rounded-xl mb-3 bg-gray-50 p-2">
+                                <p class="font-bold text-primary text-sm">iPad</p>
+                                <p class="text-[10px] text-gray-400 mt-1">추첨 1명</p>
+                            </div>
+                        </label>
+                        <!-- 스타벅스 -->
+                        <label class="prize-select-card cursor-pointer" data-prize="스타벅스 기프티콘">
+                            <input type="radio" name="prize" value="스타벅스 기프티콘" class="hidden">
+                            <div class="rounded-2xl border-2 border-transparent p-4 text-center transition-all hover:border-indigo-200">
+                                <img src="/images/prizes/스타벅스.jpeg" alt="스타벅스" class="w-full h-28 object-contain rounded-xl mb-3 bg-gray-50 p-2">
+                                <p class="font-bold text-primary text-sm">스타벅스 기프티콘</p>
+                                <p class="text-[10px] text-gray-400 mt-1">추첨 3명</p>
+                            </div>
+                        </label>
+                        <!-- 1:1 컨설팅 -->
+                        <label class="prize-select-card cursor-pointer" data-prize="1:1 커리어 컨설팅권">
+                            <input type="radio" name="prize" value="1:1 커리어 컨설팅권" class="hidden">
+                            <div class="rounded-2xl border-2 border-transparent p-4 text-center transition-all hover:border-indigo-200">
+                                <img src="/images/prizes/컨설팅권이미지.avif" alt="컨설팅" class="w-full h-28 object-contain rounded-xl mb-3 bg-gray-50 p-2">
+                                <p class="font-bold text-primary text-sm">1:1 커리어 컨설팅</p>
+                                <p class="text-[10px] text-gray-400 mt-1">추첨 5명</p>
+                                <p class="text-[10px] text-accent font-semibold mt-0.5">전체 분석 리포트 포함</p>
+                            </div>
+                        </label>
+                        <!-- CU 상품권 -->
+                        <label class="prize-select-card cursor-pointer" data-prize="CU 5천원권">
+                            <input type="radio" name="prize" value="CU 5천원권" class="hidden">
+                            <div class="rounded-2xl border-2 border-transparent p-4 text-center transition-all hover:border-indigo-200">
+                                <img src="/images/prizes/cu상품권.jpeg" alt="CU 상품권" class="w-full h-28 object-contain rounded-xl mb-3 bg-gray-50 p-2">
+                                <p class="font-bold text-primary text-sm">CU 5천원권</p>
+                                <p class="text-[10px] text-gray-400 mt-1">추첨 10명</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <button id="prizeSubmitBtn" class="cta-btn w-full py-4 text-base" disabled onclick="submitPrize()">
+                        응모 완료하기 <i class="fa-solid fa-check text-sm ml-1"></i>
+                    </button>
+
+                    <p class="text-center text-[11px] text-gray-300 mt-4">* 당첨자에게 입력하신 연락처로 개별 안내드립니다</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SCREEN 6: 완료 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="screen-done" class="screen">
+        <div class="min-h-[100dvh] flex items-center justify-center px-6 py-10">
+            <div class="w-full max-w-lg text-center">
+                <div class="card p-8 md:p-12 question-slide">
+                    <div class="w-20 h-20 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-6">
+                        <i class="fa-solid fa-circle-check text-emerald-500 text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-primary mb-3">응모 완료!</h3>
+                    <p class="text-sm text-gray-500 leading-[1.9] mb-2">리서치 참여와 경품 응모가 완료되었습니다.</p>
+                    <p class="text-sm text-gray-500 leading-[1.9] mb-6">당첨 시 입력하신 연락처로 개별 안내드릴게요.</p>
+
+                    <div class="bg-gray-50 rounded-2xl p-5 mb-8 text-left">
+                        <p class="text-xs font-semibold text-gray-500 mb-2">내 응모 정보</p>
+                        <p class="text-sm font-bold text-primary" id="doneTypeSummary"></p>
+                        <p class="text-sm text-accent font-semibold" id="donePrizeSummary"></p>
+                    </div>
+
+                    <!-- 공유 버튼 -->
+                    <div class="flex gap-3 justify-center mb-6">
+                        <button onclick="shareResult()" class="share-btn">
+                            <i class="fa-solid fa-share-nodes"></i> 공유하기
+                        </button>
+                        <button onclick="copyLink()" class="share-btn" id="copyBtn2">
+                            <i class="fa-regular fa-copy"></i> 링크 복사
+                        </button>
+                    </div>
+
                     <a href="/" class="inline-flex items-center gap-2 text-accent font-medium text-sm hover:underline">
                         <i class="fa-solid fa-arrow-left text-xs"></i> Algrowithm 메인으로
                     </a>
@@ -1054,8 +1089,9 @@
             }
         });
 
-        // Firestore 저장
+        // Firestore 저장 (docId 보관 → 경품 선택 시 업데이트)
         db.collection('ai_career_research').add(responseData)
+            .then(docRef => { firestoreDocId = docRef.id; })
             .catch(e => console.warn('Firestore 저장 실패:', e));
 
         // 로딩 연출 (1.5초)
@@ -1145,6 +1181,39 @@
 
 
     // ═══════════════════════════════════════════
+    // 경품 선택
+    // ═══════════════════════════════════════════
+    let selectedPrize = '';
+    let firestoreDocId = null;
+
+    document.querySelectorAll('.prize-select-card').forEach(card => {
+        card.addEventListener('click', () => {
+            selectedPrize = card.dataset.prize;
+            document.getElementById('prizeSubmitBtn').disabled = false;
+        });
+    });
+
+    function submitPrize() {
+        if (!selectedPrize) return;
+        const btn = document.getElementById('prizeSubmitBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> 응모 중...';
+
+        // Firestore에 경품 선택 업데이트
+        if (firestoreDocId) {
+            db.collection('ai_career_research').doc(firestoreDocId).update({
+                selectedPrize: selectedPrize,
+            }).catch(e => console.warn('경품 업데이트 실패:', e));
+        }
+
+        // 완료 화면
+        document.getElementById('doneTypeSummary').textContent = '유형: ' + resultTypeName;
+        document.getElementById('donePrizeSummary').textContent = '응모 경품: ' + selectedPrize;
+        goToScreen('screen-done');
+    }
+
+
+    // ═══════════════════════════════════════════
     // 공유 기능
     // ═══════════════════════════════════════════
     async function shareResult() {
@@ -1164,11 +1233,12 @@
     function copyLink() {
         const text = `나의 AI 커리어 전략 유형은 "${resultTypeName}"! 너도 확인해봐 👉 https://algrowithm.org/ai_research`;
         navigator.clipboard.writeText(text).then(() => {
-            const btn = document.getElementById('copyBtn');
-            btn.innerHTML = '<i class="fa-solid fa-check"></i> 복사 완료!';
-            setTimeout(() => {
-                btn.innerHTML = '<i class="fa-regular fa-copy"></i> 링크 복사';
-            }, 2000);
+            document.querySelectorAll('#copyBtn, #copyBtn2').forEach(btn => {
+                if (btn) {
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i> 복사 완료!';
+                    setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy"></i> 링크 복사'; }, 2000);
+                }
+            });
         });
     }
 
