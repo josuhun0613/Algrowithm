@@ -69,25 +69,15 @@
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             opacity: 0;
-            transform: translateX(40px);
             pointer-events: none;
-            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 0.35s ease;
             z-index: 0;
             background: #FAFBFF;
         }
         .screen.active {
             opacity: 1;
-            transform: translateX(0);
             pointer-events: auto;
             z-index: 10;
-        }
-        .screen.exit-left {
-            opacity: 0;
-            transform: translateX(-40px);
-            pointer-events: none;
-        }
-        .screen.enter-left {
-            transform: translateX(-40px);
         }
 
         /* ── 프로그레스 바 ── */
@@ -400,9 +390,9 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- SCREEN 2: SURVEY (Q1~Q12) -->
     <!-- ═══════════════════════════════════════════ -->
-    <div id="screen-survey" class="screen">
+    <div id="screen-survey" class="screen" style="display: flex; flex-direction: column;">
         <!-- 프로그레스 (상단 고정) -->
-        <div class="fixed top-0 left-0 right-0 z-20 bg-surface/95 backdrop-blur-sm pt-4 pb-3 px-6">
+        <div class="sticky top-0 z-20 bg-surface/95 backdrop-blur-sm pt-4 pb-3 px-6" style="flex-shrink: 0;">
             <div class="max-w-lg mx-auto">
                 <div class="flex items-center justify-between mb-2">
                     <p class="text-sm font-semibold text-primary" id="progressLabel">AI 인식</p>
@@ -414,8 +404,8 @@
             </div>
         </div>
 
-        <!-- 질문 영역 (화면 전체 중앙) -->
-        <div class="min-h-[100dvh] flex items-center justify-center px-6 pt-16 pb-6">
+        <!-- 질문 영역 (나머지 영역 중앙) -->
+        <div class="flex-1 flex items-center justify-center px-6 py-6">
             <div class="w-full max-w-lg">
                 <div class="card p-7 md:p-10 question-slide" id="questionCard">
                     <div class="flex items-center gap-3 mb-6">
@@ -691,20 +681,9 @@
         const target = document.getElementById(targetId);
         if (!target || current === target) return;
 
-        // 방향에 따른 애니메이션
-        if (direction === 'forward') {
-            current.style.transform = 'translateX(-40px)';
-            target.style.transform = 'translateX(40px)';
-        } else {
-            current.style.transform = 'translateX(40px)';
-            target.style.transform = 'translateX(-40px)';
-        }
-
-        current.style.opacity = '0';
-        current.style.pointerEvents = 'none';
         current.classList.remove('active');
 
-        // 약간의 딜레이 후 타겟 활성화
+        // 페이드 전환 (transform 없이 — 모바일 레이아웃 깨짐 방지)
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 target.classList.add('active');
