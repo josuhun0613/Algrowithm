@@ -307,14 +307,13 @@
             position: absolute; inset: 0;
             background: linear-gradient(180deg,
                 rgba(250,251,255,0) 0%,
-                rgba(250,251,255,0.3) 15%,
-                rgba(250,251,255,0.75) 35%,
-                rgba(250,251,255,0.95) 55%,
-                rgba(250,251,255,1) 70%);
+                rgba(250,251,255,0.5) 10%,
+                rgba(250,251,255,0.85) 25%,
+                rgba(250,251,255,1) 45%);
             z-index: 2;
             display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            padding-top: 40px;
+            align-items: center; justify-content: flex-start;
+            padding-top: 32px;
         }
 
         /* ── 경품 선택 카드 ── */
@@ -324,10 +323,11 @@
             box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
         }
         .teaser-lock {
-            background: #fff; border-radius: 16px;
-            padding: 20px 28px; text-align: center;
+            background: #fff; border-radius: 20px;
+            padding: 32px 36px; text-align: center;
             box-shadow: 0 4px 24px rgba(0,0,0,0.08);
             border: 1px solid rgba(79,70,229,0.1);
+            width: 90%; max-width: 360px;
         }
 
         /* 스크롤바 숨기기 (모바일 앱 느낌) */
@@ -538,7 +538,7 @@
                 </div>
 
                 <!-- 감질맛 상세 분석 (바로 이어서) -->
-                <div class="teaser-wrap mb-6">
+                <div class="teaser-wrap mb-3" style="max-height: 320px; overflow: hidden;">
                     <div class="teaser-content">
                         <div class="card p-7 md:p-10">
                             <div class="text-left bg-gray-50 rounded-2xl p-6 mb-6">
@@ -571,9 +571,9 @@
                     <!-- 그라데이션 + 잠금 메시지 (위쪽에 위치) -->
                     <div class="teaser-fade">
                         <div class="teaser-lock">
-                            <i class="fa-solid fa-lock text-accent text-lg mb-2"></i>
-                            <p class="text-sm font-bold text-primary mb-1">1:1 코칭 당첨자 전용 리포트</p>
-                            <p class="text-xs text-gray-400 leading-[1.7]">코칭권 당첨 시 전체 분석 리포트 +<br>맞춤 커리어 전략을 제공해 드립니다</p>
+                            <i class="fa-solid fa-lock text-accent text-2xl mb-3"></i>
+                            <p class="text-lg font-bold text-primary mb-2">1:1 코칭 당첨자 전용 리포트</p>
+                            <p class="text-sm text-gray-400 leading-[1.8]">코칭권 당첨 시 전체 분석 리포트 +<br>맞춤 커리어 전략을 제공해 드립니다</p>
                         </div>
                     </div>
                 </div>
