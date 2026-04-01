@@ -538,43 +538,22 @@
                     <p class="text-sm text-gray-500 leading-[2.0] max-w-md mx-auto" id="resultDesc"></p>
                 </div>
 
-                <!-- 감질맛 상세 분석 (바로 이어서) -->
-                <div class="teaser-wrap mb-3" style="max-height: 480px; overflow: hidden;">
-                    <div class="teaser-content">
-                        <div class="card p-7 md:p-10">
-                            <div class="text-left bg-gray-50 rounded-2xl p-6 mb-6">
-                                <p class="text-sm font-bold text-primary mb-5">나의 AI 커리어 역량 분석</p>
-                                <div class="space-y-4" id="chartBars"></div>
-                            </div>
-                            <div class="text-left bg-indigo-50/50 rounded-2xl p-6 mb-6">
-                                <p class="text-sm font-bold text-primary mb-4">응답자 환경 요약</p>
-                                <div class="grid grid-cols-2 gap-4" id="envSummary"></div>
-                            </div>
-                            <div class="text-left bg-gray-50 rounded-2xl p-6">
-                                <p class="text-sm font-bold text-primary mb-4">AI 추천 커리어 로드맵</p>
-                                <div class="space-y-3">
-                                    <div class="flex items-center gap-3 bg-white rounded-xl p-4">
-                                        <div class="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0"><span class="text-xs font-bold text-accent">1</span></div>
-                                        <div><p class="text-sm font-semibold text-primary">핵심 역량 포지셔닝 전략</p><p class="text-xs text-gray-400">AI 기반 차별화 포인트 설계</p></div>
-                                    </div>
-                                    <div class="flex items-center gap-3 bg-white rounded-xl p-4">
-                                        <div class="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center shrink-0"><span class="text-xs font-bold text-violet-600">2</span></div>
-                                        <div><p class="text-sm font-semibold text-primary">맞춤형 브랜딩 액션플랜</p><p class="text-xs text-gray-400">30일 실행 로드맵 제공</p></div>
-                                    </div>
-                                    <div class="flex items-center gap-3 bg-white rounded-xl p-4">
-                                        <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0"><span class="text-xs font-bold text-emerald-600">3</span></div>
-                                        <div><p class="text-sm font-semibold text-primary">포트폴리오 AI 자동 생성</p><p class="text-xs text-gray-400">나만의 커리어 페이지 제작</p></div>
-                                    </div>
-                                </div>
-                            </div>
+                <!-- 감질맛 상세 분석 (차트만 살짝 보이고 흐려짐) -->
+                <div class="teaser-wrap mb-3" style="max-height: 240px; overflow: hidden;">
+                    <div class="teaser-content" style="filter: none; opacity: 1;">
+                        <div class="card p-6 md:p-8">
+                            <p class="text-sm font-bold text-primary mb-4">나의 AI 커리어 역량 분석</p>
+                            <div class="space-y-4" id="chartBars"></div>
                         </div>
                     </div>
-                    <!-- 그라데이션 + 잠금 메시지 (위쪽에 위치) -->
-                    <div class="teaser-fade">
+                    <!-- 아래로 갈수록 흐려지는 그라데이션 -->
+                    <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 70%;
+                        background: linear-gradient(180deg, rgba(250,251,255,0) 0%, rgba(250,251,255,0.6) 30%, rgba(250,251,255,1) 70%);
+                        z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 16px;">
                         <div class="teaser-lock">
-                            <i class="fa-solid fa-lock text-accent text-2xl mb-3"></i>
-                            <p class="text-lg font-bold text-primary mb-2">1:1 코칭 당첨자 전용 리포트</p>
-                            <p class="text-sm text-gray-400 leading-[1.8]">코칭권 당첨 시 전체 분석 리포트 +<br>맞춤 커리어 전략을 제공해 드립니다</p>
+                            <i class="fa-solid fa-lock text-accent text-xl mb-2"></i>
+                            <p class="text-base font-bold text-primary mb-1">1:1 코칭 당첨자 전용 리포트</p>
+                            <p class="text-xs text-gray-400 leading-[1.7]">코칭권 당첨 시 전체 분석 리포트를 제공해 드립니다</p>
                         </div>
                     </div>
                 </div>
@@ -1190,26 +1169,6 @@
             });
         }, 300);
 
-        // 환경 요약 (블러 처리된 티저 - 더미 데이터)
-        const envContainer = document.getElementById('envSummary');
-        envContainer.innerHTML = `
-            <div class="bg-white rounded-xl p-3 text-center">
-                <p class="text-[10px] text-gray-400 mb-1">강점 키워드</p>
-                <p class="text-xs font-bold text-primary">분석력 · 실행력</p>
-            </div>
-            <div class="bg-white rounded-xl p-3 text-center">
-                <p class="text-[10px] text-gray-400 mb-1">추천 직무</p>
-                <p class="text-xs font-bold text-primary">데이터 기반 직무</p>
-            </div>
-            <div class="bg-white rounded-xl p-3 text-center">
-                <p class="text-[10px] text-gray-400 mb-1">AI 활용 전략</p>
-                <p class="text-xs font-bold text-primary">자동화 · 분석</p>
-            </div>
-            <div class="bg-white rounded-xl p-3 text-center">
-                <p class="text-[10px] text-gray-400 mb-1">성장 포인트</p>
-                <p class="text-xs font-bold text-primary">브랜딩 강화</p>
-            </div>
-        `;
     }
 
 
