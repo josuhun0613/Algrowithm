@@ -288,23 +288,22 @@
         /* ── 감질맛 페이드 오버레이 ── */
         .teaser-wrap { position: relative; }
         .teaser-content {
-            filter: blur(2px);
-            opacity: 0.6;
             pointer-events: none;
             user-select: none;
         }
         .teaser-fade {
-            position: absolute; inset: 0;
+            position: absolute; left: 0; right: 0; bottom: 0;
+            height: 65%;
             background: linear-gradient(180deg,
                 rgba(250,251,255,0) 0%,
-                rgba(250,251,255,0.15) 20%,
-                rgba(250,251,255,0.5) 40%,
-                rgba(250,251,255,0.85) 55%,
-                rgba(250,251,255,1) 72%);
+                rgba(250,251,255,0.4) 25%,
+                rgba(250,251,255,0.8) 50%,
+                rgba(250,251,255,0.95) 70%,
+                rgba(250,251,255,1) 85%);
             z-index: 2;
             display: flex; flex-direction: column;
             align-items: center; justify-content: flex-end;
-            padding-bottom: 20px;
+            padding-bottom: 16px;
         }
 
         /* ── 경품 선택 카드 ── */
@@ -314,11 +313,14 @@
             box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
         }
         .teaser-lock {
-            background: #fff; border-radius: 20px;
-            padding: 32px 36px; text-align: center;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-            border: 1px solid rgba(79,70,229,0.1);
-            width: 90%; max-width: 360px;
+            background: rgba(255,255,255,0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 28px 32px; text-align: center;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+            border: 1px solid rgba(79,70,229,0.12);
+            width: 90%; max-width: 340px;
         }
 
         /* 스크롤바 숨기기 (모바일 앱 느낌) */
@@ -525,18 +527,15 @@
                     <p class="text-sm text-gray-500 leading-[2.0] max-w-md mx-auto" id="resultDesc"></p>
                 </div>
 
-                <!-- 감질맛 상세 분석 (차트만 살짝 보이고 흐려짐) -->
-                <div class="teaser-wrap mb-3" style="max-height: 240px; overflow: hidden;">
-                    <div class="teaser-content" style="filter: none; opacity: 1;">
+                <!-- 감질맛 상세 분석 (차트 선명 → 아래로 그라데이션) -->
+                <div class="teaser-wrap mb-3" style="max-height: 300px; overflow: hidden;">
+                    <div class="teaser-content">
                         <div class="card p-6 md:p-8">
                             <p class="text-sm font-bold text-primary mb-4">나의 AI 커리어 역량 분석</p>
                             <div class="space-y-4" id="chartBars"></div>
                         </div>
                     </div>
-                    <!-- 아래로 갈수록 흐려지는 그라데이션 -->
-                    <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 70%;
-                        background: linear-gradient(180deg, rgba(250,251,255,0) 0%, rgba(250,251,255,0.6) 30%, rgba(250,251,255,1) 70%);
-                        z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 16px;">
+                    <div class="teaser-fade">
                         <div class="teaser-lock">
                             <i class="fa-solid fa-lock text-accent text-xl mb-2"></i>
                             <p class="text-base font-bold text-primary mb-1">1:1 코칭 당첨자 전용 리포트</p>
