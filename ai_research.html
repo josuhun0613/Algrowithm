@@ -295,6 +295,33 @@
             color: #fff; text-align: center;
         }
 
+        /* ── 감질맛 페이드 오버레이 ── */
+        .teaser-wrap { position: relative; }
+        .teaser-content {
+            filter: blur(2px);
+            opacity: 0.6;
+            pointer-events: none;
+            user-select: none;
+        }
+        .teaser-fade {
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg,
+                rgba(250,251,255,0) 0%,
+                rgba(250,251,255,0.4) 30%,
+                rgba(250,251,255,0.85) 60%,
+                rgba(250,251,255,1) 100%);
+            z-index: 2;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: flex-end;
+            padding-bottom: 24px;
+        }
+        .teaser-lock {
+            background: #fff; border-radius: 16px;
+            padding: 20px 28px; text-align: center;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            border: 1px solid rgba(79,70,229,0.1);
+        }
+
         /* 스크롤바 숨기기 (모바일 앱 느낌) */
         .screen::-webkit-scrollbar { display: none; }
         .screen { -ms-overflow-style: none; scrollbar-width: none; }
@@ -347,58 +374,15 @@
                     12개 문항에 답하고,<br>
                     나만의 AI 커리어 활용 유형을 확인하세요.
                 </p>
-                <p class="text-sm text-gray-400 mb-10">
+                <p class="text-sm text-gray-400 mb-12">
                     <i class="fa-regular fa-clock mr-1"></i> 약 3분 소요 · 참여자 추첨 경품
                 </p>
-
-                <!-- 경품 미리보기 (가로 스크롤) -->
-                <div class="mb-10">
-                    <p class="text-xs font-semibold text-gray-400 mb-4 tracking-wide uppercase">Rewards</p>
-                    <div class="flex gap-3 overflow-x-auto pb-3 prizes-scroll -mx-2 px-2">
-                        <!-- iPad -->
-                        <div class="prize-card" style="background: linear-gradient(135deg, #F0F4FF 0%, #E0E7FF 100%);">
-                            <div class="prize-icon" style="background: linear-gradient(135deg, #C7D2FE, #A5B4FC);">
-                                <i class="fa-solid fa-tablet-screen-button text-indigo-600"></i>
-                            </div>
-                            <p class="text-[11px] font-bold text-indigo-400 mb-1">1등</p>
-                            <p class="font-bold text-primary text-sm">iPad</p>
-                            <p class="text-[10px] text-gray-400 mt-1">1명</p>
-                        </div>
-                        <!-- 스타벅스 -->
-                        <div class="prize-card" style="background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);">
-                            <div class="prize-icon" style="background: linear-gradient(135deg, #A7F3D0, #6EE7B7);">
-                                <i class="fa-solid fa-mug-hot text-emerald-700"></i>
-                            </div>
-                            <p class="text-[11px] font-bold text-emerald-500 mb-1">2등</p>
-                            <p class="font-bold text-primary text-sm">스타벅스<br>기프티콘</p>
-                            <p class="text-[10px] text-gray-400 mt-1">3명</p>
-                        </div>
-                        <!-- 컨설팅 -->
-                        <div class="prize-card" style="background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);">
-                            <div class="prize-icon" style="background: linear-gradient(135deg, #DDD6FE, #C4B5FD);">
-                                <i class="fa-solid fa-user-tie text-violet-600"></i>
-                            </div>
-                            <p class="text-[11px] font-bold text-violet-500 mb-1">3등</p>
-                            <p class="font-bold text-primary text-sm">1:1<br>컨설팅권</p>
-                            <p class="text-[10px] text-gray-400 mt-1">5명</p>
-                        </div>
-                        <!-- CU 상품권 -->
-                        <div class="prize-card" style="background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);">
-                            <div class="prize-icon" style="background: linear-gradient(135deg, #FED7AA, #FDBA74);">
-                                <i class="fa-solid fa-gift text-orange-600"></i>
-                            </div>
-                            <p class="text-[11px] font-bold text-orange-500 mb-1">4등</p>
-                            <p class="font-bold text-primary text-sm">CU<br>5천원권</p>
-                            <p class="text-[10px] text-gray-400 mt-1">10명</p>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- CTA -->
                 <button onclick="goToScreen('screen-survey')" class="cta-btn w-full py-4 text-base flex items-center justify-center gap-2">
                     리서치 시작하기 <i class="fa-solid fa-arrow-right text-sm"></i>
                 </button>
-                <p class="text-center text-[11px] text-gray-300 mt-3">* 당첨자에게 입력 연락처로 개별 안내</p>
+                <p class="text-center text-[11px] text-gray-300 mt-3">참여자 추첨을 통해 iPad, 스타벅스 기프티콘 등 경품 제공</p>
             </div>
         </div>
     </div>
@@ -452,8 +436,48 @@
     <!-- SCREEN 3: INFO INPUT -->
     <!-- ═══════════════════════════════════════════ -->
     <div id="screen-info" class="screen">
-        <div class="min-h-[100dvh] flex items-center justify-center px-6 py-10">
-            <div class="w-full max-w-lg">
+        <div class="min-h-[100dvh] px-6 py-10">
+            <div class="w-full max-w-lg mx-auto">
+
+                <!-- 경품 안내 -->
+                <div class="card p-6 md:p-8 mb-5 question-slide">
+                    <p class="text-center text-sm font-bold text-primary mb-5">참여자 추첨 경품</p>
+                    <div class="grid grid-cols-4 gap-3">
+                        <div class="text-center">
+                            <div class="w-14 h-14 rounded-2xl mx-auto mb-2 flex items-center justify-center" style="background: linear-gradient(135deg, #C7D2FE, #A5B4FC);">
+                                <i class="fa-solid fa-tablet-screen-button text-indigo-600 text-lg"></i>
+                            </div>
+                            <p class="text-[10px] font-bold text-indigo-500">1등</p>
+                            <p class="text-xs font-bold text-primary">iPad</p>
+                            <p class="text-[10px] text-gray-400">1명</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-14 h-14 rounded-2xl mx-auto mb-2 flex items-center justify-center" style="background: linear-gradient(135deg, #A7F3D0, #6EE7B7);">
+                                <i class="fa-solid fa-mug-hot text-emerald-700 text-lg"></i>
+                            </div>
+                            <p class="text-[10px] font-bold text-emerald-500">2등</p>
+                            <p class="text-xs font-bold text-primary">스타벅스</p>
+                            <p class="text-[10px] text-gray-400">3명</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-14 h-14 rounded-2xl mx-auto mb-2 flex items-center justify-center" style="background: linear-gradient(135deg, #DDD6FE, #C4B5FD);">
+                                <i class="fa-solid fa-user-tie text-violet-600 text-lg"></i>
+                            </div>
+                            <p class="text-[10px] font-bold text-violet-500">3등</p>
+                            <p class="text-xs font-bold text-primary">컨설팅</p>
+                            <p class="text-[10px] text-gray-400">5명</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-14 h-14 rounded-2xl mx-auto mb-2 flex items-center justify-center" style="background: linear-gradient(135deg, #FED7AA, #FDBA74);">
+                                <i class="fa-solid fa-gift text-orange-600 text-lg"></i>
+                            </div>
+                            <p class="text-[10px] font-bold text-orange-500">4등</p>
+                            <p class="text-xs font-bold text-primary">CU 5천원</p>
+                            <p class="text-[10px] text-gray-400">10명</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card p-7 md:p-10 question-slide">
                     <h3 class="text-xl font-bold text-primary mb-2">거의 다 왔어요!</h3>
                     <p class="text-sm text-gray-400 mb-8">경품 추첨 및 결과 확인을 위해 기본 정보를 입력해 주세요.</p>
@@ -533,6 +557,7 @@
         <div class="min-h-[100dvh] px-6 py-10">
             <div class="w-full max-w-lg mx-auto">
 
+                <!-- 기본 유형 결과 (공개) -->
                 <div class="card p-7 md:p-10 question-slide text-center mb-6">
                     <div class="w-16 h-16 rounded-full bg-indigo-50 flex items-center justify-center mx-auto mb-6">
                         <i class="fa-solid fa-chart-pie text-accent text-2xl"></i>
@@ -541,19 +566,7 @@
                     <p class="text-sm text-gray-400 mb-2">당신의 AI 커리어 전략 유형은</p>
                     <h2 class="text-2xl md:text-3xl font-bold text-primary mb-3" id="resultType"></h2>
                     <div class="flex justify-center mb-6" id="resultBadge"></div>
-                    <p class="text-sm text-gray-500 leading-[2.0] mb-8 max-w-md mx-auto" id="resultDesc"></p>
-
-                    <!-- 차트 -->
-                    <div class="text-left bg-gray-50 rounded-2xl p-6 mb-6">
-                        <p class="text-sm font-bold text-primary mb-5">나의 AI 커리어 역량 분석</p>
-                        <div class="space-y-4" id="chartBars"></div>
-                    </div>
-
-                    <!-- 환경 요약 -->
-                    <div class="text-left bg-indigo-50/50 rounded-2xl p-6 mb-6">
-                        <p class="text-sm font-bold text-primary mb-4">응답자 환경 요약</p>
-                        <div class="grid grid-cols-2 gap-4" id="envSummary"></div>
-                    </div>
+                    <p class="text-sm text-gray-500 leading-[2.0] max-w-md mx-auto" id="resultDesc"></p>
                 </div>
 
                 <!-- 공유 버튼 -->
@@ -566,13 +579,78 @@
                     </button>
                 </div>
 
-                <!-- 워크숍 CTA -->
+                <!-- 워크숍 CTA (상단) -->
                 <div class="cta-banner mb-6">
-                    <p class="text-sm opacity-80 mb-2">AI로 나만의 커리어를 설계하고 싶다면?</p>
+                    <p class="text-sm opacity-80 mb-2">상세 분석 리포트 + 맞춤 커리어 전략을 받고 싶다면?</p>
                     <p class="text-lg font-bold mb-4">AI 커리어 브랜딩 워크숍</p>
                     <a href="/" class="inline-flex items-center gap-2 bg-white text-accent font-bold text-sm px-6 py-3 rounded-xl hover:shadow-lg transition-all">
-                        자세히 알아보기 <i class="fa-solid fa-arrow-right text-xs"></i>
+                        워크숍 신청하기 <i class="fa-solid fa-arrow-right text-xs"></i>
                     </a>
+                </div>
+
+                <!-- 상세 분석 (감질맛 — 블러 + 그라데이션 가림) -->
+                <div class="teaser-wrap mb-6">
+                    <div class="teaser-content">
+                        <div class="card p-7 md:p-10">
+                            <!-- 차트 (블러 처리됨) -->
+                            <div class="text-left bg-gray-50 rounded-2xl p-6 mb-6">
+                                <p class="text-sm font-bold text-primary mb-5">나의 AI 커리어 역량 분석</p>
+                                <div class="space-y-4" id="chartBars"></div>
+                            </div>
+
+                            <!-- 환경 요약 (블러 처리됨) -->
+                            <div class="text-left bg-indigo-50/50 rounded-2xl p-6 mb-6">
+                                <p class="text-sm font-bold text-primary mb-4">응답자 환경 요약</p>
+                                <div class="grid grid-cols-2 gap-4" id="envSummary"></div>
+                            </div>
+
+                            <!-- 추가 티저 컨텐츠 -->
+                            <div class="text-left bg-gray-50 rounded-2xl p-6">
+                                <p class="text-sm font-bold text-primary mb-4">AI 추천 커리어 로드맵</p>
+                                <div class="space-y-3">
+                                    <div class="flex items-center gap-3 bg-white rounded-xl p-4">
+                                        <div class="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0">
+                                            <span class="text-xs font-bold text-accent">1</span>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-primary">핵심 역량 포지셔닝 전략</p>
+                                            <p class="text-xs text-gray-400">AI 기반 차별화 포인트 설계</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3 bg-white rounded-xl p-4">
+                                        <div class="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center shrink-0">
+                                            <span class="text-xs font-bold text-violet-600">2</span>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-primary">맞춤형 브랜딩 액션플랜</p>
+                                            <p class="text-xs text-gray-400">30일 실행 로드맵 제공</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3 bg-white rounded-xl p-4">
+                                        <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
+                                            <span class="text-xs font-bold text-emerald-600">3</span>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-primary">포트폴리오 AI 자동 생성</p>
+                                            <p class="text-xs text-gray-400">나만의 커리어 페이지 제작</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 그라데이션 오버레이 + 잠금 CTA -->
+                    <div class="teaser-fade">
+                        <div class="teaser-lock">
+                            <i class="fa-solid fa-lock text-accent text-lg mb-2"></i>
+                            <p class="text-sm font-bold text-primary mb-1">상세 분석 결과 잠김</p>
+                            <p class="text-xs text-gray-400 mb-3">워크숍 참여 시 전체 리포트를 확인할 수 있어요</p>
+                            <a href="/" class="cta-btn inline-flex items-center gap-2 px-6 py-2.5 text-sm">
+                                워크숍 신청하기 <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- 안내 -->
