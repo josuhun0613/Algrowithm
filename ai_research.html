@@ -1109,6 +1109,25 @@
         db.collection('ai_career_research').add(responseData)
             .catch(e => console.warn('Firestore 저장 실패:', e));
 
+        // 텔레그램 알림 (독립 실행 — 실패해도 진행)
+        fetch('/api/notify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: 'research',
+                name: userInfo.name,
+                phone: userInfo.phone,
+                age: userInfo.age,
+                status: userInfo.status,
+                org: userInfo.org,
+                major: userInfo.major,
+                resultType: calcResultType.name,
+                totalScore: calcTotalScore,
+                selectedPrize,
+                ref: new URLSearchParams(window.location.search).get('ref') || '',
+            })
+        }).catch(e => console.warn('텔레그램 알림 실패:', e));
+
         // 완료 화면
         document.getElementById('doneTypeSummary').textContent = '유형: ' + resultTypeName;
         document.getElementById('donePrizeSummary').textContent = '응모 경품: ' + selectedPrize;

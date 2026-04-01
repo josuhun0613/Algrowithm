@@ -75,6 +75,10 @@ async function handleTelegram(req, res) {
             if (!name || !phone) return res.status(400).json({ error: '이름과 연락처는 필수입니다.' });
             const occupationMap = { student: '대학생', jobseeker: '취업준비생', worker: '직장인', founder: '창업자/프리랜서' };
             telegramMessage = `🎤 *새로운 강연 신청*\n\n📅 *접수 시간:* ${now}\n\n👤 *이름:* ${name}\n🎂 *나이:* ${age || '미입력'}세\n📱 *연락처:* ${phone}\n💼 *소속/직업:* ${occupationMap[occupation] || occupation || '미선택'}\n🏢 *학교/회사:* ${org || '미입력'}\n📍 *사는 곳:* ${region || '미입력'}\n📣 *유입 경로:* ${ref || 'direct'}\n\n💬 *기대평:*\n${expectation || '(내용 없음)'}\n\n---\n_Algrowithm 강연 페이지에서 접수됨_`;
+        } else if (type === 'research') {
+            const { name, phone, age, status, org, major, resultType, totalScore, selectedPrize, ref } = req.body;
+            if (!name || !phone) return res.status(400).json({ error: '이름과 연락처는 필수입니다.' });
+            telegramMessage = `📊 *AI 리서치 응모*\n\n📅 *접수 시간:* ${now}\n\n👤 *이름:* ${name}\n🎂 *나이:* ${age || '미입력'}세\n📱 *연락처:* ${phone}\n💼 *현재 상태:* ${status || '미선택'}\n🏫 *소속:* ${org || '미입력'}\n📚 *전공/관심:* ${major || '미입력'}\n\n🧠 *유형:* ${resultType || '-'} (${totalScore || 0}점)\n🎁 *희망 경품:* ${selectedPrize || '미선택'}\n📣 *유입 경로:* ${ref || 'direct'}\n\n---\n_AI 리서치 페이지에서 접수됨_`;
         } else {
             const { name, phone, email, program, message } = req.body;
             telegramMessage = `🔔 *새로운 코칭 참여 문의*\n\n📅 *접수 시간:* ${now}\n\n👤 *이름:* ${name || '미입력'}\n📱 *연락처:* ${phone || '미입력'}\n📧 *이메일:* ${email || '미입력'}\n📋 *코칭 과정:* ${program || '미선택'}\n\n💬 *문의 내용:*\n${message || '(내용 없음)'}\n\n---\n_Algrowithm 웹사이트에서 접수됨_`;
