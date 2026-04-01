@@ -401,40 +401,37 @@
     <!-- SCREEN 2: SURVEY (Q1~Q12) -->
     <!-- ═══════════════════════════════════════════ -->
     <div id="screen-survey" class="screen">
-        <div class="min-h-[100dvh] flex flex-col">
-
-            <!-- 프로그레스 (상단 고정) -->
-            <div class="sticky top-0 z-20 bg-surface/95 backdrop-blur-sm pt-4 pb-3 px-6">
-                <div class="max-w-lg mx-auto">
-                    <div class="flex items-center justify-between mb-2">
-                        <p class="text-sm font-semibold text-primary" id="progressLabel">AI 인식</p>
-                        <p class="font-mono text-xs text-gray-400" id="progressCount"></p>
-                    </div>
-                    <div class="w-full h-1 bg-gray-100 rounded-full overflow-hidden">
-                        <div class="progress-bar rounded-full" id="progressBar" style="width: 0%"></div>
-                    </div>
+        <!-- 프로그레스 (상단 고정) -->
+        <div class="fixed top-0 left-0 right-0 z-20 bg-surface/95 backdrop-blur-sm pt-4 pb-3 px-6">
+            <div class="max-w-lg mx-auto">
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-sm font-semibold text-primary" id="progressLabel">AI 인식</p>
+                    <p class="font-mono text-xs text-gray-400" id="progressCount"></p>
+                </div>
+                <div class="w-full h-1 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="progress-bar rounded-full" id="progressBar" style="width: 0%"></div>
                 </div>
             </div>
+        </div>
 
-            <!-- 질문 영역 (중앙 정렬) -->
-            <div class="flex-1 flex items-center justify-center px-6 py-6">
-                <div class="w-full max-w-lg">
-                    <div class="card p-7 md:p-10 question-slide" id="questionCard">
-                        <div class="flex items-center gap-3 mb-6">
-                            <span class="font-mono text-xs font-bold text-accent bg-indigo-50 px-3 py-1 rounded-lg" id="qNumber">Q1</span>
-                            <span class="text-xs text-gray-400" id="qCategory"></span>
-                        </div>
-                        <h3 class="text-lg md:text-xl font-bold text-primary mb-8 leading-[1.7]" id="qText"></h3>
-                        <div class="space-y-3" id="qOptions"></div>
+        <!-- 질문 영역 (화면 전체 중앙) -->
+        <div class="min-h-[100dvh] flex items-center justify-center px-6 pt-16 pb-6">
+            <div class="w-full max-w-lg">
+                <div class="card p-7 md:p-10 question-slide" id="questionCard">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="font-mono text-xs font-bold text-accent bg-indigo-50 px-3 py-1 rounded-lg" id="qNumber">Q1</span>
+                        <span class="text-xs text-gray-400" id="qCategory"></span>
                     </div>
+                    <h3 class="text-lg md:text-xl font-bold text-primary mb-8 leading-[1.7]" id="qText"></h3>
+                    <div class="space-y-3" id="qOptions"></div>
+                </div>
 
-                    <!-- 이전 버튼 (하단) -->
-                    <div class="flex items-center justify-between mt-5" id="navButtons">
-                        <button id="prevBtn" class="cta-btn-outline px-5 py-2.5 text-sm hidden" aria-label="이전 질문">
-                            <i class="fa-solid fa-arrow-left text-xs mr-1"></i> 이전
-                        </button>
-                        <div></div>
-                    </div>
+                <!-- 이전 버튼 -->
+                <div class="flex items-center justify-between mt-5" id="navButtons">
+                    <button id="prevBtn" class="cta-btn-outline px-5 py-2.5 text-sm hidden" aria-label="이전 질문">
+                        <i class="fa-solid fa-arrow-left text-xs mr-1"></i> 이전
+                    </button>
+                    <div></div>
                 </div>
             </div>
         </div>
